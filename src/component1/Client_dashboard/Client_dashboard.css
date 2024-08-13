@@ -1,0 +1,223 @@
+@import url(https://unpkg.com/@webpixels/css@1.1.5/dist/index.css);
+
+/* Bootstrap Icons */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.4.0/font/bootstrap-icons.min.css");
+
+#sidebarCollapse::-webkit-scrollbar{
+    width
+    : 8px;
+}
+#sidebarCollapse::-webkit-scrollbar-thumb{
+    background-color : rgb(210, 194, 194);
+    border-radius: 50px;
+}
+#sidebar_div{
+    display: flex;
+    flex-direction: column;
+    gap : 20px;
+    align-items: start;
+    justify-content: start;
+    position: relative;
+}
+#nav_item{
+    width : 100%;
+}
+
+#sidebarCollapse{
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: start; 
+    justify-content: start;
+    width: 100%;
+}
+#nav_div{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap : 0px;
+    width : 100%;
+}
+
+#navbar_brand{
+    padding-block: 18px;
+    padding-inline: 30px;
+    width: 100%;
+}
+#navbar_brand>img{
+    /* height : 40px; */
+    width : 100%;
+}
+
+
+.menu-close{
+    /* position: absolute;
+    top : 10px;
+    right : 20px; */
+    height : 20px;
+    margin-right: 10px;
+    display: none;
+}
+#nav_menu_div{
+    display: none;
+}
+
+#icon_shape{
+    background-color: #009933;
+}
+
+#main_div{
+    position: relative;
+}
+
+#dashboard_header{
+    position: fixed;
+    top : 0;
+    right : 0;
+    width : calc( 100% - 270px );
+    z-index: 99;
+}
+
+#outlet_div{
+    width: calc(100% - 270px);
+    margin-left: auto;
+    margin-top: 110px;
+}
+#navbarVertical{
+    position: fixed;
+    top : 0;
+    left : 0;
+}
+
+
+/* -----------------Requirement box------------------ */
+.requirement_box{
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+    gap : 20px;
+    padding-block: 3px;
+    /* border: 1px solid gray; */
+    border-top: 1px solid rgb(187, 185, 185);
+    border-bottom: 1px solid rgb(187, 185, 185);
+}
+.requirement_box>div{
+    display: flex;
+    gap : 20px;
+}
+.requirement_box button {
+    padding : 0px 2px;
+    font-size: 0.6rem;   
+    border: 1px solid gray;
+}
+.requirement_box p{
+    font-size: 0.9rem;
+}
+
+@media (max-width : 991px) {
+    #sidebarCollapse{
+        position: fixed;
+        top : 100px;
+        left : -100%;
+        background-color: white;
+        width : 100%;
+        height : calc(100vh - 100px);
+        overflow-y: scroll;
+        overflow-x: hidden;
+        transition: all linear 0.2s;
+        padding : 0 60px;
+    }    
+    .menu-close{
+        display: none;
+    }
+    #sidebar_div{
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top : 0;
+        left : 0;
+        background-color: white;
+    }
+    #navbar_brand{
+        width : 250px;
+    }
+    #main_div{
+        margin-top: 80px;
+    }
+    #nav_menu_div{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #dashboard_header{
+        position: static;
+        width : 100%;
+    }
+
+    #outlet_div{
+        width: 100%;
+        margin-top: 0px;
+    }
+}
+
+@media (max-width : 600px) {
+    .requirement_box>div{
+        width: 100%;
+    }
+    .requirement_box{
+        gap : 2px;
+    }
+}
+
+@media (max-width : 450px) {
+    #navbar_brand{
+        padding-inline: 0 ;
+        width: 150px;
+    }
+}
+
+
+
+.profile_pic{
+    height : 40px;
+    width : 40px;
+    border-radius: 100px;
+    object-fit: cover;
+}
+
+.profile_pic_toggle{
+    display: flex;
+    gap : 20px;
+    align-items: center;
+    justify-content: end;
+}
+
+#noti_icon{
+    font-size: 25px;
+}
+
+@media (max-width : 991px) {
+    .profile_pic_toggle{
+        display: none;
+    }    
+}
+/* .profile_pic_toggle{
+    background:transparent;
+    border: none;
+}
+.profile_pic_toggle:hover{
+    background: transparent;
+    border : none;
+}
+.profile_pic_toggle:focus{
+    background: transparent;
+    border : none;
+}
+.profile_pic_toggle::selection{
+    background: transparent;
+    border : none;
+} */

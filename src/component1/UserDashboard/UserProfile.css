@@ -1,0 +1,20 @@
+#screen .enquiry-section{
+    z-index: 999;
+    /* scale : 1; */
+    left : 0;
+}
+
+#screen .input-box>*{
+    width: 99%;
+}
+
+#screen .input-box{
+    align-items: end;
+}
+
+
+#screen .enquiry-button{
+    width : 20%;
+    border-radius: 10px;
+    background-color: green;
+}

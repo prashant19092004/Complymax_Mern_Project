@@ -1,0 +1,42 @@
+
+.client_form{
+    margin-top : 70px;
+}
+
+.client_form .form__content{
+    height : auto;
+    width : 100%;
+}
+
+.client_form .form__title{
+    font-style: italic;
+    font-size: 2rem;
+    color : #009933;
+}
+
+.client_form .form__div{
+    width : 40%;
+}
+
+.client_form .form{
+    display: block;
+}
+
+.client_form .client_forms_box{
+    justify-content: space-between;
+}
+
+@media (max-width : 991px) {
+    .client_form .form__div{
+        width : 80%;
+    }
+    .client_form .client_forms_box{
+        justify-content: center;
+    }
+}
+
+@media (max-width : 991px) {
+    .client_form{
+        margin-top: 0px;
+    }
+}
