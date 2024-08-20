@@ -26,13 +26,9 @@ const clientSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Admin"
     },
-    state : {
-        type : String,
-        required : true
-    },
-    location : {
-        type : String,
-        required : true
+    locations : {
+        type : [mongoose.Schema.Types.ObjectId],
+        ref : "Clientlocation"
     },
     status : {
         type : Boolean,

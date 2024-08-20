@@ -13,8 +13,8 @@ const SupervisorForm = () => {
         contact : "",
         email: "",
         password: "",
-        state : "",
-        loaction : ""
+        // state : "",
+        // loaction : ""
     });
     let states_of_india = [
         "Andhra Pradesh",
@@ -177,7 +177,7 @@ const SupervisorForm = () => {
                         </div>
                     </div>
 
-                    <div className='client_forms_box d-flex flex-wrap'>
+                    {/* <div className='client_forms_box d-flex flex-wrap'>
                         <div class="form__div form__div-one">
                             <div class="form__icon">
                                 <i class='bx bx-user-circle'></i>
@@ -207,7 +207,7 @@ const SupervisorForm = () => {
                                 <input type="text" name='location' onChange={changeHandle} required value={clientRegisterData.location} id='location' class="form__input" onFocus={addfocus} onBlur={remfocus}/>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* <a href="#" class="form__forgot">Forgot Password?</a> */}
 
                     <input type="submit" onClick={register} class="form__button" value="Register" />

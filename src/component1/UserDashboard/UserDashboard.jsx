@@ -13,8 +13,10 @@ const UserDashboard = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const [user, setUser] = useState();
+    const [loading, setLoading] = useState(false);
 
   async function fetchingProfile(){
+    setLoading(true);
     try{
       await axios.get("http://localhost:9000/userdashboard", {
         headers: {
@@ -24,11 +26,13 @@ const UserDashboard = () => {
       .then((res) => {
         console.log(res.data);
         setUser(res.data);
+        setLoading(false);
       })
     }catch(err){
       console.log(err);
     }
   }
+
 
   // console.log(userHistory)
   useEffect(() => {
@@ -36,6 +40,9 @@ const UserDashboard = () => {
   }, []);
 
 
+//   if(loading){
+//     <div>Loading...</div>
+//   }
 
     function menuClickHandler(){
         // console.log("Hii");
@@ -161,14 +168,18 @@ const UserDashboard = () => {
                     </ul>
                 </div>
                 <div className='requirement_box'>
+                {/* {user.account_added && */}
                     <div>
                         <p>You haven't add your account yet.</p>
                         <button onClick={() => navigate('/user_dashboard/add_account')}>Add Account</button>
                     </div>
+                {/* } */}
+                {/* {user.pan_added && */}
                     <div>
                         <p>You haven't add your PAN yet.</p>
                         <button onClick={() => navigate('/user_dashboard/add_pan')}>Add Pan</button>
                     </div>
+                {/* } */}
                 </div>
             </div>
         </header>

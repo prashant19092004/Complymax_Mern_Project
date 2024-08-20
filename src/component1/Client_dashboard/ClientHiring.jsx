@@ -5,7 +5,7 @@ import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const ClientRegistration = () => {
+const ClientHiring = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -13,36 +13,36 @@ const ClientRegistration = () => {
     const [filteredClients, setFilteredClients] = useState();
     const [loading, setLoading] = useState(true);
 
-  async function fetchingProfile(){
-    try{
-      await axios.get("http://localhost:9000/establisment/clientlist", {
-        headers: {
-          Authorization : `Bearer ${token}`
-        }
-      })
-      .then((res) => {
-        console.log(res.data.clients);
-        setClients(res.data.clients);
-        setFilteredClients(res.data.clients);
-        setLoading(false);
-        // setUser(res.data);
-      })
-    }catch(err){
-      console.log(err);
-    }
-  }
+//   async function fetchingProfile(){
+//     try{
+//       await axios.get("http://localhost:9000/establisment/clientlist", {
+//         headers: {
+//           Authorization : `Bearer ${token}`
+//         }
+//       })
+//       .then((res) => {
+//         console.log(res.data.clients);
+//         setClients(res.data.clients);
+//         setFilteredClients(res.data.clients);
+//         setLoading(false);
+//         // setUser(res.data);
+//       })
+//     }catch(err){
+//       console.log(err);
+//     }
+//   }
 
   // console.log(userHistory)
-  useEffect(() => {
-    fetchingProfile();
-  }, []);
+//   useEffect(() => {
+//     fetchingProfile();
+//   }, []);
 
-  if(loading){
-    return(<div>Loading...</div>)
-  }
+//   if(loading){
+//     return(<div>Loading...</div>)
+//   }
   
-    let registerButtonHandler = () => {
-        navigate('/establisment_dashboard/client_registration_form');
+    let postHiringButtonHandler = () => {
+        navigate('/establisment_dashboard/post_hiring');
     }
 
     function toggleShow () {
@@ -72,16 +72,15 @@ const ClientRegistration = () => {
                   <input type="text" id="box" placeholder="Search...." class="search__box" onChange={changeHandle} />
                   <i class="fas fa-search search__icon" id="icon" onclick={toggleShow}></i>
             </div>
-            <Button className='mt-2' onClick={registerButtonHandler} varient='primary'>Register</Button>
+            <Button className='mt-2' onClick={postHiringButtonHandler} varient='primary'>Post Hiring</Button>
         </div>
-        <ul className='list_box'>
+        {/* <ul className='list_box'>
             {
                 filteredClients.map((client) => {
                     return (
                         <li className='list' onClick={() => getClientDetail(client._id)}>
-                          <img className='' src={defaultProfile} alt='' />
-                          <div className='list_content'>
                             <div className='list-left'>
+                                <img className='' src={defaultProfile} alt='' />
                                 <p>{client.name}</p>
                             </div>
                             <div className='list-middle'>
@@ -90,14 +89,13 @@ const ClientRegistration = () => {
                             <div className='list-right'>
                                 <p>{client.status ? 'Active' : 'Inactive'}</p>
                             </div>
-                          </div>  
                         </li>
                     )
                 })
             }
-        </ul>
+        </ul> */}
     </div>
   )
 }
 
-export default ClientRegistration
+export default ClientHiring

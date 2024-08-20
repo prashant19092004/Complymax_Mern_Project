@@ -282,7 +282,7 @@ let deleteEducation = async() => {
               <dd>{user.country}</dd>
             </div>
         </div>
-        </div>
+      </div>
         <div className='id_sec'>
             <div className='pan_heading'>
                 <h1>Pan Card</h1>

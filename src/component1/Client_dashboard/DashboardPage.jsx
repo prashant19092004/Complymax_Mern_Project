@@ -1,6 +1,7 @@
 import React from 'react'
 import { TbReport, TbLicense } from "react-icons/tb";
 import { TbReportAnalytics } from "react-icons/tb";
+import { Link } from "react-router-dom";
 
 const DashboardPage = () => {
   return (
@@ -91,20 +92,22 @@ const DashboardPage = () => {
                     </div>
                     <div className="col-xl-3 col-sm-6 col-12">
                         <div className="card shadow border-0">
-                            <div className="card-body">
-                                <div className="row">
-                                    <div className="col">
-                                        <span className="h6 font-semibold text-muted text-sm d-block mb-2">Hiring</span>
-                                        {/* <span className="h3 font-bold mb-0">95%</span> */}
-                                    </div>
-                                    <div className="col-auto">
-                                        <div className="icon icon-shape text-white text-lg rounded-circle" id='icon_shape'>
-                                            <i class="bi bi-person-plus"></i>
+                            <Link to="/establisment_dashboard/hiring">
+                                <div className="card-body">
+                                    <div className="row">
+                                        <div className="col">
+                                            <span className="h6 font-semibold text-muted text-sm d-block mb-2">Hiring</span>
+                                            {/* <span className="h3 font-bold mb-0">95%</span> */}
+                                        </div>
+                                        <div className="col-auto">
+                                            <div className="icon icon-shape text-white text-lg rounded-circle" id='icon_shape'>
+                                                <i class="bi bi-person-plus"></i>
+                                            </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
-                                
-                            </div>
+                            </Link>
                         </div>
                     </div>
                     <div className="col-xl-3 col-sm-6 col-12">

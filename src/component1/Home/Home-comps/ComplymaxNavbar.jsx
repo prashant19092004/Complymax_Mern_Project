@@ -174,7 +174,7 @@ const side_bar=document.querySelector("#side_bar");
                           <div class="inner-hero-content">
                             <h1>Leading Payroll & Compliance Management Solutions.</h1>
                             <p>ComplyMax Management Pvt. Ltd. is a leading provider of Payroll & compliance management , Manpower solutions catering to a diverse range of industries</p>
-                            <button>Get Started <i class="fa-solid fa-arrow-right"></i> </button>
+                            <button><Link to="/client-signup">Get Started <i class="fa-solid fa-arrow-right"></i></Link> </button>
                           </div>
                           <img src="https://i.ibb.co/sVqYmS2/Illustration.png" alt="" />
                       </div>

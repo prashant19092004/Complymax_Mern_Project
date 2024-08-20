@@ -90,6 +90,11 @@ const Client_dashboard = () => {
                         </a>
                     </li>
                     <li className="nav-item" id='nav_item'>
+                        <a className="nav-link" href="#">
+                            <i className="bi bi-bar-chart"></i>Job Categories
+                        </a>
+                    </li>
+                    <li className="nav-item" id='nav_item'>
                         <Link className="nav-link" to="/establisment_dashboard/client_registration">
                         <i class="bi bi-person"></i> Client Registration
                             {/* <span className="badge bg-soft-primary text-primary rounded-pill d-inline-flex align-items-center ms-auto">6</span> */}

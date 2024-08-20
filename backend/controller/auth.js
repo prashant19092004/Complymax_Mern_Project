@@ -468,9 +468,9 @@ exports.clientregister = async (req, res) => {
 
 exports.supervisorregister = async (req, res) => {
     try {
-        const { name, email, password, contact, state, location } = req.body;
+        const { name, email, password, contact, } = req.body;
 
-        if(!name || !email || !password || !contact || !state || !location){
+        if(!name || !email || !password || !contact ){
             res.json({message : "Please Enter all the data", success : false});
         }
 
@@ -522,7 +522,7 @@ exports.supervisorregister = async (req, res) => {
                   });
 
         const newSupervisor = await Supervisor.create({
-            name, email, password: hashedpassword, contact, establisment: currentEstablisment._id, state, location
+            name, email, password: hashedpassword, contact, establisment: currentEstablisment._id
         })
 
         currentEstablisment.supervisors.push(newSupervisor._id);

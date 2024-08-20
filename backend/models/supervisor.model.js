@@ -26,14 +26,14 @@ const supervisorSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Admin"
     },
-    state : {
-        type : String,
-        required : true
-    },
-    location : {
-        type : String,
-        required : true
-    },
+    // state : {
+    //     type : String,
+    //     required : true
+    // },
+    // location : {
+    //     type : String,
+    //     required : true
+    // },
     status : {
         type : Boolean,
         default : true

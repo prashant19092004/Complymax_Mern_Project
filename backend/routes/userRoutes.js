@@ -9,6 +9,7 @@ const trainingModel = require("../models/subject.model.js")
 const classModel = require("../models/class.model.js")
 const educationModel = require("../models/education.model.js")
 const experienceModel = require("../models/experience.model.js")
+const clientlocationModel = require("../models/clientlocation.model.js")
 
 
 
@@ -312,6 +313,13 @@ router.get("/establisment/profile",auth, async (req, res) => {
     const currentEstablisment = await adminModel.findOne({
         _id : req.user.id
     })
+    .populate({
+        path : 'clients',
+        populate : {
+            path : 'locations',
+            model : 'Clientlocation'
+        }
+    })
     
     // console.log(currentEstablisment);
     res.send(currentEstablisment);
@@ -397,7 +405,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
         const { state } = req.body;
 
         try{
-            const clientDetail = await clientModel.findOne({ _id : state});
+            const clientDetail = await clientModel.findOne({ _id : state})
+            .populate('locations')
             res.json({message : "check", data : clientDetail , success : true});
         }catch(err){
             res.json({ message : err, success : false});
@@ -577,5 +586,92 @@ router.get("/establisment/profile",auth, async (req, res) => {
             return res.status(500).json({ message : "internal server error", success : false});
         }
     })
+
+    router.post("/user/add_location", auth, async(req, res) => {
+        try{
+            const { name, contact, location, state, email, editId, client_id } = req.body;
+
+            if(!name || !contact || !location || !state || !email ){
+                res.json({message : "Please Enter all the data", success : false});
+            }
+
+            
+            if(editId !== ''){
+                const currentLocation = await clientlocationModel.findOne({ _id : editId });
+
+                currentLocation.name = name;
+                currentLocation.email = email;
+                currentLocation.contact = contact;
+                currentLocation.state = state;
+                currentLocation.location = location;
+
+                await currentLocation.save();
+
+                const currentClient = await clientModel.findOne({ _id : currentLocation.client })
+                .populate('locations')
+                // .populate('experiences')
+
+                return res.status(200).json({ success : true, message : "Location Updated", currentClient});
+            }
+
+            const currentClient1 = await clientModel.findOne({
+                _id : client_id
+            });
+
+            
+            const newLocation = await clientlocationModel.create({
+                name, contact, state, location, email, client : currentClient1._id
+            });
+
+            console.log(newLocation);
+            currentClient1.locations.push(newLocation._id);
+            await currentClient1.save();
+
+            const currentClient = await clientModel.findOne({
+                _id : client_id
+            })
+            .populate('locations')
+            // .populate('experiences')
+
+            return res.status(200).json({
+                success : true,
+                message : "Location Added",
+                currentClient
+            })
+        }catch(err){
+            return res.status(500).json({
+                success: false,
+                message: "plz try again later"
+            })
+        }
+    })
+    router.post("/user/delete_location", auth, async(req, res) => {
+
+        const { uid, client_id } = req.body;
+        // console.log(req.body);
+
+        try{
+            const currentLocation = await clientlocationModel.deleteOne({ _id : uid });
+            // console.log(currentEducation);
+
+            const currentClient = await clientModel.findOne({ _id : client_id })
+            .populate("locations")
+            // .populate('experiences')
+            // currentEducation.deleteOne();
+
+            return res.status(200).json({ message : "location deleted", success : true, currentClient});
+        }catch(err){
+            return res.status(500).json({ message : "internal server error", success : false});
+        }
+    })
+
+    // router.get("/establisment/hiring_form", auth, async(req, res) => {
+
+    //     try{
+
+    //     }catch(err){
+
+    //     }
+    // })
 
 module.exports = router
