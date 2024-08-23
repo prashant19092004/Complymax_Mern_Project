@@ -14,8 +14,12 @@ const PostHiringForm = () => {
         location: "",
         job_category: "",
         no_of_hiring : "",
-        skilled : ""
+        skill : "",
+        // client_id : "",
     });
+    let filteredData1;
+    const [filteredData, setFilteredData] = useState();
+    const [filteredStateData, setFilteredStateData] = useState();
     const [loading, setLoading] = useState(true);
     const [establismentData, setEstablismentData] = useState();
     let states_of_india = [
@@ -54,6 +58,14 @@ const PostHiringForm = () => {
         setHiringData({ ...hiringData, [e.target.name]: e.target.value });
         // console.log(loginData);
     };
+
+    const clientChangeHandler = (e) => {
+        // console.log(e.target.value);
+        // const temp = e.target.value;
+        // const arr = temp.split(",");
+        setHiringData({ ...hiringData, [e.target.name] : e.target.value});
+        // setHiringData({ ...hiringData, client_id : arr[0]});    
+    }
 
     function addfocus(e){
         let parent = e.target.parentNode.parentNode;
@@ -107,19 +119,47 @@ const PostHiringForm = () => {
         }
       }
 
-    useEffect(() => {fetchingProfile();}, []);
+    let postHiring = async(e) => {
+        e.preventDefault();
+        console.log(hiringData);
+    }
 
+    useEffect(() => {fetchingProfile();}, []);
+    useEffect(() => {
+        // console.log(hiringData);
+
+        let filteredData1 = establismentData?.clients.filter((client) => {
+            return ( client.name === hiringData.client)
+        })
+        
+        setFilteredData(filteredData1);
+        // console.log(filteredData);
+
+        
+    }, [hiringData.client]);
+    
+    useEffect(() => {
+        // console.log(hiringData);
+        // console.log(filteredData);        
+        filteredData1 = filteredData && filteredData.length && filteredData[0].locations?.filter((loc) => {
+            return ( loc.state === hiringData.state)
+        })
+        
+        setFilteredStateData(filteredData1);
+    }, [hiringData.state]);
+    
     if(loading){
         return <div>Loading...</div>
     }
-
-
-  return (
+    
+    
+    // console.log(filteredStateData);
+    return (
     <div className='client_form'>
         <div class="form">
                 {/* <img src={login_pic} alt="" class="form__img" /> */}
 
-                <form action="" class="form__content d-flex flex-column">
+                <form action="" onSubmit={postHiring} class="form__content d-flex flex-column">
                     <h1 class="form__title">Post Hiring</h1>
                     <div className='client_forms_box d-flex flex-wrap'>
                         <div class="form__div form__div-one">
@@ -129,12 +169,12 @@ const PostHiringForm = () => {
 
                             <div class="form__div-input">
                                 <label for="state" class="form__label"></label>
-                                <select onChange={changeHandle} name="client" id="client" value={hiringData.client} class="form__input" placeholder="" required="">
+                                <select onChange={clientChangeHandler} name="client" id="client" value={hiringData.client} class="form__input" placeholder="" required="">
                                     <option value="">Select Client</option>
                                     {
                                         establismentData.clients.map((client) => {
                                             return(
-                                                <option key={client.name} value={client.name}>{client.name}</option>
+                                                <option key={client.name} value={`${client._id},${client.name}`}>{client.name}</option>
                                             )
                                         })
                                     }
@@ -151,19 +191,10 @@ const PostHiringForm = () => {
                                 <select onChange={changeHandle} name="state" id="s" disabled={hiringData.client === ''} class="form__input" placeholder="" required="">
                                     <option value="">Select State</option>
                                     {
-                                        establismentData.clients.map((client) => {
-                                            if(client.name === hiringData.client){
-                                                for(let i=0; i<client.locations.length; i++){
-                                                    
-                                                }
-                                                client.locations.map((location) => {
-                                                    return(
-                                                        <option key={location.state} value={location.state}>{location.state}</option>
-                                                    )
-                                                })
-                                                
-                                            }
-                                            
+                                        filteredData && filteredData.length && filteredData[0]?.locations.map((location) => {
+                                            return (
+                                                <option key={location.state} value={location.state}>{location.state}</option>
+                                            )
                                         })
                                     }
                                 </select>
@@ -178,17 +209,17 @@ const PostHiringForm = () => {
                             </div>
 
                             <div class="form__div-input">
-                                <label for="" class="form__label">Skilled</label>
-                                <input 
-                                type="email" 
-                                name='email' 
-                                onChange={changeHandle} 
-                                required 
-                                // value={clientRegisterData.email} 
-                                id='email' 
-                                class="form__input" 
-                                onFocus={addfocus} 
-                                onBlur={remfocus} />
+                                <label for="location" class="form__label"></label>
+                                <select onChange={changeHandle} name="location" id="location" disabled={hiringData.state === ''} class="form__input" placeholder="" required="">
+                                    <option value="">Select Location</option>
+                                    {
+                                        filteredStateData && filteredStateData.length && filteredStateData.map((loc) => {
+                                            return (
+                                                <option key={loc.location} value={loc.location}>{loc.location}</option>
+                                            )
+                                        })
+                                    }
+                                </select>
                             </div>
                         </div>
                         <div class="form__div form__div-one">
@@ -198,7 +229,7 @@ const PostHiringForm = () => {
 
                         <div class="form__div-input">
                             <label for="" class="form__label">Job Categorie</label>
-                            <input type="password" name='password' onChange={changeHandle} required id='password' class="form__input" onFocus={addfocus} onBlur={remfocus}/>
+                            <input type="text" name='job_category' onChange={changeHandle} required id='job_category' class="form__input" onFocus={addfocus} onBlur={remfocus}/>
                         </div>
                         </div>
                     </div>
@@ -211,15 +242,11 @@ const PostHiringForm = () => {
 
                             <div class="form__div-input">
                                 <label for="state" class="form__label"></label>
-                                <select onChange={changeHandle} name="state" id="state" class="form__input" placeholder="" required="">
-                                    <option value="">Select State</option>
-                                    {
-                                        states_of_india.map((state) => {
-                                            return(
-                                                <option key={state} value={state}>{state}</option>
-                                            )
-                                        })
-                                    }
+                                <select onChange={changeHandle} name="skill" id="skill" class="form__input" placeholder="" required="">
+                                    <option value="">Select Skill</option>
+                                    <option key="skilled" value="skilled">Skilled</option>
+                                    <option key="unskilled" value="unskilled">Unskilled</option>
+                                    <option key="someskilled" value="someskilled">Someskilled</option>
                                 </select>
                             </div>
                         </div>
@@ -230,7 +257,7 @@ const PostHiringForm = () => {
 
                             <div class="form__div-input">
                                 <label for="" class="form__label">No of Hiring</label>
-                                <input type="text" name='location' onChange={changeHandle} required id='location' class="form__input" onFocus={addfocus} onBlur={remfocus}/>
+                                <input type="text" name='no_of_hiring' onChange={changeHandle} required id='no_of_hiring' class="form__input" onFocus={addfocus} onBlur={remfocus}/>
                             </div>
                         </div>
                     </div>

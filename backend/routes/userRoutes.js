@@ -665,13 +665,14 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
-    // router.get("/establisment/hiring_form", auth, async(req, res) => {
+    router.post("/establisment/hiring", auth, async(req, res) => {
 
-    //     try{
+        const {client, no_of_hiring, state, location, skill, job_category, client_id} = req.body;
+        try{
 
-    //     }catch(err){
+        }catch(err){
 
-    //     }
-    // })
+        }
+    })
 
 module.exports = router
