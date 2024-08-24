@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 const PostHiringForm = () => {
 
     const token = localStorage.getItem("token");
+    const [temp1, setTemp1] = useState("");
     const [hiringData, setHiringData] = useState({
         client : "",
         state : "",
@@ -15,7 +16,8 @@ const PostHiringForm = () => {
         job_category: "",
         no_of_hiring : "",
         skill : "",
-        // client_id : "",
+        client_id : "",
+        location_id : ""
     });
     let filteredData1;
     const [filteredData, setFilteredData] = useState();
@@ -56,15 +58,29 @@ const PostHiringForm = () => {
     
     const changeHandle = (e) => {
         setHiringData({ ...hiringData, [e.target.name]: e.target.value });
-        // console.log(loginData);
     };
 
-    const clientChangeHandler = (e) => {
-        // console.log(e.target.value);
-        // const temp = e.target.value;
-        // const arr = temp.split(",");
-        setHiringData({ ...hiringData, [e.target.name] : e.target.value});
-        // setHiringData({ ...hiringData, client_id : arr[0]});    
+    const clientChangeHandler = async(e) => {
+        const temp = e.target.value;
+
+        // setHiringData({ ...hiringData, [e.target.name] : e.target.value});
+        const filtered = await establismentData.clients.filter((client) => {
+            return (temp === client._id);
+        })
+
+        console.log(filtered);
+        
+        setHiringData({ ...hiringData, [e.target.name] : filtered[0].name});   
+    }
+
+    let locationChangeHandler =(e) => {
+        const temp = e.target.value;
+
+        const filtered1 = filteredStateData && filteredStateData.length && filteredStateData.filter((loc) => {
+            return(loc._id = temp);
+        })
+
+        setHiringData({ ...hiringData, [e.target.name] : filtered1[0].location, location_id : e.target.value});
     }
 
     function addfocus(e){
@@ -79,27 +95,6 @@ const PostHiringForm = () => {
             parent.classList.remove("focus")
         }
     }
-
-    // let fetchingData = async (e) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     try{
-    //         const response = await axios.get(
-    //             "http://localhost:9000/establisment/hiring_form",
-    //             {
-    //                 headers: {
-    //                   Authorization : `Bearer ${token}`
-    //                 }
-    //             }
-    //         )
-    //         .then((res) => {
-    //             console.log(res);
-    //             setLoading(false);
-    //         })
-    //     }catch(err){
-    //         console.log("try again");
-    //     }
-    // }
 
     async function fetchingProfile(){
         setLoading(true);
@@ -122,11 +117,26 @@ const PostHiringForm = () => {
     let postHiring = async(e) => {
         e.preventDefault();
         console.log(hiringData);
+        // try{
+        //     await axios.post('http://localhost:9000/establisment/hiring', 
+        //         hiringData,
+        //         {
+        //             headers: {
+        //               Authorization : `Bearer ${token}`
+        //             }
+        //         }    
+        //     )
+        //     .then((res) => {
+        //         console.log(res);
+        //     })
+        // }
+        // catch(e){
+        //     console.log(e);
+        // }
     }
 
     useEffect(() => {fetchingProfile();}, []);
     useEffect(() => {
-        // console.log(hiringData);
 
         let filteredData1 = establismentData?.clients.filter((client) => {
             return ( client.name === hiringData.client)
@@ -139,8 +149,7 @@ const PostHiringForm = () => {
     }, [hiringData.client]);
     
     useEffect(() => {
-        // console.log(hiringData);
-        // console.log(filteredData);        
+                
         filteredData1 = filteredData && filteredData.length && filteredData[0].locations?.filter((loc) => {
             return ( loc.state === hiringData.state)
         })
@@ -152,8 +161,7 @@ const PostHiringForm = () => {
         return <div>Loading...</div>
     }
     
-    
-    // console.log(filteredStateData);
+    console.log(hiringData);
     return (
     <div className='client_form'>
         <div class="form">
@@ -174,7 +182,7 @@ const PostHiringForm = () => {
                                     {
                                         establismentData.clients.map((client) => {
                                             return(
-                                                <option key={client.name} value={`${client._id},${client.name}`}>{client.name}</option>
+                                                <option key={client.name} value={client._id}>{client.name}</option>
                                             )
                                         })
                                     }
@@ -210,12 +218,12 @@ const PostHiringForm = () => {
 
                             <div class="form__div-input">
                                 <label for="location" class="form__label"></label>
-                                <select onChange={changeHandle} name="location" id="location" disabled={hiringData.state === ''} class="form__input" placeholder="" required="">
+                                <select onChange={locationChangeHandler} name="location" id="location" disabled={hiringData.state === ''} class="form__input" placeholder="" required="">
                                     <option value="">Select Location</option>
                                     {
                                         filteredStateData && filteredStateData.length && filteredStateData.map((loc) => {
                                             return (
-                                                <option key={loc.location} value={loc.location}>{loc.location}</option>
+                                                <option key={loc.location} value={loc._id}>{loc.location}</option>
                                             )
                                         })
                                     }
@@ -246,7 +254,7 @@ const PostHiringForm = () => {
                                     <option value="">Select Skill</option>
                                     <option key="skilled" value="skilled">Skilled</option>
                                     <option key="unskilled" value="unskilled">Unskilled</option>
-                                    <option key="someskilled" value="someskilled">Someskilled</option>
+                                    <option key="Semi-Skilled" value="Semi-Skilled">Semi-Skilled</option>
                                 </select>
                             </div>
                         </div>

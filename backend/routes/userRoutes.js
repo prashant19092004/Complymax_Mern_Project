@@ -10,6 +10,7 @@ const classModel = require("../models/class.model.js")
 const educationModel = require("../models/education.model.js")
 const experienceModel = require("../models/experience.model.js")
 const clientlocationModel = require("../models/clientlocation.model.js")
+const hiringModel = require("../models/hiring.model.js")
 
 
 
@@ -667,9 +668,19 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
     router.post("/establisment/hiring", auth, async(req, res) => {
 
-        const {client, no_of_hiring, state, location, skill, job_category, client_id} = req.body;
+        const {client, no_of_hiring, state, location, skill, job_category, client_id, location_id} = req.body;
         try{
-
+            const newHiring = await hiringModel.create({
+                client_name : client,
+                client_id,
+                skill,
+                no_of_hiring,
+                state,
+                location,
+                establisment : req.user.id,
+                job_category,
+                location_id
+            })
         }catch(err){
 
         }

@@ -10,16 +10,13 @@ const hiringSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Client'
     },
-    contact : {
-        typr : String,
-    },
-    email : {
-        type : String
-    },
     skill : {
         type : String
     },
-    no_of_jobs : {
+    job_category : {
+        type : String
+    },
+    no_of_hiring : {
         type : Number
     },
     state : {
@@ -27,6 +24,14 @@ const hiringSchema = new mongoose.Schema({
     },
     location : {
         type : String
+    },
+    establisment : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Admin"
+    },
+    location_id : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Location"
     }
 })
 

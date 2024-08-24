@@ -75,15 +75,17 @@ const SupervisorRegistration = () => {
                 filteredSupervisors.map((supervisor) => {
                     return (
                         <li className='list' onClick={() => getSupervisorDetail(supervisor._id)}>
-                            <div className='list-left'>
-                                <img className='' src={defaultProfile} alt='' />
-                                <p>{supervisor.name}</p>
-                            </div>
-                            <div className='list-middle'>
-                                <p>{supervisor.contact}</p>
-                            </div>
-                            <div className='list-right'>
-                                <p>{supervisor.status ? 'Active' : 'Inactive'}</p>
+                            <img className='' src={defaultProfile} alt='' />
+                            <div className='list_content'>
+                              <div className='list-left'>
+                                  <p>{supervisor.name}</p>
+                              </div>
+                              <div className='list-middle'>
+                                  <p>{supervisor.contact}</p>
+                              </div>
+                              <div className='list-right'>
+                                  <p>{supervisor.status ? 'Active' : 'Inactive'}</p>
+                              </div>
                             </div>
                         </li>
                     )
