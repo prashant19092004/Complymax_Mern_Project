@@ -26,6 +26,10 @@ const clientlocationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Client"
     },
+    hirings : {
+        type : [mongoose.Schema.Types.ObjectId],
+        REF : "Hiring"
+    }
 })
 
 module.exports = mongoose.model("Clientlocation", clientlocationSchema);

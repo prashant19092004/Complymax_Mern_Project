@@ -70,7 +70,7 @@ const ClientHiring = () => {
         <div className='ragister_div'>
             <div className='search_container'>
                   <input type="text" id="box" placeholder="Search...." class="search__box" onChange={changeHandle} />
-                  <i class="fas fa-search search__icon" id="icon" onclick={toggleShow}></i>
+                  <i class="fas fa-search search__icon" id="icon" onClick={toggleShow}></i>
             </div>
             <Button className='mt-2' onClick={postHiringButtonHandler} varient='primary'>Post Hiring</Button>
         </div>
@@ -94,6 +94,12 @@ const ClientHiring = () => {
                 })
             }
         </ul> */}
+        <div className='hiringsList'>
+            <div>
+                <h1>Worker</h1>
+                
+            </div>
+        </div>
     </div>
   )
 }

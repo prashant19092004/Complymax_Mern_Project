@@ -61,16 +61,12 @@ const PostHiringForm = () => {
     };
 
     const clientChangeHandler = async(e) => {
+
         const temp = e.target.value;
-
-        // setHiringData({ ...hiringData, [e.target.name] : e.target.value});
-        const filtered = await establismentData.clients.filter((client) => {
-            return (temp === client._id);
-        })
-
-        console.log(filtered);
         
-        setHiringData({ ...hiringData, [e.target.name] : filtered[0].name});   
+        const arr = temp.split(",");
+        console.log(arr);
+        setHiringData({ ...hiringData, client : e.target.value, client_id : arr[0]});   
     }
 
     let locationChangeHandler =(e) => {
@@ -79,7 +75,6 @@ const PostHiringForm = () => {
         const filtered1 = filteredStateData && filteredStateData.length && filteredStateData.filter((loc) => {
             return(loc._id = temp);
         })
-
         setHiringData({ ...hiringData, [e.target.name] : filtered1[0].location, location_id : e.target.value});
     }
 
@@ -117,36 +112,53 @@ const PostHiringForm = () => {
     let postHiring = async(e) => {
         e.preventDefault();
         console.log(hiringData);
-        // try{
-        //     await axios.post('http://localhost:9000/establisment/hiring', 
-        //         hiringData,
-        //         {
-        //             headers: {
-        //               Authorization : `Bearer ${token}`
-        //             }
-        //         }    
-        //     )
-        //     .then((res) => {
-        //         console.log(res);
-        //     })
-        // }
-        // catch(e){
-        //     console.log(e);
-        // }
+        try{
+            await axios.post('http://localhost:9000/establisment/hiring', 
+                hiringData,
+                {
+                    headers: {
+                      Authorization : `Bearer ${token}`
+                    }
+                }    
+            )
+            .then((res) => {
+                // console.log(res);
+                if(res.data.success){
+                    setHiringData({
+                        client : "",
+                        state : "",
+                        location: "",
+                        job_category: "",
+                        no_of_hiring : "",
+                        skill : "",
+                        client_id : "",
+                        location_id : ""
+                    })
+                    navigate('/establisment_dashboard/hiring');
+                    toast.success(res.data.message);
+                }
+                else{
+                    toast.error("try again");
+                }
+            })
+        }
+        catch(e){
+            console.log(e);
+        }
     }
 
     useEffect(() => {fetchingProfile();}, []);
     useEffect(() => {
 
         let filteredData1 = establismentData?.clients.filter((client) => {
-            return ( client.name === hiringData.client)
+            return ( client._id === hiringData.client_id)
         })
         
         setFilteredData(filteredData1);
         // console.log(filteredData);
 
         
-    }, [hiringData.client]);
+    }, [hiringData.client_id]);
     
     useEffect(() => {
                 
@@ -161,7 +173,6 @@ const PostHiringForm = () => {
         return <div>Loading...</div>
     }
     
-    console.log(hiringData);
     return (
     <div className='client_form'>
         <div class="form">
@@ -182,7 +193,7 @@ const PostHiringForm = () => {
                                     {
                                         establismentData.clients.map((client) => {
                                             return(
-                                                <option key={client.name} value={client._id}>{client.name}</option>
+                                                <option key={client.name} value={`${client._id},${client.name}`}>{client.name}</option>
                                             )
                                         })
                                     }

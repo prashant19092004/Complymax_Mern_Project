@@ -34,6 +34,10 @@ const adminSchema = new mongoose.Schema({
     users : {
         type : [mongoose.Schema.Types.ObjectId],
         ref : "User"
+    },
+    hirings : {
+        type : [mongoose.Schema.Types.ObjectId],
+        ref : "Hiring"
     }
 
  })

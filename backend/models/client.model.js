@@ -30,6 +30,10 @@ const clientSchema = new mongoose.Schema({
         type : [mongoose.Schema.Types.ObjectId],
         ref : "Clientlocation"
     },
+    hirings : {
+        type : [mongoose.Schema.Types.ObjectId],
+        ref : "Hiring"
+    },
     status : {
         type : Boolean,
         default : true

@@ -321,6 +321,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
             model : 'Clientlocation'
         }
     })
+    .populate('hirings')
     
     // console.log(currentEstablisment);
     res.send(currentEstablisment);
@@ -669,9 +670,12 @@ router.get("/establisment/profile",auth, async (req, res) => {
     router.post("/establisment/hiring", auth, async(req, res) => {
 
         const {client, no_of_hiring, state, location, skill, job_category, client_id, location_id} = req.body;
+
+        const arr = client.split(",");
+        let client_name = arr[1];
         try{
             const newHiring = await hiringModel.create({
-                client_name : client,
+                client_name,
                 client_id,
                 skill,
                 no_of_hiring,
@@ -681,8 +685,24 @@ router.get("/establisment/profile",auth, async (req, res) => {
                 job_category,
                 location_id
             })
-        }catch(err){
+            const currentEstablisment1 = await adminModel.findOne({ _id : req.user.id})
+            currentEstablisment1.hirings.push(newHiring._id);
+            await currentEstablisment1.save();
 
+            const currentClient = await clientModel.findOne({ _id : client_id});
+            currentClient.hirings.push(newHiring._id);
+            await currentClient.save();
+
+            const currentLocation = await clientlocationModel.findOne({ _id : location_id});
+            currentLocation.hirings.push(newHiring._id);
+            await currentLocation.save();
+            
+            const currentEstablisment = await adminModel.findOne({ _id : req.user.id})
+            .populate('hirings')
+
+            res.status(200).json({ success : true, message : "Hiring Posted", currentEstablisment});
+        }catch(err){
+            res.status(500).json({ success : false, message : "internal server error"})
         }
     })
 
