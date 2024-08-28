@@ -28,6 +28,7 @@ import SupervisorDetail from './component1/Client_dashboard/SupervisorDetail';
 import Jobs from './component1/UserDashboard/Jobs';
 import ClientHiring from './component1/Client_dashboard/ClientHiring';
 import PostHiringForm from './component1/Client_dashboard/PostHiringForm';
+import HiringList from './component1/Supervisor_dashboard/HiringList';
 function App() {
 
    
@@ -111,6 +112,10 @@ function App() {
               {
                 path : '/supervisor_dashboard/',
                 element : <SupervisorDashboardPage />
+              },
+              {
+                path : '/supervisor_dashboard/hiring',
+                element : <HiringList />
               }
             ]
           },

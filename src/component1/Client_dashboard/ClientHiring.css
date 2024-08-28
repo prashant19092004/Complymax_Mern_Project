@@ -1,0 +1,79 @@
+/* .hiring_list{
+    width : 100%;
+    padding-inline: 30px;
+    padding-block: 50px;
+    justify-content: space-between;
+}
+
+.hiring_list>p:nth-child(1){
+    width : 5%;
+}
+.hiring_list>p:nth-child(2){
+    width : 25%;
+}
+.hiring_list>p:nth-child(3){
+    width : 15%;
+}
+.hiring_list>p:nth-child(4){
+    width : 15%;
+}
+.hiring_list>p:nth-child(5){
+    width : 15%;
+}
+.hiring_list>p:nth-child(6){
+    width : 15%;
+} */
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    /* background-color: #f4f4f4; */
+    margin: 0;
+    padding: 0;
+}
+.container3 {
+    width: 95%;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.header, .job-list {
+    display: flex;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+.header {
+    background-color: #f8f8f8;
+    font-weight: bold;
+}
+.job-list {
+    flex-wrap: wrap;
+}
+.header div, .job-list div {
+    flex: 1;
+    padding: 8px;
+    text-align: left;
+}
+.job-list:nth-child(even) {
+    background-color: #f9f9f9;
+}
+.header div:nth-child(1), .job-list div:nth-child(1) {
+    flex: 0 0 50px; /* Adjust the width for serial number */
+}
+@media only screen and (max-width: 768px) {
+    .header div, .job-list div {
+        padding: 6px;
+    }
+}
+@media only screen and (max-width: 480px) {
+    .header, .job-list {
+        flex-direction: column;
+    }
+    .header div, .job-list div {
+        text-align: left;
+        padding: 1px;
+        flex: 1;
+    }
+}

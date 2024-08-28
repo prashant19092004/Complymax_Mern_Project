@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import defaultProfile from '../../assets/Default_pfp.svg.png';
-import './list.css';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './ClientHiring.css';
+import '../Client_dashboard/ClientHiring.css';
 
-const ClientHiring = () => {
+const HiringList = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -124,4 +123,4 @@ const ClientHiring = () => {
   )
 }
 
-export default ClientHiring
+export default HiringList

@@ -29,6 +29,10 @@ const clientlocationSchema = new mongoose.Schema({
     hirings : {
         type : [mongoose.Schema.Types.ObjectId],
         REF : "Hiring"
+    },
+    supervisor : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Supervisor'
     }
 })
 

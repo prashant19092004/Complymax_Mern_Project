@@ -409,7 +409,11 @@ router.get("/establisment/profile",auth, async (req, res) => {
         try{
             const clientDetail = await clientModel.findOne({ _id : state})
             .populate('locations')
-            res.json({message : "check", data : clientDetail , success : true});
+
+            const currentEstablisment = await adminModel.findOne({ _id : clientDetail.establisment })
+            .populate('supervisors')
+
+            res.json({message : "check", data : clientDetail, supervisors : currentEstablisment.supervisors, success : true});
         }catch(err){
             res.json({ message : err, success : false});
         }    
@@ -591,7 +595,9 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
     router.post("/user/add_location", auth, async(req, res) => {
         try{
-            const { name, contact, location, state, email, editId, client_id } = req.body;
+            const { name, contact, location, state, email, editId, client_id, supervisor } = req.body;
+
+            const arr = supervisor.split(",");
 
             if(!name || !contact || !location || !state || !email ){
                 res.json({message : "Please Enter all the data", success : false});
@@ -601,13 +607,26 @@ router.get("/establisment/profile",auth, async (req, res) => {
             if(editId !== ''){
                 const currentLocation = await clientlocationModel.findOne({ _id : editId });
 
+                const previousSupervisor = await supervisorModel.findOne({ _id : currentLocation.supervisor });
+                const index = previousSupervisor.locations.indexOf(currentLocation._id);
+                console.log(index);
+                if(index > -1){
+                    previousSupervisor.locations.splice(index, 1);
+                    await previousSupervisor.save();
+                }
+
                 currentLocation.name = name;
                 currentLocation.email = email;
                 currentLocation.contact = contact;
                 currentLocation.state = state;
                 currentLocation.location = location;
+                currentLocation.supervisor = arr[0];
 
                 await currentLocation.save();
+
+                const currentSupervisor = await supervisorModel.findOne({ _id : arr[0] });
+                currentSupervisor.locations.push(currentLocation._id);
+                await currentSupervisor.save();
 
                 const currentClient = await clientModel.findOne({ _id : currentLocation.client })
                 .populate('locations')
@@ -622,12 +641,16 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
             
             const newLocation = await clientlocationModel.create({
-                name, contact, state, location, email, client : currentClient1._id
+                name, contact, state, location, email, client : currentClient1._id, supervisor : arr[0]
             });
 
             console.log(newLocation);
             currentClient1.locations.push(newLocation._id);
             await currentClient1.save();
+
+            const currentSupervisor = await supervisorModel.findOne({ _id : arr[0] });
+            currentSupervisor.locations.push(newLocation._id);
+            await currentSupervisor.save();
 
             const currentClient = await clientModel.findOne({
                 _id : client_id
@@ -649,10 +672,18 @@ router.get("/establisment/profile",auth, async (req, res) => {
     })
     router.post("/user/delete_location", auth, async(req, res) => {
 
-        const { uid, client_id } = req.body;
-        // console.log(req.body);
+        const { uid, client_id, supervisor_id } = req.body;
+        console.log(req.body);
 
         try{
+            const previousSupervisor = await supervisorModel.findOne({ _id : supervisor_id });
+            const index = previousSupervisor.locations.indexOf(uid);
+            console.log(index);
+            if(index > -1){
+                previousSupervisor.locations.splice(index, 1);
+                await previousSupervisor.save();
+            }
+
             const currentLocation = await clientlocationModel.deleteOne({ _id : uid });
             // console.log(currentEducation);
 
@@ -667,7 +698,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
-    router.post("/establisment/hiring", auth, async(req, res) => {
+    router.post("/establisment/hiring_post", auth, async(req, res) => {
 
         const {client, no_of_hiring, state, location, skill, job_category, client_id, location_id} = req.body;
 
@@ -703,6 +734,21 @@ router.get("/establisment/profile",auth, async (req, res) => {
             res.status(200).json({ success : true, message : "Hiring Posted", currentEstablisment});
         }catch(err){
             res.status(500).json({ success : false, message : "internal server error"})
+        }
+    })
+
+    router.get("/establisment/hirings", auth, async(req, res) => {
+        
+        try{
+            currentSupervisor = await supervisorModel.findOne({ _id : req.user.id });
+
+            const currentEstablisment = await adminModel.findOne({ _id : currentSupervisor.establisment})
+            .populate('hirings')
+
+            res.status(200).json({ success : true, currentEstablisment});
+        }
+        catch(e){
+            res.status(500).json({ success : false, message : "Interna Server Error"});
         }
     })
 

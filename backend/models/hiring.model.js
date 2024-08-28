@@ -32,6 +32,10 @@ const hiringSchema = new mongoose.Schema({
     location_id : {
         type : mongoose.Schema.Types.ObjectId,
         ref : "Location"
+    },
+    no_of_hired : {
+        type : Number,
+        default : 0
     }
 })
 

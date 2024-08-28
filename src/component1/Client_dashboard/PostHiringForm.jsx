@@ -113,7 +113,7 @@ const PostHiringForm = () => {
         e.preventDefault();
         console.log(hiringData);
         try{
-            await axios.post('http://localhost:9000/establisment/hiring', 
+            await axios.post('http://localhost:9000/establisment/hiring_post', 
                 hiringData,
                 {
                     headers: {

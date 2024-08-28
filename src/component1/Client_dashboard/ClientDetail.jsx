@@ -13,6 +13,7 @@ const ClientDetail = () => {
   const enquiryref = useRef();
   const token = localStorage.getItem("token");
   const [locationEdit, setLocationEdit] = useState(false);
+  const [supervisors, setSupervisors] = useState();
 
   const [locationData, setLocationData] = useState({
     name : "",
@@ -21,13 +22,15 @@ const ClientDetail = () => {
     contact : "",
     email : "",
     client_id : state,
-    editId : ''
+    editId : '',
+    supervisor: '',
   })
 
   let states_of_india = [
     "Andhra Pradesh",
     "Arunachal Pradesh",
     "Assam",
+    "Delhi",
     "Bihar",
     "Chhattisgarh",
     "Goa",
@@ -64,7 +67,7 @@ const ClientDetail = () => {
       }
       )
       .then((res) => {
-        console.log(res);
+        setSupervisors(res.data.supervisors);
         setLoading(false);
         setClientData(res.data.data);
       })
@@ -99,6 +102,7 @@ const ClientDetail = () => {
         state : filteredData[0].state,
         location : filteredData[0].location,
         email : filteredData[0].email,
+        supervisor : filteredData[0].supervisor,
         editId : uid
       });
   
@@ -107,10 +111,13 @@ const ClientDetail = () => {
 
   let deleteLocation = async() => {
 
+    // console.log(locationData);
     const uid = locationData.editId;
+    const supervisor_id = locationData.supervisor;
     const data = {
       uid,
-      client_id : state
+      client_id : state,
+      supervisor_id
     }
     try{
       console.log(uid);
@@ -160,7 +167,8 @@ const ClientDetail = () => {
                 contact : "",
                 email : "",
                 client_id : state,
-                editId : ''
+                editId : '',
+                supervisor : '',
             });
             closeEnquiry();
           }
@@ -187,7 +195,8 @@ const ClientDetail = () => {
         contact : '',
         email:'',
         client_id : state,
-        editId : ''
+        editId : '',
+        supervisor : '',
     })
     const enquiry_pop_up = document.querySelector(".enquiry-section");
     enquiry_pop_up.style.scale = 1;
@@ -201,7 +210,8 @@ const ClientDetail = () => {
       contact : '',
       email:'',
       client_id : state,
-      editId : ''
+      editId : '',
+      supervisor : '',
   })
     const enquiry_pop_up = document.querySelector(".enquiry-section");
     enquiry_pop_up.style.scale = 0;
@@ -320,6 +330,21 @@ return (
                 <div class="input-div">
                   <label class="form-label" for="contact">Contact No.</label>
                   <input required type="contact" value={locationData.contact} name="contact" onChange={changeHandler} id="contact" placeholder="contact no" autocomplete="off"/>
+                </div>  
+              </div>
+              <div class="input-box">
+                <div class="input-div">
+                  <label class="form-label" for="state">Supervisor</label>
+                  <select onChange={changeHandler} name="supervisor" id="supervisor" placeholder="" value={locationData.supervisor} required="">
+                    <option value="">Select Supervisor</option>
+                    {
+                      supervisors && supervisors.length && supervisors.map((supervisor) => {
+                        return(
+                          <option key={supervisor.name} value={`${supervisor._id},${supervisor.name}`}>{supervisor.name}</option>
+                        )
+                      })
+                    }
+                  </select>
                 </div>  
               </div>
               <div className='d-flex justify-content-between align-items-center mt-2'>

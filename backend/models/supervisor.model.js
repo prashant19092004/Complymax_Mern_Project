@@ -26,6 +26,10 @@ const supervisorSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Admin"
     },
+    locations : {
+        type : [mongoose.Schema.Types.ObjectId],
+        ref : 'Clientlocation'
+    },
     // state : {
     //     type : String,
     //     required : true
