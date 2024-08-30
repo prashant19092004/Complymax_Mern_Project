@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import defaultProfile from '../../assets/Default_pfp.svg.png';
+import { FaEdit } from "react-icons/fa";
 import './list.css';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -9,9 +10,10 @@ const SupervisorRegistration = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-    const [supervisors, setSupervisors] = useState();
-    const [loading, setLoading] = useState(true);
-    const [filteredSupervisors, setFilteredSupervisors] = useState();
+  const [supervisors, setSupervisors] = useState();
+  const [loading, setLoading] = useState(true);
+  const [filteredSupervisors, setFilteredSupervisors] = useState();
+  const enquiryref = useRef();
 
   async function fetchingProfile(){
     try{
@@ -83,8 +85,9 @@ const SupervisorRegistration = () => {
                               <div className='list-middle'>
                                   <p>{supervisor.contact}</p>
                               </div>
-                              <div className='list-right'>
+                              <div className='list-right d-flex gap-3 align-items-center'>
                                   <p>{supervisor.status ? 'Active' : 'Inactive'}</p>
+                                  <FaEdit title='Edit' fontSize={18} />
                               </div>
                             </div>
                         </li>

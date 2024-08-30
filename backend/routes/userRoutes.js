@@ -737,12 +737,25 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
-    router.get("/establisment/hirings", auth, async(req, res) => {
+    router.get("/supervisor/hirings", auth, async(req, res) => {
         
         try{
             currentSupervisor = await supervisorModel.findOne({ _id : req.user.id });
 
             const currentEstablisment = await adminModel.findOne({ _id : currentSupervisor.establisment})
+            .populate('hirings')
+
+            res.status(200).json({ success : true, currentEstablisment});
+        }
+        catch(e){
+            res.status(500).json({ success : false, message : "Interna Server Error"});
+        }
+    })
+
+    router.get("/establisment/hirings", auth, async(req, res) => {
+        
+        try{
+            const currentEstablisment = await adminModel.findOne({ _id : req.user.id })
             .populate('hirings')
 
             res.status(200).json({ success : true, currentEstablisment});

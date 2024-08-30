@@ -77,3 +77,23 @@ body {
         flex: 1;
     }
 }
+
+.hiring_button{
+    padding : 10px 15px;
+    background-color: green;
+    border: none;
+    color : white;
+    border-radius: 10px;
+}
+.hiring_button:hover{
+    background-color: rgb(1, 106, 1);
+}
+.supervisor_hire{
+    position: relative;
+    width : 100%;
+}
+.supervisor_hire .enquiry-section{
+    z-index: 9999;
+    /* scale : 1; */
+    left : 0;
+}
