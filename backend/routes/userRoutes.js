@@ -742,10 +742,13 @@ router.get("/establisment/profile",auth, async (req, res) => {
         try{
             currentSupervisor = await supervisorModel.findOne({ _id : req.user.id });
 
+            const users = await userModel.find({}, {aadhar_number:1}, {full_Name : 1}, {contact : 1});
+            
+
             const currentEstablisment = await adminModel.findOne({ _id : currentSupervisor.establisment})
             .populate('hirings')
 
-            res.status(200).json({ success : true, currentEstablisment});
+            res.status(200).json({ success : true, currentEstablisment, users});
         }
         catch(e){
             res.status(500).json({ success : false, message : "Interna Server Error"});
