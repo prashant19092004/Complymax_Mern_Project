@@ -5,18 +5,34 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../Client_dashboard/ClientHiring.css';
 import close from '../../assets/close.png';
+import './style.css';
+import { toast } from 'react-toastify';
 
 const HiringList = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-    const [hiringList, setHiringList] = useState();
-    const [filteredHirings, setFilteredHirings] = useState();
-    const [loading, setLoading] = useState(true);
+  const [hiringList, setHiringList] = useState();
+  const [filteredHirings, setFilteredHirings] = useState();
+  const [loading, setLoading] = useState(true);
   const enquiryref = useRef();
+  const warningref = useRef();
   const [assignData, setAssignData] = useState({
-    aadhar_no : ''
+    user_id : '',
+    hiring_id : '',
   });
+  const [assignedUserId, setAssignedUserId] = useState('');
+  const [users, setUsers] = useState();
+  const buttonStyle = {
+    backgroundColor: 'green',
+    color: 'white',
+    height: '30px', // Adjust the height as needed
+    padding: '0 15px', // Adjust padding for a more compact look
+    fontSize: '14px', // Adjust font size if needed
+    borderRadius: '5px', // Optional: Adjust border radius
+  };
+  const [filteredUsers, setFilteredUsers] = useState();
+  const [search, setSearch] = useState('');
 
   async function fetchingHiring(){
     try{
@@ -27,9 +43,11 @@ const HiringList = () => {
       })
       .then((res) => {
         console.log(res);
-        setHiringList(res.data.currentEstablisment.hirings);
+        setHiringList(res.data.requiredHirings);
         // setClients(res.data.clients);
-        setFilteredHirings(res.data.currentEstablisment.hirings);
+        setFilteredHirings(res.data.requiredHirings);
+        setUsers(res.data.users);
+        // setFilteredUsers(res.data.users);
         setLoading(false);
         // setUser(res.data);
       })
@@ -55,27 +73,64 @@ const HiringList = () => {
       el.classList.toggle("show");
     }
 
-    let changeHandle = (e) => {
-        let query = e.target.value.toLowerCase();
-
-          const filteredData = 
-              hiringList && hiringList.length? hiringList.filter((hiring) => hiring.client_name.toLowerCase().indexOf(query) > -1) : [];
-          setFilteredHirings(filteredData);
-          // setShowDropDown(true);
-    }
-
     let openEnquiry = () => {
       enquiryref.current.style.scale = 1;  
     }
 
     let closeEnquiry = () => {
-      enquiryref.current.style.scale = 0;  
+      enquiryref.current.style.scale = 0;
+      setFilteredUsers([]);
+      setSearch('');  
     }
 
     let assignDataChangeHandler = (e) => {
       setAssignData({ ...assignData, [e.target.name] : e.target.value});
     }
 
+    let changeHandle = (e) => {
+      let query = e.target.value.toLowerCase();
+
+        const filteredData = hiringList && hiringList.length? hiringList.filter((hiring) => hiring.client_name.toLowerCase().indexOf(query) > -1) : [];
+        setFilteredHirings(filteredData);
+        // setShowDropDown(true);
+  }
+
+    let userSearchHandler = () => {
+      const filteredData = users && users.length? users.filter((user) => user.aadhar_number.indexOf(search) > -1): [];
+      setFilteredUsers(filteredData);
+    }
+
+    let userSearchChangeHandler = (e) => {
+      setSearch(e.target.value);
+    }
+
+    let hireUser = async() => {
+      console.log(assignData);
+      try{
+        await axios.post('http://localhost:9000/supervisor/hire',
+          assignData,
+          {
+            headers: {
+              Authorization : `Bearer ${token}`
+            }
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          if(res.data.success){
+            warningref.current.style.scale = 0;
+            closeEnquiry();
+            toast.success(res.data.message);
+            setHiringList(res.data.requiredHirings);
+            setFilteredHirings(res.data.requiredHirings);
+            setUsers(res.data.users);
+          }
+        })
+      }
+      catch(e){
+        console.log(e);
+      }
+    }
 
     return (
     <div className='supervisor_hire position-relative'>
@@ -106,22 +161,57 @@ const HiringList = () => {
                             <div>{hiring.state}</div>
                             <div>{hiring.skill}</div>
                             <div>{`${hiring.no_of_hiring-hiring.no_of_hired}/${hiring.no_of_hiring}`}</div>
-                            <div><button className='hiring_button' onClick={() => openEnquiry()}>Assign</button></div>
+                            <div><button className='hiring_button' onClick={() => {setAssignData({...assignData, hiring_id : hiring._id}); openEnquiry()}}>Assign</button></div>
                         </div>
                     )
                 })
             }
         </div>
+        <div className='warning_box' ref={warningref}>
+          <div className='inner_warning_box'>
+            <p>Are you Sure?</p>
+            <div className='d-flex justify-content-center align-items-center gap-3'>
+              <button onClick={() => {warningref.current.style.scale = 0}} style={{backgroundColor : "red"}}>No</button>
+              <button style={{backgroundColor : "green"}} onClick={hireUser}>Yes</button>
+            </div>
+          </div>
+        </div>
         <section ref={enquiryref} class="enquiry-section" >
           <div class="enquiry-form">
             <img onClick={closeEnquiry} class="enquiry-close" src={close} alt="" />
-            <h2>Add Location</h2>
+            <h2>Hiring</h2>
             {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
             
             <div className='search_container border justify-content-between'>
-                  <input type="text" id="box" placeholder="Aadhar No..." class="search__box" onChange={changeHandle} />
-                  <i class="fas fa-search search__icon" id="icon" onClick={toggleShow}></i>
+                  <input type="text" id="box" value={search} placeholder="Aadhar No..." style={{width : '80%'}} class="search__box" onChange={userSearchChangeHandler} />
+                  <i class="fas fa-search search__icon" id="icon" onClick={userSearchHandler}></i>
             </div>
+
+            <ul className='list_box' style={{padding : '0px'}}>
+            {
+                filteredUsers?.map((user) => {
+                    return ( 
+                        <li className='list'>
+                          <img className='' src={defaultProfile} alt='' />
+                          <div className='w-full'>
+                            <div className='list_content'>
+                              <div className='list-left'>
+                                  <p>{user.full_Name}</p>
+                              </div>
+                              <div className='list-middle'>
+                                  <p>{user.contact}</p>
+                              </div>
+                              <div className='list-right'>
+                                <button class="btn custom-btn" onClick={() => {setAssignData({...assignData, user_id : user._id}); warningref.current.style.scale = 1; }} style={buttonStyle}>Hire</button>
+                              </div>
+                            </div>
+                            <p>Addhar No. : {user.aadhar_number}</p>
+                          </div>  
+                        </li>
+                     )
+                })
+            }
+            </ul>
           </div>
         </section>
     </div>

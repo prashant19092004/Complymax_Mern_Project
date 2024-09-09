@@ -11,6 +11,7 @@ const educationModel = require("../models/education.model.js")
 const experienceModel = require("../models/experience.model.js")
 const clientlocationModel = require("../models/clientlocation.model.js")
 const hiringModel = require("../models/hiring.model.js")
+const hiredModel = require("../models/hired.model.js");
 
 
 
@@ -742,13 +743,29 @@ router.get("/establisment/profile",auth, async (req, res) => {
         try{
             currentSupervisor = await supervisorModel.findOne({ _id : req.user.id });
 
-            const users = await userModel.find({}, {aadhar_number:1}, {full_Name : 1}, {contact : 1});
+            const users = await userModel.find({}, {aadhar_number:1, full_Name : 1, contact : 1},);
             
-
+            // console.log(users);
             const currentEstablisment = await adminModel.findOne({ _id : currentSupervisor.establisment})
             .populate('hirings')
 
-            res.status(200).json({ success : true, currentEstablisment, users});
+            const supervisorLocations = currentSupervisor.locations;
+            const totalHirings = currentEstablisment.hirings;
+            let requiredHirings = [];
+
+            // console.log(supervisorLocations);
+            // console.log(totalHirings);
+            
+            for(let i=0; i<supervisorLocations.length; i++){
+                for(let j=0; j<totalHirings.length; j++){
+                    if(supervisorLocations[i].equals(totalHirings[j].location_id)){
+                        requiredHirings.push(totalHirings[j]);
+                    }
+                }
+            }
+            // console.log(requiredHirings);
+
+            res.status(200).json({ success : true, requiredHirings, users});
         }
         catch(e){
             res.status(500).json({ success : false, message : "Interna Server Error"});
@@ -765,6 +782,112 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
         catch(e){
             res.status(500).json({ success : false, message : "Interna Server Error"});
+        }
+    })
+
+    router.post("/establisment/supervisor_edit", async(req, res) => {
+        try{
+            const {_id, name, email, password, contact} = req.body;
+        
+            const currentSupervisor = await supervisorModel.findOne({_id});
+            console.log(currentSupervisor);
+            currentSupervisor.name = name;
+            currentSupervisor.email = email;
+            currentSupervisor.contact = contact;
+            currentSupervisor.password = password;
+
+            await currentSupervisor.save();
+
+            res.status(200).json({message : "Supervisor Edited", success : true});
+        }
+        catch(e){
+            res.status(500).json({message : "Internal Server Error", success : false});
+        }
+    })
+
+    router.post("/establisment/client_edit", async(req, res) => {
+        try{
+            // console.log(req.body);
+            const {_id, name, email, password, contact} = req.body;
+        
+            const currentClient = await clientModel.findOne({_id});
+            // console.log(currentClient);
+            currentClient.name = name;
+            currentClient.email = email;
+            currentClient.contact = contact;
+            currentClient.password = password;
+
+            await currentClient.save();
+
+            const currentEstablisment = await adminModel.findOne({
+                _id : req.user.id
+              })
+              .populate('clients');
+
+            res.status(200).json({message : "Client Edited", success : true, currentEstablisment});
+        }
+        catch(e){
+            res.status(500).json({message : "Internal Server Error", success : false});
+        }
+    })
+
+    router.post("/supervisor/hire", auth, async(req, res) => {
+        const { user_id, hiring_id } = req.body;
+        // console.log(assignedUserId);
+        try{
+            const currentUser = await userModel.findOne({_id : user_id},{_id : 1, hired : 1});
+
+            // console.log(req.user.id);
+            const currentSupervisor = await supervisorModel.findOne({_id : req.user.id}, {_id : 1, hired : 1, establisment : 1, locations : 1});
+            // console.log(currentSupervisor);
+
+            const currentHiring = await hiringModel.findOne({_id : hiring_id}, {_id : 1, hired : 1, no_of_hired : 1});
+
+            const newHired = await hiredModel.create({
+                hiring_id,
+                user_id,
+                supervisor_id : req.user.id
+            });
+
+            // console.log("Hii");
+            currentUser.hired.push(newHired._id);
+            await currentUser.save();
+
+            const temp = currentHiring.no_of_hired;
+            currentHiring.hired.push(newHired._id);
+            currentHiring.no_of_hired = temp+1;
+            await currentHiring.save();
+
+            currentSupervisor.hired.push(newHired._id);
+            await currentSupervisor.save();
+
+            const users = await userModel.find({}, {aadhar_number:1, full_Name : 1, contact : 1},);
+            
+            // console.log(users);
+            const currentEstablisment = await adminModel.findOne({ _id : currentSupervisor.establisment},{ hirings : 1})
+            .populate('hirings')
+
+            // console.log(currentEstablisment);
+
+            const supervisorLocations = currentSupervisor.locations;
+            const totalHirings = currentEstablisment.hirings;
+            let requiredHirings = [];
+
+            // console.log(supervisorLocations);
+            // console.log(totalHirings);
+            
+            for(let i=0; i<supervisorLocations.length; i++){
+                for(let j=0; j<totalHirings.length; j++){
+                    if(supervisorLocations[i].equals(totalHirings[j].location_id)){
+                        requiredHirings.push(totalHirings[j]);
+                    }
+                }
+            }
+
+            res.status(200).json({ success : true, message : "Hired Successfully..", requiredHirings, users});      
+        }
+        catch(err){
+            res.status(500).json({success : false, message : "Internal Server Error"});
         }
     })
 

@@ -146,7 +146,7 @@ exports.clientlogin = async (req, res) => {
             id: client._id,
         }
 
-        if (await bcrpt.compare(password, client.password)) {
+        if (password === client.password) {
             let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" })
             client = client.toObject()
             client.token = token
@@ -203,7 +203,7 @@ exports.supervisorlogin = async (req, res) => {
             id: supervisor._id,
         }
 
-        if (await bcrpt.compare(password, supervisor.password)) {
+        if (password === supervisor.password) {
             let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" })
             supervisor = supervisor.toObject()
             supervisor.token = token
@@ -431,22 +431,12 @@ exports.clientregister = async (req, res) => {
             })
         }
 
-        let hashedpassword;
-        try {
-            hashedpassword = await bcrpt.hash(password, 10)
-        } catch (e) {
-            return res.status(500).json({
-                success: false,
-                message: "nahi hua hash"
-            })
-        }
-
         const currentEstablisment = await Admin.findOne({
                     _id : req.user.id
                   });
 
         const newClient = await Client.create({
-            name, email, password: hashedpassword, contact, establisment: currentEstablisment._id, state, location
+            name, email, password, contact, establisment: currentEstablisment._id, state, location
         })
 
         currentEstablisment.clients.push(newClient._id);
@@ -507,22 +497,12 @@ exports.supervisorregister = async (req, res) => {
             })
         }
 
-        let hashedpassword;
-        try {
-            hashedpassword = await bcrpt.hash(password, 10)
-        } catch (e) {
-            return res.status(500).json({
-                success: false,
-                message: "nahi hua hash"
-            })
-        }
-
         const currentEstablisment = await Admin.findOne({
                     _id : req.user.id
                   });
 
         const newSupervisor = await Supervisor.create({
-            name, email, password: hashedpassword, contact, establisment: currentEstablisment._id
+            name, email, password, contact, establisment: currentEstablisment._id
         })
 
         currentEstablisment.supervisors.push(newSupervisor._id);

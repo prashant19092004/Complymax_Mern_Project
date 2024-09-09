@@ -30,14 +30,11 @@ const supervisorSchema = new mongoose.Schema({
         type : [mongoose.Schema.Types.ObjectId],
         ref : 'Clientlocation'
     },
-    // state : {
-    //     type : String,
-    //     required : true
-    // },
-    // location : {
-    //     type : String,
-    //     required : true
-    // },
+    hired : {
+        type : [mongoose.Schema.Types.ObjectId],
+        ref : 'Hired',
+        default : []
+    },
     status : {
         type : Boolean,
         default : true
