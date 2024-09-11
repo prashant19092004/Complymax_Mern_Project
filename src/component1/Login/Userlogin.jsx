@@ -15,15 +15,16 @@ const Userlogin = () => {
         email: "",
         password: "",
       });
-      const navigate = useNavigate();
+    const [role, setRole] = useState('');
+
+    const navigate = useNavigate();
     
-      const changeHandle = (e) => {
-        
+    const changeHandle = (e) => {    
         setLoginData({ ...loginData, [e.target.name]: e.target.value });
         // console.log(loginData);
     };
 
-    const submitHandle2 = async (e) => {
+    const establismentLogin = async (e) => {
       // console.log(loginData);
       // e.preventDefault();
       try {
@@ -61,7 +62,7 @@ const Userlogin = () => {
       }
     };
 
-    const supervisorLogin = async (e) => {
+    const supervisorLogin = async () => {
       // console.log(loginData);
       // e.preventDefault();
       try {
@@ -81,9 +82,8 @@ const Userlogin = () => {
     };
 
 
-      const submitHandle = async (e) => {
-        // console.log(loginData);
-        e.preventDefault();
+      const submitHandle = async () => {
+
         try {
           const response = await axios.post(
             "http://localhost:9000/userlogin",
@@ -98,7 +98,7 @@ const Userlogin = () => {
         } catch (err) {
           // toast.error(err.response.data.message);
           // console.log(err.response);
-          submitHandle2();
+          console.log(err);
         }
       };
 
@@ -116,6 +116,26 @@ function remfocus(e){
     }
 }
 
+let loginChangeHandle = (e) => {
+  setRole(e.target.value);
+}
+
+let loginSubmitHandle = (e) => {
+  e.preventDefault();
+  if(role === 'User'){
+    submitHandle();
+  }
+  else if(role === 'Supervisor'){
+    supervisorLogin();
+  }
+  else if(role === 'Client'){
+    clientLogin();
+  }
+  else if(role === 'Establisment'){
+    establismentLogin();
+  }
+}
+
 
   return (
     <div class="l-form">
@@ -125,8 +145,31 @@ function remfocus(e){
             <div class="form">
                 {/* <img src={login_pic} alt="" class="form__img" /> */}
 
-                <form action="" class="form__content">
+                <form action="" onSubmit={loginSubmitHandle} class="form__content">
                     <h1 class="form__title">Welcome</h1>
+
+                    <div class="form__div form__div-one">
+                        <div class="form__icon">
+                            <i class='bx bx-user-circle'></i>
+                        </div>
+
+                        <div class="form__div-input">
+                            {/* <label for="" class="form__label">Role</label> */}
+                            <select  
+                            name='loginAs' 
+                            onChange={loginChangeHandle} 
+                            required 
+                            value={role} 
+                            id='role' 
+                            class="form__input">
+                            <option value="">Select Role</option>
+                            <option value="User">User</option>
+                            <option value="Supervisor">Supervisor</option>
+                            <option value="Client">Client</option>
+                            <option value="Establisment">Establisment</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form__div form__div-one">
                         <div class="form__icon">
@@ -158,9 +201,12 @@ function remfocus(e){
                             <input type="password" name='password' onChange={changeHandle} required value={loginData.password} id='password' class="form__input" onFocus={addfocus} onBlur={remfocus}/>
                         </div>
                     </div>
-                    {/* <a href="#" class="form__forgot">Forgot Password?</a> */}
+                    
+                    {
+                      (role === 'Supervisor' || role === 'Client') ? '' : <a href="#" className="form__forgot">Forgot Password?</a>
+                    }
 
-                    <input type="submit" onClick={submitHandle} class="form__button" value="Login" />
+                    <input type="submit" class="form__button" value="Login" />
 
                 </form>
             </div>
