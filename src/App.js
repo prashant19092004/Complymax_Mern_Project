@@ -29,6 +29,8 @@ import Jobs from './component1/UserDashboard/Jobs';
 import ClientHiring from './component1/Client_dashboard/ClientHiring';
 import PostHiringForm from './component1/Client_dashboard/PostHiringForm';
 import HiringList from './component1/Supervisor_dashboard/HiringList';
+import ForgotPassword from './pages/ResetPassword/ForgotPassword';
+import ResetPassword from './pages/ResetPassword/ResetPassword';
 function App() {
 
    
@@ -158,6 +160,14 @@ function App() {
                 element : <AccountForm />
               }
             ]
+          },
+          {
+            path : '/reset-password',
+            element : <ForgotPassword />
+          },
+          {
+            path : '/reset-password/:token',
+            element : <ResetPassword />
           }
     ]);
 

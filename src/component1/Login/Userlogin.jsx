@@ -203,7 +203,7 @@ let loginSubmitHandle = (e) => {
                     </div>
                     
                     {
-                      (role === 'Supervisor' || role === 'Client') ? '' : <a href="#" className="form__forgot">Forgot Password?</a>
+                      (role === 'Supervisor' || role === 'Client') ? '' : <Link to="/reset-password" className="form__forgot">Forgot Password?</Link>
                     }
 
                     <input type="submit" class="form__button" value="Login" />

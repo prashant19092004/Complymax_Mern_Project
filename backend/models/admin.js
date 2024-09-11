@@ -38,8 +38,13 @@ const adminSchema = new mongoose.Schema({
     hirings : {
         type : [mongoose.Schema.Types.ObjectId],
         ref : "Hiring"
+    },
+    resetPasswordToken: {
+        type : String,
+    },
+    resetPasswordExpires: {
+        type : Date,
     }
-
  })
 
  module.exports = mongoose.model("Admin",adminSchema)
