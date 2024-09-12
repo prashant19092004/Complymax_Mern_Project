@@ -162,7 +162,7 @@ let loginSubmitHandle = (e) => {
                             value={role} 
                             id='role' 
                             class="form__input">
-                            <option value="">Select Role</option>
+                            <option value="">Select</option>
                             <option value="User">User</option>
                             <option value="Supervisor">Supervisor</option>
                             <option value="Client">Client</option>

@@ -12,6 +12,7 @@ app.use(cokkieParser());
 app.use(express.json());
 const userRoutes = require("./routes/userRoutes");
 const establismentResetPasswordRoutes = require("./routes/establismentResetPasswordRoute");
+
 const port = process.env.PORT || 9000;
 
 app.use("/", userRoutes);

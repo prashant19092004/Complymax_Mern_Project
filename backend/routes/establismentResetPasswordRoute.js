@@ -9,8 +9,8 @@ const establismentModel = require('../models/admin.js');
 const transporter = nodemailer.createTransport({
     service: 'gmail', // Use your email provider
     auth: {
-      user: 'pk62066045@gmail.com',
-      pass: 'Pk@6206604163',
+      user: 'prashantkumargupta19092004@gmail.com',
+      pass: 'iwhi iyyv yvfi kvrs',
     },
   });
 
@@ -18,25 +18,28 @@ router.post('/', async (req, res) => {
     const { email } = req.body;
   
     // Find user by email
-    const establisment = await establismentModel.findOne({ email });
+    let currentAuth = await establismentModel.findOne({ email });
   
-    if (!establisment) {
-      return res.status(404).json({ message: 'Email not found' });
+    if (!currentAuth) {
+      currentAuth = await userModel.findOne({ email });
+      if(!currentAuth){
+        return res.status(404).json({ message: 'Email not found' });
+      }
     }
   
     // Generate password reset token and expiration
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
   
-    establisment.resetPasswordToken = resetTokenHash; // Store hashed token in DB
-    establisment.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes expiration
-    await establisment.save();
+    currentAuth.resetPasswordToken = resetTokenHash; // Store hashed token in DB
+    currentAuth.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes expiration
+    await currentAuth.save();
   
     // Send password reset link via email
-    const resetLink = `http://localhost:9000/api/reset-password/${resetToken}`;
+    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
     const mailOptions = {
-      from: 'pk62066045@gmail.com',
-      to: establisment.email,
+      from: 'prashantkumargupta19092004@gmail.com',
+      to: currentAuth.email,
       subject: 'Password Reset Link',
       text: `You requested a password reset. Click on the following link to reset your password: ${resetLink}`,
     };
@@ -60,13 +63,19 @@ router.post('/:token', async (req, res) => {
   const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
   // Find the user with the matching reset token and make sure it hasn't expired
-  const establisment = await establismentModel.findOne({
+  let currentAuth = await establismentModel.findOne({
     resetPasswordToken: resetTokenHash,
     resetPasswordExpires: { $gt: Date.now() }, // Token must not be expired
   });
 
-  if (!establisment) {
-    return res.status(400).json({ message: 'Invalid or expired token' });
+  if (!currentAuth) {
+    currentAuth = await userModel.findOne({
+      resetPasswordToken: resetTokenHash,
+      resetPasswordExpires: { $gt: Date.now() }, // Token must not be expired
+    });
+    if(!currentAuth){
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
   }
 
   // Hash the new password and save it
@@ -74,10 +83,10 @@ router.post('/:token', async (req, res) => {
   const hashedPassword = await bcrypt.hash(newPassword, salt);
 
   // Update user's password and clear the reset token fields
-  establisment.password = hashedPassword;
-  establisment.resetPasswordToken = undefined;
-  establisment.resetPasswordExpires = undefined;
-  await establisment.save();
+  currentAuth.password = hashedPassword;
+  currentAuth.resetPasswordToken = undefined;
+  currentAuth.resetPasswordExpires = undefined;
+  await currentAuth.save();
 
   res.status(200).json({ message: 'Password has been reset successfully' });
 }

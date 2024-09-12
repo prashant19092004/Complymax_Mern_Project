@@ -167,20 +167,6 @@ const UserDashboard = () => {
                   
                     </ul>
                 </div>
-                <div className='requirement_box'>
-                {/* {user.account_added && */}
-                    <div>
-                        <p>You haven't add your account yet.</p>
-                        <button onClick={() => navigate('/user_dashboard/add_account')}>Add Account</button>
-                    </div>
-                {/* } */}
-                {/* {user.pan_added && */}
-                    <div>
-                        <p>You haven't add your PAN yet.</p>
-                        <button onClick={() => navigate('/user_dashboard/add_pan')}>Add Pan</button>
-                    </div>
-                {/* } */}
-                </div>
             </div>
         </header>
         {/* <!-- Main --> */}
