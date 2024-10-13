@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim:true
     },
+    employeeId : {
+        type : Number,
+    },
     contact : {
         type:String,
         required : true
@@ -25,9 +28,12 @@ const userSchema = new mongoose.Schema({
         type:String,
         required : true
     },
+    kyc : {
+        type : Boolean,
+        default : false
+    },
     country : {
         type:String,
-        required : true
     },
     dist : {
         type:String,
@@ -117,7 +123,7 @@ const userSchema = new mongoose.Schema({
         ref : "Experience"
     },
     hired : {
-        type : [mongoose.Schema.Types.ObjectId],
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Hired'
     },
     resetPasswordToken: {
@@ -125,7 +131,60 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordExpires: {
         type : Date,
-    }
+    },
+    profilePic: {
+        type: String, // The path to the uploaded image
+        default: ''
+    },
+    date_of_joining : {
+        type : Date,
+    },
+    pf_esic_status : {
+        type : Boolean,
+        default : false
+    },
+    date_of_joining_status : {
+        type : Boolean,
+        default : false
+    },
+    basic : {
+        type : String,
+    },
+    da : {
+        type : String,
+    },
+    hra : {
+        type : String,
+    },
+    other_allowance : {
+        type : String,
+    },
+    leave_with_wages : {
+        type : String
+    },
+    wages_status : {
+        type : Boolean,
+        default : false
+    },
+    active_user_status : {
+        type : Boolean,
+        default : false
+    },
+    uan_number : {
+        type : String,
+    },
+    epf_number : {
+        type : String,
+    },
+    esi_number : {
+        type : String,
+    },
+    file1 : {
+        type : String
+    },
+    file2 : {
+        type : String
+    },
  })
 
  module.exports = mongoose.model("User",userSchema)

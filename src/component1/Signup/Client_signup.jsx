@@ -26,7 +26,7 @@ const Client_signup = () => {
     }
     try {
       const response = await axios.post(
-        "http://localhost:9000/adminsignup",
+        `${process.env.REACT_APP_BACKEND_URL}/adminsignup`,
         signupData
       )
       .then((res) => {

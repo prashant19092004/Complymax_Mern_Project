@@ -116,6 +116,10 @@
     font-size: 0.9rem;
 }
 
+#name_heading{
+    font-size: 1.5rem;
+}
+
 @media (max-width : 991px) {
     #sidebarCollapse{
         position: fixed;
@@ -177,6 +181,9 @@
     #navbar_brand{
         padding-inline: 0 ;
         width: 150px;
+    }
+    #name_heading{
+        font-size: 1rem;
     }
 }
 

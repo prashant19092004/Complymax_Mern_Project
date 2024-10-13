@@ -44,7 +44,7 @@ const adminSchema = new mongoose.Schema({
     },
     resetPasswordExpires: {
         type : Date,
-    }
+    },
  })
 
  module.exports = mongoose.model("Admin",adminSchema)

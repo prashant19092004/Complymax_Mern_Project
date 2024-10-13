@@ -82,7 +82,7 @@ const UserDashboardPage = () => {
                                     </div>
                                     <div className="col-auto">
                                         <div className="icon icon-shape text-white text-lg rounded-circle" id='icon_shape'>
-                                        <i class="bi bi-file-earmark-person"></i>
+                                        <i className="bi bi-file-earmark-person"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -99,7 +99,7 @@ const UserDashboardPage = () => {
                                     </div>
                                     <div className="col-auto">
                                         <div className="icon icon-shape text-white text-lg rounded-circle" id='icon_shape'>
-                                            <i class="bi bi-person-plus"></i>
+                                            <i className="bi bi-person-plus"></i>
                                         </div>
                                     </div>
                                 </div>

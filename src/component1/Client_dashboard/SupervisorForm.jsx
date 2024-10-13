@@ -71,7 +71,7 @@ const SupervisorForm = () => {
         e.preventDefault();
         try{
             const response = await axios.post(
-                "http://localhost:9000/establisment/supervisor_register",
+                `${process.env.REACT_APP_BACKEND_URL}/establisment/supervisor_register`,
                 clientRegisterData,
                 {
                     headers: {

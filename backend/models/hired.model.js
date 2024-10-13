@@ -10,9 +10,17 @@ const hiredSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User'
     },
+    employeeId : {
+        type: Number,
+        unique: true
+    },
     supervisor_id : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Supervisor'
+    },
+    establishment_id : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Admin'
     },
     createdAt : {
         type : Date,
@@ -21,7 +29,75 @@ const hiredSchema = new mongoose.Schema({
     status : {
         type : String,
         default : '1'
-    }
+    },
+    date_of_joining : {
+        type : Date,
+    },
+    date_of_joining_status : {
+        type : Boolean,
+        default : false
+    },
+    pf_esic_status : {
+        type : Boolean,
+        default : false
+    },
+    basic : {
+        type : String,
+    },
+    da : {
+        type : String,
+    },
+    hra : {
+        type : String,
+    },
+    other_allowance : {
+        type : String,
+    },
+    leave_with_wages : {
+        type : String
+    },
+    wages_status : {
+        type : Boolean,
+        default : false
+    },
+    active_user_status : {
+        type : Boolean,
+        default : false
+    },
+    uan_number : {
+        type : String,
+    },
+    epf_number : {
+        type : String,
+    },
+    esi_number : {
+        type : String,
+    },
+    pf_esic_status : {
+        type : Boolean,
+        default : false
+    },
+    file1 : {
+        type : String
+    },
+    file2 : {
+        type : String
+    },
+    basic : {
+        type : String,
+    },
+    da : {
+        type : String,
+    },
+    hra : {
+        type : String,
+    },
+    other_allowance : {
+        type : String,
+    },
+    leave_with_wages : {
+        type : String
+    },
 })
 
 module.exports = mongoose.model("Hired", hiredSchema);

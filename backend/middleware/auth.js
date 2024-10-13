@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const supervisorModel = require("../models/supervisor.model");
+const superadminModel = require("../models/superadmin.model");
 
 require("dotenv").config();
 
@@ -28,13 +30,32 @@ exports.auth = async (req, res, next) => {
   }
 };
 
-exports.isStudent = async (req, res, next) => {
+exports.isSupervisor = async (req, res, next) => {
   try {
-    if (req.user.role !== "Student") {
+    const supervisor = await supervisorModel.findOne({email : req.user.email}, {_id:1});
+    if (!supervisor) {
       res.status(401).json({
         success: false,
         role: req.user.role,
-        message: "this is for student stay away",
+        message: "this is for Supervisor stay away",
+      });
+    }
+    next();
+  } catch (e) {
+    res.status(401).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+};
+
+exports.isSuperadmin = async (req, res, next) => {
+  try {
+    const superadmin = await superadminModel.findOne({email : req.user.email}, {_id:1});
+    if (!superadmin) {
+      res.status(401).json({
+        success: false,
+        message: "this is for Superadmin stay away",
       });
     }
     next();

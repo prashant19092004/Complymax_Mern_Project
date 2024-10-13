@@ -4,8 +4,9 @@ const Client = require("../models/client.model.js");
 const Supervisor = require("../models/supervisor.model.js");
 const bcrpt = require("bcrypt")
 const jwt = require("jsonwebtoken") 
+const SuperadminModel = require("../models/superadmin.model.js");
 
-require('dotenv').config()
+require('dotenv').config();
 
 exports.userlogin = async (req, res) => { 
     try {
@@ -121,6 +122,63 @@ exports.adminlogin = async (req, res) => {
     }
 }
 
+exports.superadminlogin = async (req, res) => { 
+    try {
+        const { email, password } = req.body
+
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "please provide email and password"
+            })
+        }
+
+        let superadmin = await SuperadminModel.findOne({ email }).select("+password") 
+
+        if (!superadmin) {
+            return res.status(404).json({
+                success: false,
+                message: "Invalid credentials"
+            })
+        }
+
+        const payload = {
+            email: superadmin.email,
+            id: superadmin._id,
+        }
+
+        if (await bcrpt.compare(password, superadmin.password)) {
+            let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" })
+            superadmin = superadmin.toObject()
+            superadmin.token = token
+            superadmin.password = undefined
+
+            const option = {
+                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                httpOnly: true
+            }
+
+            res.cookie("token", token, option).status(200).json({
+                success: true,
+                token, superadmin, message: "admin looged  succes"
+            })
+
+        } else {
+            return res.status(403).json({
+                success: false,
+                message: "Invalid credentials"
+            })
+        }
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            success: false,
+            message: "internal server error"
+        })
+    }
+}
+
 exports.clientlogin = async (req, res) => { 
     try {
         const { email, password } = req.body
@@ -134,6 +192,7 @@ exports.clientlogin = async (req, res) => {
 
         let client = await Client.findOne({ email }).select("+password") 
 
+        // console.log(client);
         if (!client) {
             return res.status(404).json({
                 success: false,
@@ -310,7 +369,8 @@ exports.usersignup = async (req, res) => {
             gender : aadharData.gender,
             has_image : aadharData.has_image,
             aadhar_image : aadharData.profile_image,
-            zip : userDetail.zip
+            zip : userDetail.zip,
+            kyc : true
         })
 
         return res.status(200).json({
@@ -374,6 +434,39 @@ exports.adminsignup = async (req, res) => {
 
         const newAdmin = await Admin.create({
             name, email, password: hashedpassword, contact, role: "establisment"
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "user created successfully"
+        })
+
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            success: false,
+            message: "plz try again later"
+        })
+    }
+}
+
+exports.superadminsignup = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        
+        console.log(req.body);
+        let hashedpassword;
+        try {
+            hashedpassword = await bcrpt.hash(password, 10)
+        } catch (e) {
+            return res.status(500).json({
+                success: false,
+                message: "nahi hua hash"
+            })
+        }
+
+        const newAdmin = await SuperadminModel.create({
+            name, email, password: hashedpassword
         })
 
         return res.status(200).json({

@@ -2,8 +2,17 @@ const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const cors = require("cors");
+const multer = require('multer');
+const path = require('path');
+
+
 app.use(cors());
+app.use('/uploads', express.static('uploads'));
 require("dotenv").config();
+
+// Serve static files (uploaded images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 const cokkieParser = require("cookie-parser");
 

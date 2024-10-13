@@ -25,7 +25,7 @@ const Client_login = () => {
         e.preventDefault();
         try {
           const response = await axios.post(
-            "http://localhost:9000/adminlogin",
+            `${process.env.REACT_APP_BACKEND_URL}/adminlogin`,
             loginData
           )
           .then((res)=> {

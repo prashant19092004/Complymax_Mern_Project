@@ -36,13 +36,12 @@ const HiringList = () => {
 
   async function fetchingHiring(){
     try{
-      await axios.get("http://localhost:9000/supervisor/hirings", {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor/hirings`, {
         headers: {
           Authorization : `Bearer ${token}`
         }
       })
       .then((res) => {
-        console.log(res);
         setHiringList(res.data.requiredHirings);
         // setClients(res.data.clients);
         setFilteredHirings(res.data.requiredHirings);
@@ -52,7 +51,7 @@ const HiringList = () => {
         // setUser(res.data);
       })
     }catch(err){
-      console.log(err);
+      toast.error('Try Again..')
     }
   }
 
@@ -93,7 +92,7 @@ const HiringList = () => {
         const filteredData = hiringList && hiringList.length? hiringList.filter((hiring) => hiring.client_name.toLowerCase().indexOf(query) > -1) : [];
         setFilteredHirings(filteredData);
         // setShowDropDown(true);
-  }
+    }
 
     let userSearchHandler = () => {
       const filteredData = users && users.length? users.filter((user) => user.aadhar_number.indexOf(search) > -1): [];
@@ -105,9 +104,8 @@ const HiringList = () => {
     }
 
     let hireUser = async() => {
-      console.log(assignData);
       try{
-        await axios.post('http://localhost:9000/supervisor/hire',
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/supervisor/hire`,
           assignData,
           {
             headers: {
@@ -116,7 +114,6 @@ const HiringList = () => {
           }
         )
         .then((res) => {
-          console.log(res);
           if(res.data.success){
             warningref.current.style.scale = 0;
             closeEnquiry();
@@ -128,7 +125,9 @@ const HiringList = () => {
         })
       }
       catch(e){
-        console.log(e);
+        warningref.current.style.scale = 0;
+        closeEnquiry();
+        toast.error(e.response.data.message);
       }
     }
 
@@ -136,13 +135,13 @@ const HiringList = () => {
     <div className='supervisor_hire position-relative'>
         <div className='ragister_div'>
             <div className='search_container'>
-                  <input type="text" id="box" placeholder="Search...." class="search__box" onChange={changeHandle} />
-                  <i class="fas fa-search search__icon" id="icon" onClick={toggleShow}></i>
+                  <input type="text" id="box" placeholder="Search...." className="search__box" onChange={changeHandle} />
+                  <i className="fas fa-search search__icon" id="icon" onClick={toggleShow}></i>
             </div>
-            <Button className='mt-2' onClick={postHiringButtonHandler} varient='primary'>Post Hiring</Button>
+            {/* <Button className='mt-2' onClick={postHiringButtonHandler} varient='primary'>Post Hiring</Button> */}
         </div>
         <div className='container3'>
-            <div class="header">
+            <div className="header">
                 <div>S.No</div>
                 <div>Name</div>
                 <div>Job Category</div>
@@ -154,7 +153,7 @@ const HiringList = () => {
             {
                 filteredHirings && filteredHirings.length && filteredHirings.map((hiring, index) => {
                     return (
-                        <div class="job-list">
+                        <div className="job-list" key={index}>
                             <div>{index+1}.</div>
                             <div>{hiring.client_name}</div>
                             <div>{hiring.job_category}</div>
@@ -176,22 +175,22 @@ const HiringList = () => {
             </div>
           </div>
         </div>
-        <section ref={enquiryref} class="enquiry-section" >
-          <div class="enquiry-form">
-            <img onClick={closeEnquiry} class="enquiry-close" src={close} alt="" />
+        <section ref={enquiryref} className="enquiry-section" >
+          <div className="enquiry-form">
+            <img onClick={closeEnquiry} className="enquiry-close" src={close} alt="" />
             <h2>Hiring</h2>
             {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
             
             <div className='search_container border justify-content-between'>
-                  <input type="text" id="box" value={search} placeholder="Aadhar No..." style={{width : '80%'}} class="search__box" onChange={userSearchChangeHandler} />
-                  <i class="fas fa-search search__icon" id="icon" onClick={userSearchHandler}></i>
+                  <input type="text" id="box" value={search} placeholder="Aadhar No..." style={{width : '80%'}} className="search__box" onChange={userSearchChangeHandler} />
+                  <i className="fas fa-search search__icon" id="icon" onClick={userSearchHandler}></i>
             </div>
 
             <ul className='list_box' style={{padding : '0px'}}>
             {
-                filteredUsers?.map((user) => {
+                filteredUsers?.map((user, index) => {
                     return ( 
-                        <li className='list'>
+                        <li className='list' key={index}>
                           <img className='' src={defaultProfile} alt='' />
                           <div className='w-full'>
                             <div className='list_content'>
@@ -202,7 +201,7 @@ const HiringList = () => {
                                   <p>{user.contact}</p>
                               </div>
                               <div className='list-right'>
-                                <button class="btn custom-btn" onClick={() => {setAssignData({...assignData, user_id : user._id}); warningref.current.style.scale = 1; }} style={buttonStyle}>Hire</button>
+                                <button className="btn custom-btn" onClick={() => {setAssignData({...assignData, user_id : user._id}); warningref.current.style.scale = 1; }} style={buttonStyle}>Hire</button>
                               </div>
                             </div>
                             <p>Addhar No. : {user.aadhar_number}</p>

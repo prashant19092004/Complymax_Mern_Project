@@ -1,0 +1,17 @@
+/* .custom-lottie-loader svg path {
+    fill: #ffffff !important;  
+} */
+
+/* .custom-lottie-loader svg rect, */
+/* .custom-lottie-loader svg circle, */
+/* .custom-lottie-loader svg line, */
+/* .custom-lottie-loader svg polyline,
+.custom-lottie-loader svg polygon, */
+/* .custom-lottie-loader svg ellipse { */
+    /* fill: #ffffff !important;  
+    stroke: #ffffff !important;  
+} */
+
+.custom-lottie-loader svg g path {
+    stroke: #ffffff !important;  
+}

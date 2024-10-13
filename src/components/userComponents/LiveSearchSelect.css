@@ -1,0 +1,51 @@
+
+.search_button{
+  padding : 0px 10px;
+  font-weight: 600;
+  height : 45px;
+  width : 110px;
+  border-radius: 10px;
+  color : white;
+  background-color: #1e3686;
+}
+
+.container1{
+  width : 70%;
+}
+
+  .list-group-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .dropdown {
+    position: relative;
+    width: 100%;
+    background-color: #fff;
+  }
+  
+  .list-group {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-top: 5px;
+    gap: 0;
+  }
+  
+  .list-group-item {
+    padding: 10px;
+    width: 100%;
+    border: none;
+    margin: 0 !important;
+  }
+
+  .form-control{
+    width : 100%;
+  }
+  
+
+
+  @media (max-width : 570px) {
+    .container1{
+        width : 90%;
+    }
+}

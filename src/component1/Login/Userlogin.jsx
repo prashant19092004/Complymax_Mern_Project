@@ -29,7 +29,7 @@ const Userlogin = () => {
       // e.preventDefault();
       try {
         const response = await axios.post(
-          "http://localhost:9000/adminlogin",
+          `${process.env.REACT_APP_BACKEND_URL}/adminlogin`,
           loginData
         )
         .then((res)=> {
@@ -39,16 +39,16 @@ const Userlogin = () => {
           toast.success(res.data.message);
         })
       } catch (err) {
-        clientLogin();
+        toast.error(err.response.data.message);
       }
     };
 
     const clientLogin = async (e) => {
-      // console.log(loginData);
+      console.log(loginData);
       // e.preventDefault();
       try {
         const response = await axios.post(
-          "http://localhost:9000/clientlogin",
+          `${process.env.REACT_APP_BACKEND_URL}/clientlogin`,
           loginData
         )
         .then((res)=> {
@@ -58,7 +58,7 @@ const Userlogin = () => {
           toast.success(res.data.message);
         })
       } catch (err) {
-        supervisorLogin();
+        toast.error(err.response.data.message);
       }
     };
 
@@ -67,7 +67,7 @@ const Userlogin = () => {
       // e.preventDefault();
       try {
         const response = await axios.post(
-          "http://localhost:9000/supervisorlogin",
+          `${process.env.REACT_APP_BACKEND_URL}/supervisorlogin`,
           loginData
         )
         .then((res)=> {
@@ -77,7 +77,7 @@ const Userlogin = () => {
           toast.success(res.data.message);
         })
       } catch (err) {
-        toast.error("try again");
+        toast.error(err.response.data.message);
       }
     };
 
@@ -86,7 +86,7 @@ const Userlogin = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:9000/userlogin",
+            `${process.env.REACT_APP_BACKEND_URL}/userlogin`,
             loginData
           )
           .then((res)=> {
@@ -96,9 +96,9 @@ const Userlogin = () => {
             toast.success(res.data.message);
           })
         } catch (err) {
-          // toast.error(err.response.data.message);
+          toast.error(err.response.data.message);
           // console.log(err.response);
-          console.log(err);
+          // console.log(err);
         }
       };
 

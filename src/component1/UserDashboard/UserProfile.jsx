@@ -10,6 +10,8 @@ import { FaRegEdit } from "react-icons/fa";
 import close from './../../assets/close.png';
 import { toast } from 'react-toastify';
 import { MdDeleteOutline } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
+import default_pic from '../../assets/Default_pfp.svg.png'
 
 const UserProfile = () => {
 
@@ -18,9 +20,13 @@ const UserProfile = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const enquiryref = useRef();
+    const profile_pic_input_ref = useRef();
     const experienceElement = useRef();
     const [ isExperience, setIsExperience ] = useState(false);
     const [educationEdit, setEducationEdit] = useState(false);
+    const [file, setFile] = useState(null);
+    const [message, setMessage] = useState('');
+    const [profilePicUrl, setProfilePicUrl] = useState('');
     // const [editId, setEditId] = useState("");
 
     const [educationData, setEducationData] = useState({
@@ -47,21 +53,28 @@ let changeHandler = (e) => {
   });
 }
 
+const onFileChange = (e) => {
+  const selectedFile = e.target.files[0];
+  if (selectedFile) {
+    setFile(selectedFile);
+    onSubmit(selectedFile);
+  }
+};
+
 async function fetchingProfile(){
   try{
     setLoading(true);
-    await axios.get("http://localhost:9000/user/profile", {
+    await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user/profile`, {
       headers: {
         Authorization : `Bearer ${token}`
       }
     })
     .then((res) => {
-      console.log(res.data);
       setUser(res.data);
       setLoading(false);
     })
   }catch(err){
-    console.log(err);
+    toast.error('Try Again..')
   }
 }
 
@@ -69,6 +82,24 @@ async function fetchingProfile(){
 useEffect(() => {
   fetchingProfile();
 }, []);
+
+const onSubmit = async (selectedFile) => {
+  const formData = new FormData();
+  formData.append('profilePic', selectedFile);
+
+  try {
+    const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/upload/profile-pic`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    toast.success('Profile picture uploaded successfully!');
+    setUser({ ...user, profilePic: res.data.user.profilePic });
+  } catch (err) {
+    toast.error('Error uploading profile picture');
+  }
+};
 
 if(loading) {
   return(<div>Loading</div>)
@@ -116,10 +147,14 @@ let closeEnquiry = () => {
   enquiry_pop_up.style.scale = 0;
 };
 
+const handleProfilePicClick = () => {
+  profile_pic_input_ref.current.click();
+};
+
 let addEducation = async() => {
   try{
     const response = await axios.post(
-        `http://localhost:9000/user/${isExperience ? 'add_experience' : 'add_education'}`,
+        `${process.env.REACT_APP_BACKEND_URL}/user/${isExperience ? 'add_experience' : 'add_education'}`,
         educationData,
         {
             headers: {
@@ -128,7 +163,6 @@ let addEducation = async() => {
         }
     )
     .then((res) => {
-        console.log(res);
         if(res.data.success){
           toast.success(res.data.message);
           setUser(res.data.currentUser1);
@@ -150,7 +184,7 @@ let addEducation = async() => {
         }
     })
   }catch(err){
-      console.log("try again");
+      toast.error("try again");
   }
 }
 
@@ -210,7 +244,7 @@ let deleteEducation = async() => {
   try{
     console.log(uid);
     const response = await axios.post(
-      `http://localhost:9000/user/${isExperience ? 'delete_experience' : 'delete_education'}`,
+      `${process.env.REACT_APP_BACKEND_URL}/user/${isExperience ? 'delete_experience' : 'delete_education'}`,
       data,
       {
         headers: {
@@ -232,8 +266,19 @@ let deleteEducation = async() => {
 
   return (
     <div id="screen">
+      <form onSubmit={onSubmit} className='d-none'>
+        <input ref={profile_pic_input_ref} type="file" onChange={onFileChange} />
+        {/* <button type="submit">Upload</button> */}
+      </form>
       <div id="content">
-        <img id="user-avatar" src="https://hips.hearstapps.com/hmg-prod/images/enjoying-the-view-royalty-free-image-1582838254.jpg" alt="Avatar" />
+        <div className='position-relative'>
+          <img id="user-avatar" src={user.profilePic ? `${process.env.REACT_APP_BACKEND_URL}/${user.profilePic}` : default_pic} alt="Avatar" />
+          <div onClick={handleProfilePicClick} className='position-absolute end-4 bottom-4 rounded-circle p-1 bg-light' style={{height : '30px', width : '30px'}}>
+            <div className='bg-primary h-full w-full rounded-circle d-flex justify-content-center align-items-center'>
+              <MdEdit className='text-light'  />
+            </div>
+          </div>
+        </div>
         <p id="user-name">{user.full_Name}</p>
         <p id="user-location">{user.email}</p>
         {/* <p id="user-description">Photos rom all over the world</p> */}
@@ -242,12 +287,12 @@ let deleteEducation = async() => {
             <span>231</span>
             <span>Posts</span>
 	    	  </p>
-          <div class="line"></div>
+          <div className="line"></div>
           <p>
             <span>531</span>
             <span>Followers</span>
 	    	  </p>
-          <div class="line"></div>
+          <div className="line"></div>
           <p>
             <span>123</span>
             <span>Following</span>
@@ -255,29 +300,29 @@ let deleteEducation = async() => {
         </div> */}
         {/* <p id="follow-btn">Follow</p> */}
       </div>
-      <div class="container1 px-5">
-        <div class="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
-            <div class="flex flex-col profile-content-box">
+      <div className="container1 px-5">
+        <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
+            <div className="flex flex-col profile-content-box">
               <dt>Aadhar No.</dt>
               <dd>{user.aadhar_number}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>Date Of Birth</dt>
               <dd>{user.dob}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>Gender</dt>
               <dd>{user.gender === 'M' ? 'Male' : 'Female'}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>Phone Number</dt>
               <dd>{user.contact}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>State</dt>
               <dd>{user.state}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>Country</dt>
               <dd>{user.country}</dd>
             </div>
@@ -288,12 +333,12 @@ let deleteEducation = async() => {
                 <h1>Pan Card</h1>
                 <button onClick={addPan} >{user.pan_added ? 'Change' : 'Add'}</button>
             </div>
-            <div class="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
-              <div class="flex flex-col profile-content-box">
+            <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
+              <div className="flex flex-col profile-content-box">
                 <dt>Pan No.</dt>
                 <dd>{user.pan_number}</dd>
               </div>
-              <div class="flex flex-col profile-content-box">
+              <div className="flex flex-col profile-content-box">
                 <dt>Name</dt>
                 <dd>{user.pan_name}</dd>
               </div>
@@ -304,16 +349,16 @@ let deleteEducation = async() => {
                 <h1>Account</h1>
                 <button onClick={addAccount} >{user.account_added ? 'Change' : 'Add'}</button>
             </div>
-            <div class="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
-              <div class="flex flex-col profile-content-box">
+            <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
+              <div className="flex flex-col profile-content-box">
                 <dt>Account No.</dt>
                 <dd>{user.account_number}</dd>
               </div>
-              <div class="flex flex-col profile-content-box">
+              <div className="flex flex-col profile-content-box">
                 <dt>Name</dt>
                 <dd>{user.account_name}</dd>
               </div>
-              <div class="flex flex-col profile-content-box">
+              <div className="flex flex-col profile-content-box">
                 <dt>IFSC code</dt>
                 <dd>{user.account_ifsc}</dd>
               </div>
@@ -324,7 +369,7 @@ let deleteEducation = async() => {
                 <h1>Education</h1>
                 <button onClick={() => {setIsExperience(false); openEnquiry();}} >Add Education</button>
             </div>
-            <div class="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
+            <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
               {
                 user.qualifications?.map((qualification) => {
                   return(
@@ -348,7 +393,7 @@ let deleteEducation = async() => {
                 <h1>Experience</h1>
                 <button onClick={() => {setIsExperience(true); openEnquiry();}}>Add Experience</button>
             </div>
-            <div class="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
+            <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
               {
                 user.experiences?.map((experience) => {
                   return(
@@ -367,27 +412,27 @@ let deleteEducation = async() => {
               }
             </div>
         </div>
-        <section ref={enquiryref} class="enquiry-section" >
-          <div class="enquiry-form">
-            <img onClick={closeEnquiry} class="enquiry-close" src={close} alt="" />
+        <section ref={enquiryref} className="enquiry-section" >
+          <div className="enquiry-form">
+            <img onClick={closeEnquiry} className="enquiry-close" src={close} alt="" />
             <h2>Add {isExperience ? 'Experience' : 'Education'}</h2>
             {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
             <form action="#" onSubmit={(e) => { e.preventDefault(); addEducation(); }}>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="institute">{isExperience ? 'Company' : 'School/College'}</label>
-                  <input required type="text" value={educationData.institute} name="institute" onChange={changeHandler} id="institute" placeholder="Which School/College have you studied at?" autocomplete="off"/>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" for="institute">{isExperience ? 'Company' : 'School/College'}</label>
+                  <input required type="text" value={educationData.institute} name="institute" onChange={changeHandler} id="institute" placeholder="Which School/College have you studied at?" autoComplete="off"/>
                 </div>
               </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="contact_no">{isExperience ? 'Role' : 'Degree'}</label>
-                  <input required type="text" value={educationData.degree} name="degree" onChange={changeHandler} id="degree" placeholder="eg: B.E" autocomplete="off"/>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" for="contact_no">{isExperience ? 'Role' : 'Degree'}</label>
+                  <input required type="text" value={educationData.degree} name="degree" onChange={changeHandler} id="degree" placeholder="eg: B.E" autoComplete="off"/>
                 </div>  
               </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="starting_from">Starting From</label>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" for="starting_from">Starting From</label>
                   <select placeholder="Month" value={educationData.starting_month} name='starting_month' id='starting_month' className='' onChange={changeHandler}>
                     <option value="" placeholder="Month">Month</option>
                     {
@@ -397,8 +442,8 @@ let deleteEducation = async() => {
                     }
                   </select>
                 </div>
-                <div class="input-div">
-                  <label class="form-label" for="starting_year"></label>
+                <div className="input-div">
+                  <label className="form-label" for="starting_year"></label>
                   <select placeholder="Year" value={educationData.starting_year} name='starting_year' id='starting_year' className='' onChange={changeHandler}>
                     <option value="" placeholder="Year">Year</option>
                     {
@@ -409,9 +454,9 @@ let deleteEducation = async() => {
                   </select>
                 </div>  
               </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="ending_in">Ending In</label>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" for="ending_in">Ending In</label>
                   <select placeholder="Month" value={educationData.ending_month} name='ending_month' id='ending_month' className='' onChange={changeHandler}>
                     <option value="" placeholder="Month">Month</option>
                     {
@@ -421,8 +466,8 @@ let deleteEducation = async() => {
                     }
                   </select>
                 </div>
-                <div class="input-div">
-                  <label class="form-label" for="ending_year"></label>
+                <div className="input-div">
+                  <label className="form-label" for="ending_year"></label>
                   <select placeholder="Year" name='ending_year' value={educationData.ending_year} id='ending_year' className='' onChange={changeHandler}>
                     <option value="" placeholder="Year">Year</option>
                     {
@@ -433,19 +478,19 @@ let deleteEducation = async() => {
                   </select>
                 </div>  
               </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="Score">Score{isExperience ? 'Location' : 'Score'}</label>
-                  <input required type="text" value={educationData.score} name="score" onChange={changeHandler} id="score" placeholder="eg: 80.00%" autocomplete="off"/>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" for="Score">Score{isExperience ? 'Location' : 'Score'}</label>
+                  <input required type="text" value={educationData.score} name="score" onChange={changeHandler} id="score" placeholder="eg: 80.00%" autoComplete="off"/>
                 </div>  
               </div>
-              <div class="input-div">
-                <label class="form-label" for="email">Description</label>
-                <textarea value={educationData.description} type="text" name="description" onChange={changeHandler} id="description" placeholder="Description" autocomplete="off"></textarea>
+              <div className="input-div">
+                <label className="form-label" for="email">Description</label>
+                <textarea value={educationData.description} type="text" name="description" onChange={changeHandler} id="description" placeholder="Description" autoComplete="off"></textarea>
               </div>
               <div className='d-flex justify-content-between align-items-center mt-2'>
                 <h2 onClick={() => deleteEducation()} className='fs-6 cursor-pointer'>{educationEdit ? 'Delete this entry' : ''}</h2>
-                <button class="enquiry-button" type="submit" >Save</button>    
+                <button className="enquiry-button" type="submit" >Save</button>    
               </div>
             </form>
           </div>

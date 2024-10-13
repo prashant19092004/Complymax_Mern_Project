@@ -8,7 +8,6 @@ const AccountForm = () => {
   const navigate = useNavigate();
   const [panNumber, setPanNumber] = useState("");
   const [otpGenerated, setOtpGenerated] = useState(false);
-  const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxODE4NDg1NSwianRpIjoiNDRmNzUyZDAtYzNiYy00MTQ1LThjOGItNWRjNjg3NzU2N2ZkIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmNvbXBseW1heEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxODE4NDg1NSwiZXhwIjoyMDMzNTQ0ODU1LCJlbWFpbCI6ImNvbXBseW1heEBzdXJlcGFzcy5pbyIsInRlbmFudF9pZCI6Im1haW4iLCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.HZRqEIPUAx9VCS_FPoNaoMnWGcJkux8xLMjstMtNfZc";
   const [accountNumber, setAccountNumber] = useState({
     id_number: "",
     ifsc: "",
@@ -33,16 +32,14 @@ const AccountForm = () => {
         accountNumber, 
         {
           headers: { 
-              'Authorization': `Bearer ${token}`,
+              'Authorization': `Bearer ${process.env.REACT_APP_SURPASS_TOKEN}`,
               'Content-Type' : 'application/json' 
           }
         }
       )
       .then(async(res) => {
-        // console.log(res);
         if(res.data.success){
           setAccountData(res.data.data);
-          console.log(res.data.data);
           
           const addAccountData = {
             account_number : accountNumber.id_number,
@@ -50,7 +47,7 @@ const AccountForm = () => {
           }
           try{
             await axios.post(
-              "http://localhost:9000/user/profile/add_Account",
+              `${process.env.REACT_APP_BACKEND_UR}/user/profile/add_Account`,
               addAccountData,
               {
                 headers: {
@@ -69,32 +66,32 @@ const AccountForm = () => {
               }
             })
           }catch(err){
-            console.log(err);
+            toast.error('Try Again..')
           }
         }
       })
     }catch(err){
-      console.log(err);
+      toast.error('Try Again..')
     }
   }
 
   return (
     <div className='pan_form'>
-        <div class="form-box">
+        <div className="form-box">
             <h1 className='mb-3'>Add Pan Card</h1>
             {/* <p>Using <a href="https://getbootstrap.com">Bootstrap</a> and <a href="https://www.formbucket.com">FormBucket</a></p> */}
             <form action="#" >
-                <div class="form-group">
+                <div className="form-group">
                   <label for="account_number">Account Number</label>
-                  <input class="form-control" id="id_number" type="text" name="id_number" onChange={changeHandler} />
+                  <input className="form-control" id="id_number" type="text" name="id_number" onChange={changeHandler} />
                 </div>
-                <div class="form-group mt-3" id='otp_box'>
+                <div className="form-group mt-3" id='otp_box'>
                   <label for="ifsc">IFSC Code</label>
-                  <input class="form-control" id="ifsc" type="text" name="ifsc" onChange={changeHandler} />
+                  <input className="form-control" id="ifsc" type="text" name="ifsc" onChange={changeHandler} />
                 </div>
                 <div className='d-flex gap-3 mt-4'>
-                    <input class="btn btn-primary" onClick={generateAccount} type="submit" value={otpGenerated ? 'Verify' : 'Add'} />
-                    <button class="btn btn-danger" onClick={() => navigate(-1)}>Cancel</button> 
+                    <input className="btn btn-primary" onClick={generateAccount} type="submit" value={otpGenerated ? 'Verify' : 'Add'} />
+                    <button className="btn btn-danger" onClick={() => navigate(-1)}>Cancel</button> 
                 </div>
             </form>
         </div>

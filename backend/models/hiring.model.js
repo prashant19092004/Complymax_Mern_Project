@@ -31,7 +31,7 @@ const hiringSchema = new mongoose.Schema({
     },
     location_id : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "Location"
+        ref : "Clientlocation"
     },
     no_of_hired : {
         type : Number,

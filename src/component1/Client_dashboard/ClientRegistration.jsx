@@ -24,7 +24,7 @@ const ClientRegistration = () => {
 
   async function fetchingProfile(){
     try{
-      await axios.get("http://localhost:9000/establisment/clientlist", {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/clientlist`, {
         headers: {
           Authorization : `Bearer ${token}`
         }
@@ -111,7 +111,7 @@ const ClientRegistration = () => {
 
     let saveEdit = async() => {
       try{
-        await axios.post("http://localhost:9000/establisment/client_edit",
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/client_edit`,
           clientData,
           {
             headers: {
@@ -179,25 +179,25 @@ const ClientRegistration = () => {
             <form action="#" onSubmit={(e) => { e.preventDefault(); saveEdit(); }}>
               <div class="input-box">
                 <div class="input-div">
-                  <label class="form-label" for="name">Name</label>
+                  <label class="form-label" htmlFor="name">Name</label>
                   <input required type="text" value={clientData.name} name="name" onChange={clientChangeHandler} id="name" placeholder="Name" autocomplete="off"/>
                 </div>
               </div>
               <div class="input-box">
                 <div class="input-div">
-                  <label class="form-label" for="Score">Email</label>
+                  <label class="form-label" htmlFor="Score">Email</label>
                   <input required type="email" value={clientData.email} name="email" onChange={clientChangeHandler} id="email" placeholder="email" autocomplete="off"/>
                 </div>  
               </div>
               <div class="input-box">
                 <div class="input-div">
-                  <label class="form-label" for="contact">Contact No.</label>
+                  <label class="form-label" htmlFor="contact">Contact No.</label>
                   <input required type="contact" value={clientData.contact} name="contact" onChange={clientChangeHandler} id="contact" placeholder="contact no" autocomplete="off"/>
                 </div>  
               </div>
               <div class="input-box">
                 <div class="input-div">
-                  <label class="form-label" for="password">Password</label>
+                  <label class="form-label" htmlFor="password">Password</label>
                   <input required type="text" value={clientData.password} name="password" onChange={clientChangeHandler} id="password" placeholder="Password" autocomplete="off"/>
                 </div>  
               </div>

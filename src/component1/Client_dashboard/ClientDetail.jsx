@@ -61,7 +61,7 @@ const ClientDetail = () => {
   let fetchingClientData = async() => {
     try{
       setLoading(true);
-      await axios.post("http://localhost:9000/establisment/client_data", 
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/client_data`, 
       {
         state
       }
@@ -72,7 +72,7 @@ const ClientDetail = () => {
         setClientData(res.data.data);
       })
     }catch(err){
-      console.log(err);
+      toast.error('Internal Server Error');
     }
   }
 
@@ -85,7 +85,6 @@ const ClientDetail = () => {
   }
 
   let editLocation = (uid) => {
-    console.log(uid);
     // setEditId(uid);
     setLocationEdit(true);
   
@@ -122,7 +121,7 @@ const ClientDetail = () => {
     try{
       console.log(uid);
       const response = await axios.post(
-        `http://localhost:9000/user/delete_location`,
+        `${process.env.REACT_APP_BACKEND_URL}/user/delete_location`,
         data,
         {
           headers: {
@@ -132,7 +131,6 @@ const ClientDetail = () => {
       )
       .then((res) => {
         if(res.data.success){
-          console.log(res);
           setClientData(res.data.currentClient);
           closeEnquiry();
         }
@@ -143,10 +141,9 @@ const ClientDetail = () => {
   }
 
   let addLocation = async() => {
-    // console.log(locationData);
     try{
       const response = await axios.post(
-          `http://localhost:9000/user/add_location`,
+          `${process.env.REACT_APP_BACKEND_URL}/user/add_location`,
           locationData,
           {
               headers: {
@@ -155,9 +152,7 @@ const ClientDetail = () => {
           }
       )
       .then((res) => {
-          console.log(res);
           if(res.data.success){
-            console.log("Hii");
             toast.success(res.data.message);
             setClientData(res.data.currentClient);
             setLocationData({
@@ -177,7 +172,7 @@ const ClientDetail = () => {
           }
       })
     }catch(err){
-        console.log("try again");
+        toast.error('Try Again..')
     }
   }
 
@@ -230,12 +225,12 @@ return (
             <span>{clientData.cli}</span>
             <span>Clients</span>
 	    	  </p>
-          <div class="line"></div>
+          <div className="line"></div>
           <p>
             <span>7</span>
             <span>Supervisors</span>
 	    	  </p>
-          <div class="line"></div>
+          <div className="line"></div>
           <p>
             <span>6</span>
             <span>Emploies</span>
@@ -243,21 +238,21 @@ return (
         </div> */}
         {/* <p id="follow-btn">Follow</p> */}
       </div>
-      <div class="container1 px-5">
-        <div class="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
-            <div class="flex flex-col profile-content-box">
+      <div className="container1 px-5">
+        <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
+            <div className="flex flex-col profile-content-box">
               <dt>Name</dt>
               <dd>{clientData.name}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>Contact</dt>
               <dd>{clientData.contact}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>Location</dt>
               <dd>{clientData.location}</dd>
             </div>
-            <div class="flex flex-col profile-content-box">
+            <div className="flex flex-col profile-content-box">
               <dt>State</dt>
               <dd>{clientData.state}</dd>
             </div>
@@ -269,7 +264,7 @@ return (
           <h1>Locations</h1>
           <button onClick={() => {openEnquiry();}} >Add Location</button>
       </div>
-      <div class="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
+      <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
         {
           clientData.locations?.map((location) => {
             return(
@@ -288,22 +283,22 @@ return (
         }
       </div>
       </div>
-      <section ref={enquiryref} class="enquiry-section" >
-          <div class="enquiry-form">
-            <img onClick={closeEnquiry} class="enquiry-close" src={close} alt="" />
+      <section ref={enquiryref} className="enquiry-section" >
+          <div className="enquiry-form">
+            <img onClick={closeEnquiry} className="enquiry-close" src={close} alt="" />
             <h2>Add Location</h2>
             {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
             <form action="#" onSubmit={(e) => { e.preventDefault(); addLocation(); }}>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="institute">Name</label>
-                  <input required type="text" value={locationData.name} name="name" onChange={changeHandler} id="name" placeholder="Name" autocomplete="off"/>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" htmlFor="name">Name</label>
+                  <input required type="text" value={locationData.name} name="name" onChange={changeHandler} id="name" placeholder="Name" autoComplete="off"/>
                 </div>
               </div>
               
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="state">State</label>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" htmlFor="state">State</label>
                   <select onChange={changeHandler} name="state" id="state" placeholder="" value={locationData.state} required="">
                     <option value="">Select State</option>
                     {
@@ -315,26 +310,26 @@ return (
                     }
                   </select>
                 </div>
-                <div class="input-div">
-                  <label class="form-label" for="location">Location</label>
-                  <input required type="text" value={locationData.location} name="location" onChange={changeHandler} id="location" placeholder="Location" autocomplete="off"/>
+                <div className="input-div">
+                  <label className="form-label" htmlFor="location">Location</label>
+                  <input required type="text" value={locationData.location} name="location" onChange={changeHandler} id="location" placeholder="Location" autoComplete="off"/>
                 </div>  
               </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="Score">Email</label>
-                  <input required type="email" value={locationData.email} name="email" onChange={changeHandler} id="email" placeholder="email" autocomplete="off"/>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" htmlFor="email">Email</label>
+                  <input required type="email" value={locationData.email} name="email" onChange={changeHandler} id="email" placeholder="email" autoComplete="off"/>
                 </div>  
               </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="contact">Contact No.</label>
-                  <input required type="contact" value={locationData.contact} name="contact" onChange={changeHandler} id="contact" placeholder="contact no" autocomplete="off"/>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" htmlFor="contact">Contact No.</label>
+                  <input required type="contact" value={locationData.contact} name="contact" onChange={changeHandler} id="contact" placeholder="contact no" autoComplete="off"/>
                 </div>  
               </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" for="state">Supervisor</label>
+              <div className="input-box">
+                <div className="input-div">
+                  <label className="form-label" htmlFor="supervisor">Supervisor</label>
                   <select onChange={changeHandler} name="supervisor" id="supervisor" placeholder="" value={locationData.supervisor} required="">
                     <option value="">Select Supervisor</option>
                     {
@@ -349,7 +344,7 @@ return (
               </div>
               <div className='d-flex justify-content-between align-items-center mt-2'>
                 <h2 onClick={() => deleteLocation()} className='fs-6 cursor-pointer'>{locationEdit ? 'Delete this entry' : ''}</h2>
-                <button class="enquiry-button" type="submit" >Save</button>    
+                <button className="enquiry-button" type="submit" >Save</button>    
               </div>
             </form>
           </div>

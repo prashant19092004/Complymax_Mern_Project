@@ -24,7 +24,7 @@ const SupervisorRegistration = () => {
 
   async function fetchingProfile(){
     try{
-      await axios.get("http://localhost:9000/establisment/supervisorlist", {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/supervisorlist`, {
         headers: {
           Authorization : `Bearer ${token}`
         }
@@ -108,11 +108,18 @@ const SupervisorRegistration = () => {
 
   let saveEdit = async() => {
     try{
-      await axios.post("http://localhost:9000/establisment/supervisor_edit",
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/supervisor_edit`,
         supervisorData,
+        {
+          headers: {
+            Authorization : `Bearer ${token}`
+          }
+        }
       )
       .then((res) => {
         if(res.data.success){
+          setSupervisors(res.data.currentEstablisment.supervisors);
+          setFilteredSupervisors(res.data.currentEstablisment.supervisors);
           toast.success(res.data.message);
           closeEnquiry();
         }

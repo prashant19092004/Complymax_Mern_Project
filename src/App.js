@@ -6,7 +6,6 @@ import Client_login from './component1/Login/Client_login';
 import Client_dashboard from './component1/Client_dashboard/Client_dashboard';
 import UserSignup from './component1/Signup/UserSignup';
 import Addhar from './component1/Signup/UserSignup_components/Addhar';
-import ShowAadharData from './component1/Signup/UserSignup_components/ShowAadharData';
 import Userlogin from './component1/Login/Userlogin';
 import UserDashboard from './component1/UserDashboard/UserDashboard';
 import DashboardPage from './component1/Client_dashboard/DashboardPage';
@@ -31,6 +30,24 @@ import PostHiringForm from './component1/Client_dashboard/PostHiringForm';
 import HiringList from './component1/Supervisor_dashboard/HiringList';
 import ForgotPassword from './pages/ResetPassword/ForgotPassword';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
+import AllotDateofJoining from './pages/Supervisor/Allot Date of Joining/AllotDateofJoining';
+import PendingPF_ESIC from './pages/Supervisor/Pending PF_ESIC/PendingPF_ESIC';
+import SuperAdminLogin from './pages/SuperAdmin/SuperAdminLogin/SuperAdminLogin';
+import SuperAdminDashboard from './pages/SuperAdmin/SuperAdminDashboard/SuperAdminDashboard';
+import AlotWages from './pages/Establishment/AlotWages/AlotWages';
+import SupervisorAlotWages from './pages/Supervisor/Alot Wages/AlotWages';
+import EstablishmentPfEsic from './pages/Establishment/PF ESIC/PendingPfEsic';
+import ActiveUsers from './pages/Establishment/ActiveUsers/ActiveUsers';
+import SupervisorActiveUser from './pages/Supervisor/ActiveUsers/ActiveUsers';
+import EmployeeDetail from './pages/Establishment/EmployeeDetail/EmployeeDetail';
+import RegisterCandidate from './pages/Establishment/RegisterCandidate/RegisterCandidate';
+import ErrorPage from './pages/404Page/ErrorPage';
+import Profile from './pages/Supervisor/Profile/Profile';
+import ClientProfile from './pages/Client/Profile/Profile';
+import ClientDashboardPage from './component1/Client_main/DashboardPage';
+import EstablishmentPanForm from './pages/Establishment/PanForm/PanForm';
+import EstablishmentAccountForm from './pages/Establishment/AccountForm/AccountForm';
+
 function App() {
 
    
@@ -38,6 +55,7 @@ function App() {
           {
             path: "/",
             element: <Home />,
+            errorElement : <ErrorPage />
           },
           {
             path:"/client-signup",
@@ -48,12 +66,37 @@ function App() {
             element:<Client_login />
           },
           {
+            path : "/superadmin-login",
+            element : <SuperAdminLogin />
+          },
+          {
+            path : "/superadmin-dashboard",
+            element : <SuperAdminDashboard />
+          },
+          {
+            path: "*", // This handles 404s
+            element: <ErrorPage />,
+          },
+          {
             path : "/establisment_dashboard",
             element : <Client_dashboard />,
+            errorElement : <ErrorPage />,
             children : [
               {
                 path : "/establisment_dashboard/",
                 element : <DashboardPage />
+              },
+              {
+                path : "/establisment_dashboard/alot-wages",
+                element : <AlotWages />
+              },
+              {
+                path : "/establisment_dashboard/pending-pf-esic",
+                element : <EstablishmentPfEsic />
+              },
+              {
+                path : "/establisment_dashboard/active-users",
+                element : <ActiveUsers />
               },
               {
                 path : "/establisment_dashboard/client_registration",
@@ -94,16 +137,37 @@ function App() {
               {
                 path:"/establisment_dashboard/post_hiring",
                 element : <PostHiringForm />
+              },
+              {
+                path : "/establisment_dashboard/employee-detail",
+                element : <EmployeeDetail />
+              },
+              {
+                path : "/establisment_dashboard/register-candidate",
+                element : <RegisterCandidate />
+              },
+              {
+                path : '/establisment_dashboard/add_pan',
+                element : <EstablishmentPanForm />
+              },
+              {
+                path : '/establisment_dashboard/add_account',
+                element : <EstablishmentAccountForm />
               }
             ]
           },
           {
             path : "/client_dashboard",
             element : <Dashboard />,
+            errorElement : <ErrorPage />,
             children : [
               {
                 path : '/client_dashboard/',
-                element : <DashboardPage />
+                element : <ClientDashboardPage />
+              },
+              {
+                path : '/client_dashboard/profile',
+                element : <ClientProfile />
               }
             ]
           },
@@ -116,8 +180,28 @@ function App() {
                 element : <SupervisorDashboardPage />
               },
               {
+                path : '/supervisor_dashboard/allot-wages',
+                element : <SupervisorAlotWages />
+              },
+              {
                 path : '/supervisor_dashboard/hiring',
                 element : <HiringList />
+              },
+              {
+                path : '/supervisor_dashboard/active-employees',
+                element : <SupervisorActiveUser />
+              },
+              {
+                path : '/supervisor_dashboard/allot-date-of-joining',
+                element : <AllotDateofJoining />
+              },
+              {
+                path : '/supervisor_dashboard/pending-pf-esic',
+                element : <PendingPF_ESIC />
+              },
+              {
+                path : '/supervisor_dashboard/profile',
+                element : <Profile />
               }
             ]
           },
@@ -138,6 +222,7 @@ function App() {
           {
             path : "/user_dashboard",
             element : <UserDashboard />,
+            errorElement : <ErrorPage />,
             children : [
               {
                 path : "/user_dashboard/dashboard",

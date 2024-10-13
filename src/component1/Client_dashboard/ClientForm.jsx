@@ -71,7 +71,7 @@ const ClientForm = () => {
         e.preventDefault();
         try{
             const response = await axios.post(
-                "http://localhost:9000/establisment/client_register",
+                `${process.env.REACT_APP_BACKEND_URL}/establisment/client_register`,
                 clientRegisterData,
                 {
                     headers: {
