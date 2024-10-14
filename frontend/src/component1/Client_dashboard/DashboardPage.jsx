@@ -10,7 +10,7 @@ const DashboardPage = () => {
             <div className="container-fluid">
                 {/* <!-- Card stats --> */}
                 <div className="row g-6 mb-6">
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/establisment_dashboard/register-candidate">
                                 <div className="card-body">
@@ -35,7 +35,7 @@ const DashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/establisment_dashboard/alot-wages">
                                 <div className="card-body">
@@ -60,7 +60,7 @@ const DashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/establisment_dashboard/pending-pf-esic">
                                 <div className="card-body">
@@ -79,7 +79,7 @@ const DashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/establisment_dashboard/active-users">
                                 <div className="card-body">
@@ -98,7 +98,7 @@ const DashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/establisment_dashboard/hiring">
                                 <div className="card-body">
@@ -118,7 +118,7 @@ const DashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
@@ -135,7 +135,7 @@ const DashboardPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
@@ -152,7 +152,7 @@ const DashboardPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">

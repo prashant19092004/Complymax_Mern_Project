@@ -10,7 +10,7 @@ const SupervisorDashboardPage = () => {
             <div className="container-fluid">
                 {/* <!-- Card stats --> */}
                 <div className="row g-6 mb-6">
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/supervisor_dashboard/hiring">
                                 <div className="card-body">
@@ -35,7 +35,7 @@ const SupervisorDashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to='/supervisor_dashboard/allot-date-of-joining'>
                                 <div className="card-body">
@@ -60,7 +60,7 @@ const SupervisorDashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to='/supervisor_dashboard/allot-wages'>
                                 <div className="card-body">
@@ -85,7 +85,7 @@ const SupervisorDashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/supervisor_dashboard/pending-pf-esic">
                                 <div className="card-body">
@@ -104,7 +104,7 @@ const SupervisorDashboardPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <Link to="/supervisor_dashboard/active-employees">
                                 <div className="card-body">

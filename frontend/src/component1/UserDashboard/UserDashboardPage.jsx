@@ -8,8 +8,8 @@ const UserDashboardPage = () => {
         <main className="py-6 bg-surface-secondary">
             <div className="container-fluid">
                 {/* <!-- Card stats --> */}
-                <div className="row g-6 mb-6">
-                    <div className="col-xl-3 col-sm-6 col-12">
+                <div className="row g-6 mb-6 gy-6">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
@@ -32,7 +32,7 @@ const UserDashboardPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
@@ -55,7 +55,7 @@ const UserDashboardPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
@@ -72,7 +72,7 @@ const UserDashboardPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
@@ -89,7 +89,7 @@ const UserDashboardPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
@@ -107,7 +107,7 @@ const UserDashboardPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-sm-6 col-12">
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
                             <div className="card-body">
                                 <div className="row">
