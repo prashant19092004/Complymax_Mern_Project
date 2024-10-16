@@ -24,7 +24,7 @@ app.use(express.json());
 const userRoutes = require("./routes/userRoutes");
 const establismentResetPasswordRoutes = require("./routes/establismentResetPasswordRoute");
 
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 8000;
 
 app.use("/", userRoutes);
 app.use("/api/establisment/reset-password/", establismentResetPasswordRoutes);
