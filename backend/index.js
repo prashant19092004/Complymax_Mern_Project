@@ -29,10 +29,10 @@ const port = process.env.PORT || 9000;
 app.use("/", userRoutes);
 app.use("/api/establisment/reset-password/", establismentResetPasswordRoutes);
 
-app.use(express.static(path.join(_dirname, "/frontend/build")));
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(_dirname, "frontend", "build", "index.html"));
-})
+// app.use(express.static(path.join(_dirname, "/frontend/build")));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(_dirname, "frontend", "build", "index.html"));
+// })
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
