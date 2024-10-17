@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 import default_img from '../../../assets/Default_pfp.svg.png';
 
-const profile = () => {
+const Profile = () => {
   
   const [supervisorData, setSupervisorData] = useState();
   const [loading, setLoading] = useState(true);
@@ -86,4 +86,4 @@ const profile = () => {
   )
 }
 
-export default profile
+export default Profile

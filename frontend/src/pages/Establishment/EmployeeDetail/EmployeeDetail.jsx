@@ -166,7 +166,7 @@ if(loading) {
                       </div>
                       <div>
                         {/* <MdDeleteOutline fontSize={20} cursor="pointer" /> */}
-                        <FaRegEdit onClick={() =>{setIsExperience(false); editEducation(qualification._id);}} fontSize={20} cursor="pointer" />
+                        {/* <FaRegEdit onClick={() =>{setIsExperience(false); editEducation(qualification._id);}} fontSize={20} cursor="pointer" /> */}
                       </div>
                     </div>
                   )
@@ -190,7 +190,7 @@ if(loading) {
                       </div>
                       <div>
                         {/* <MdDeleteOutline fontSize={20} cursor="pointer" /> */}
-                        <FaRegEdit onClick={() => {setIsExperience(true); editEducation(experience._id);}} fontSize={20} cursor="pointer" />
+                        {/* <FaRegEdit onClick={() => {setIsExperience(true); editEducation(experience._id);}} fontSize={20} cursor="pointer" /> */}
                       </div>
                     </div>
                   )

@@ -6,7 +6,7 @@ import Logo from '../../assets/logo2.png'
 import axios from 'axios';
 import ProfileDropdown from './ProfileDropdown';
 import NotificationIcon from './NotificationIcon';
-
+import { toast } from 'react-toastify';
 
 const Client_dashboard = () => {
 

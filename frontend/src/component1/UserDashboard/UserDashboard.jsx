@@ -7,6 +7,7 @@ import axios from 'axios';
 import ProfileDropdown from './ProfileDropdown';
 import NotificationIcon from './NotificationIcon';
 import default_pic from '../../assets/Default_pfp.svg.png';
+import { toast } from 'react-toastify';
 
 
 const UserDashboard = () => {

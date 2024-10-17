@@ -75,12 +75,6 @@ const ClientRegistration = () => {
 
     let closeEnquiry = () => {
       enquiryref.current.style.scale = 0;
-      setSupervisorData({
-        name : "",
-        email : "",
-        contact : "",
-        password : ""
-      })
     }
 
     let clientChangeHandler = (e) => {
@@ -171,46 +165,6 @@ const ClientRegistration = () => {
                 })
             }
         </ul>
-        <section ref={enquiryref} class="enquiry-section" >
-          <div class="enquiry-form">
-            <img onClick={closeEnquiry} class="enquiry-close" src={close} alt="" />
-            <h2>Edit Supervisor Data</h2>
-            {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
-            <form action="#" onSubmit={(e) => { e.preventDefault(); saveEdit(); }}>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" htmlFor="name">Name</label>
-                  <input required type="text" value={clientData.name} name="name" onChange={clientChangeHandler} id="name" placeholder="Name" autocomplete="off"/>
-                </div>
-              </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" htmlFor="Score">Email</label>
-                  <input required type="email" value={clientData.email} name="email" onChange={clientChangeHandler} id="email" placeholder="email" autocomplete="off"/>
-                </div>  
-              </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" htmlFor="contact">Contact No.</label>
-                  <input required type="contact" value={clientData.contact} name="contact" onChange={clientChangeHandler} id="contact" placeholder="contact no" autocomplete="off"/>
-                </div>  
-              </div>
-              <div class="input-box">
-                <div class="input-div">
-                  <label class="form-label" htmlFor="password">Password</label>
-                  <input required type="text" value={clientData.password} name="password" onChange={clientChangeHandler} id="password" placeholder="Password" autocomplete="off"/>
-                </div>  
-              </div>
-              <div className='d-flex justify-content-between align-items-center mt-2'>
-                {/* <h2 className='fs-6 cursor-pointer'></h2> */}
-                <div className='d-flex gap-3'>
-                  <button onClick={cancelEdit} className='enquiry-button bg-danger' style={{width : '70px'}}>Cancel</button> 
-                  <button class="enquiry-button" type="submit" style={{width : '70px'}}>Save</button>    
-                </div>
-              </div>
-            </form>
-          </div>
-        </section>
     </div>
   )
 }

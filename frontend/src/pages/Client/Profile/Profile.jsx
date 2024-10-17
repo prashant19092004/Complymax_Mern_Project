@@ -2,8 +2,9 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import default_img from '../../../assets/Default_pfp.svg.png';
+import { toast } from 'react-toastify';
 
-const profile = () => {
+const Profile = () => {
   
   const [clientData, setClientData] = useState();
   const [loading, setLoading] = useState(true);
@@ -85,4 +86,4 @@ const profile = () => {
   )
 }
 
-export default profile
+export default Profile

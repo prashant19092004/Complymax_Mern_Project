@@ -84,7 +84,7 @@ const PendingWages = () => {
         let query = e.target.value.toLowerCase();
   
         const filteredData = pendinWagesList && pendinWagesList.length? pendinWagesList.filter((hired) => hired.full_Name.toLowerCase().indexOf(query) > -1) : [];
-        setFilteredHired(filteredData);
+        setFilteredList(filteredData);
         // setShowDropDown(true);
     }
 
