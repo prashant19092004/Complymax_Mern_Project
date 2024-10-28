@@ -102,7 +102,9 @@ const PendingWages = () => {
         enquiry_pop_up.style.scale = 0;
       };
 
-    useEffect(() => fetchingHired, []);
+    useEffect(() => {
+        fetchingHired();
+    }, []);
 
     if(loading){
         return (<div>Loading...</div>)

@@ -180,15 +180,15 @@ router.get("/establisment/profile",auth, async (req, res) => {
         try{
             const currentUser = await userModel.findOne({ _id : req.user.id});
 
-            // if(currentUser.full_Name == full_name){
+            if(currentUser.full_Name.toUpperCase() === full_name.toUpperCase()){
                 currentUser.pan_number = pan_number;
                 currentUser.pan_name = full_name;
                 currentUser.pan_added = true;
                 await currentUser.save();
                 res.json({message : "Pan Added", success : true});
-            // }else{
-                // res.json({message : "Name of Pan Card and Aadhar Card not matched", success : false});
-            // }
+            }else{
+                res.json({message : "Name of Pan Card and Aadhar Card not matched", success : false});
+            }
         }catch(err){
             res.json({message : "error Occured", success : false});
         }
@@ -199,12 +199,17 @@ router.get("/establisment/profile",auth, async (req, res) => {
         try{
             const currentUser = await userModel.findOne({ _id : req.user.id});
 
+            
+            if(currentUser.full_Name.toUpperCase() === data.full_name.toUpperCase()){
                 currentUser.account_number = account_number;
                 currentUser.account_name = data.full_name;
                 currentUser.account_added = true;
                 currentUser.account_ifsc = data.ifsc_details.ifsc;
                 await currentUser.save();
-                res.json({message : "PaAccount Added", success : true});
+                res.json({message : "Account Added", success : true});
+            }else{
+                res.json({message : "Name of Bank Account and Aadhar Card not matched", success : false});
+            }
         }catch(err){
             res.json({message : "Account not Added", success : false});
         }

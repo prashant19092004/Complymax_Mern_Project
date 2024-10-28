@@ -47,7 +47,7 @@ const AccountForm = () => {
           }
           try{
             await axios.post(
-              `${process.env.REACT_APP_BACKEND_UR}/user/profile/add_Account`,
+              `${process.env.REACT_APP_BACKEND_URL}/user/profile/add_Account`,
               addAccountData,
               {
                 headers: {
@@ -78,7 +78,7 @@ const AccountForm = () => {
   return (
     <div className='pan_form'>
         <div className="form-box">
-            <h1 className='mb-3'>Add Pan Card</h1>
+            <h1 className='mb-3'>Add Bank Account</h1>
             {/* <p>Using <a href="https://getbootstrap.com">Bootstrap</a> and <a href="https://www.formbucket.com">FormBucket</a></p> */}
             <form action="#" >
                 <div className="form-group">
