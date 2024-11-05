@@ -44,6 +44,14 @@ const AllotDateofJoining = () => {
         }
     }
 
+    useEffect(() => {
+        fetchingHired();
+    }, []);
+
+    if(loading){
+        return (<div>Loading...</div>)
+    }
+
     const assignDateOfJoining = async(e) => {
         try{
             const data = {
@@ -95,13 +103,7 @@ const AllotDateofJoining = () => {
         enquiryref.current.style.scale = 0; 
       }
 
-    useEffect(() => {
-        fetchingHired();
-    }, []);
-
-    if(loading){
-        return (<div>Loading...</div>)
-    }
+    
 
 
   return (

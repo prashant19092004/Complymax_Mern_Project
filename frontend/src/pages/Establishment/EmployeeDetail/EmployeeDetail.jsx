@@ -43,6 +43,16 @@ const EmployeeDetail = () => {
       }
     }
 
+    useEffect(() => {
+      fetchingProfile();
+    }, []);
+    
+
+  if(loading) {
+    return(<div>Loading</div>)
+  }
+
+
     function addPan() {
       navigate('/establisment_dashboard/add_pan', { state : { userId } });
     }
@@ -51,12 +61,6 @@ const EmployeeDetail = () => {
       navigate('/establisment_dashboard/add_account', { state : { userId } });
     }
 
-useEffect(() => fetchingProfile, []);
-    
-
-if(loading) {
-  return(<div>Loading</div>)
-}
 
   return (
     <div id="screen">

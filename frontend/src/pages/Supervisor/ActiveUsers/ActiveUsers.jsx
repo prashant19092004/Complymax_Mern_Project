@@ -99,6 +99,14 @@ const ActiveUsers = () => {
         }
     }
 
+    useEffect(() => {
+        fetchingHired();
+    }, []);
+
+    if(loading){
+        return (<div>Loading...</div>)
+    }
+
     let changeHandle = (e) => {
         let query = e.target.value.toLowerCase();
   
@@ -124,11 +132,7 @@ const ActiveUsers = () => {
         enquiry_pop_up.style.scale = 0;
       };
 
-    useEffect(() => fetchingHired, []);
-
-    if(loading){
-        return (<div>Loading...</div>)
-    }
+    
 
 
   return (

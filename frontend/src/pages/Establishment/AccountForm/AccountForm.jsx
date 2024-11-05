@@ -81,7 +81,7 @@ const AccountForm = () => {
   return (
     <div className='pan_form'>
         <div className="form-box">
-            <h1 className='mb-3'>Add Pan Card</h1>
+            <h1 className='mb-3'>Add Account</h1>
             {/* <p>Using <a href="https://getbootstrap.com">Bootstrap</a> and <a href="https://www.formbucket.com">FormBucket</a></p> */}
             <form action="#" >
                 <div className="form-group">

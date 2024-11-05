@@ -62,6 +62,15 @@ const RegisterCandidate = () => {
         }
     }
 
+    
+    useEffect(() => {
+        fetchingHired();
+    }, []);
+
+    if(loading){
+        return (<div>Loading...</div>)
+    }
+
     let verifyPan = async() => {
         try{
             await axios.post(
@@ -173,11 +182,6 @@ const RegisterCandidate = () => {
         setRegisterData({...registerData, [e.target.name] : e.target.value});
     }
 
-    useEffect(() => fetchingHired, []);
-
-    if(loading){
-        return (<div>Loading...</div>)
-    }
 
 
   return (

@@ -29,6 +29,35 @@ const PendingWages = () => {
     const enquiryref = useRef();
     const warningref = useRef();
 
+    const fetchingHired = async() => {
+        try{
+            setLoading(true);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor/pending-wages`,{
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            .then((res) => {
+                setPendingWagesList(res.data.pendingWages);
+                setFilteredList(res.data.pendingWages);
+                setLoading(false);
+            })
+        }
+        catch(e){
+            toast.error(e.response.data.message);
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchingHired();
+    }, []);
+
+    if(loading){
+        return (<div>Loading...</div>)
+    }
+
     let wagesChangeHandler = (e) => {
         const query = e.target.value;
         setSaveData({...saveData, [e.target.name] : query});
@@ -57,26 +86,7 @@ const PendingWages = () => {
         }
     }
 
-    const fetchingHired = async() => {
-        try{
-            setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor/pending-wages`,{
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                }
-            })
-            .then((res) => {
-                setPendingWagesList(res.data.pendingWages);
-                setFilteredList(res.data.pendingWages);
-                setLoading(false);
-            })
-        }
-        catch(e){
-            toast.error(e.response.data.message);
-            setLoading(false);
-        }
-    }
+    
 
     let changeHandle = (e) => {
         console.log(e.target.value);
@@ -102,13 +112,7 @@ const PendingWages = () => {
         enquiry_pop_up.style.scale = 0;
       };
 
-    useEffect(() => {
-        fetchingHired();
-    }, []);
-
-    if(loading){
-        return (<div>Loading...</div>)
-    }
+    
 
 
   return (

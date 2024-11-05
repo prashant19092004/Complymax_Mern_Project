@@ -30,6 +30,36 @@ const PendingPfEsic = () => {
     const enquiryref = useRef();
     const warningref = useRef();
 
+    const fetchingHired = async() => {
+        try{
+            setLoading(true);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establishment/pending-pf-esic`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            .then((res) => {
+                setPendingPfEsicList(res.data.pendingPfEsic);
+                setFilteredList(res.data.pendingPfEsic);
+                setLoading(false);
+                console.log(res);
+            })
+        }
+        catch(e){
+            toast.error(e.response.data.message);
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchingHired();
+    }, []);
+
+    if(loading){
+        return (<div>Loading...</div>)
+    }
+
     let pfesicChangeHandler = (e) => {
         const query = e.target.value;
         setSaveData({...saveData, [e.target.name] : query});
@@ -115,27 +145,7 @@ const PendingPfEsic = () => {
         }
     };
 
-    const fetchingHired = async() => {
-        try{
-            setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establishment/pending-pf-esic`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                }
-            })
-            .then((res) => {
-                setPendingPfEsicList(res.data.pendingPfEsic);
-                setFilteredList(res.data.pendingPfEsic);
-                setLoading(false);
-                console.log(res);
-            })
-        }
-        catch(e){
-            toast.error(e.response.data.message);
-            setLoading(false);
-        }
-    }
+    
 
     let changeHandle = (e) => {
         console.log(e.target.value);
@@ -161,11 +171,7 @@ const PendingPfEsic = () => {
         enquiry_pop_up.style.scale = 0;
       };
 
-    useEffect(() => fetchingHired, []);
-
-    if(loading){
-        return (<div>Loading...</div>)
-    }
+    
 
 
   return (

@@ -32,7 +32,7 @@ const Client_signup = () => {
       .then((res) => {
         console.log(res);
         console.log("Hii");
-        navigate("/client_login");
+        navigate("/user_login");
         toast.success(res.data.message);
       })
     } catch (err) {
@@ -155,7 +155,7 @@ function remfocus(e){
 
         <div className="text-muted mt-3">
           Already have an account?{' '}
-          <Link to="/login" className="text-decoration-none text-primary">
+          <Link to="/user_login" className="text-decoration-none text-primary">
             Log in
           </Link>
         </div>
