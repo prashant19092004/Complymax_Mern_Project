@@ -827,43 +827,54 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
-    router.post('/supervisor/assign-date-of-joining', auth, async(req, res) => {
-        try{
-            const {dateOfJoining, chooseUser} = req.body;
-
+    router.post('/supervisor/assign-date-of-joining', auth, async (req, res) => {
+        try {
+            const { dateOfJoining, chooseUser } = req.body;
+    
+            // Find the last hired user by employeeId in descending order
             const lastHired = await userModel.findOne().sort({ employeeId: -1 });
-            let newEmployeeId = 1001;
-
-            if (lastHired) {
-                newEmployeeId = lastHired.employeeId + 1; // Increment the last user's ID
+            let newEmployeeId = 1001; // Default starting employeeId
+    
+            // Increment the last user's ID if a user exists
+            if (lastHired && lastHired.employeeId) {
+                newEmployeeId = lastHired.employeeId + 1;
             }
-
-            const currentUser = await userModel.findOne({_id : chooseUser},{date_of_joining_status : 1, date_of_joining : 1, hired : 1})
-            .populate('hired');
-
+    
+            // Find the user to whom we are assigning the date of joining
+            const currentUser = await userModel.findOne({ _id: chooseUser }, { date_of_joining_status: 1, date_of_joining: 1, hired: 1 })
+                .populate('hired');
+    
+            if (!currentUser) {
+                return res.status(404).json({ message: 'User not found', success: false });
+            }
+    
+            // Assign date of joining and employee ID, then save
             currentUser.date_of_joining = dateOfJoining;
             currentUser.date_of_joining_status = true;
             currentUser.employeeId = newEmployeeId;
             await currentUser.save();
-
-            const hiredList = await userModel.find({job : true, date_of_joining_status : false})
-            .populate('hired');
-
-            const currentSupervisor = await supervisorModel.findOne({_id : req.user.id}, {_id : 1});
+    
+            // Find all users who are hired but have not been assigned a date of joining
+            const hiredList = await userModel.find({ job: true, date_of_joining_status: false })
+                .populate('hired');
+    
+            // Find the current supervisor and get only their ID
+            const currentSupervisor = await supervisorModel.findOne({ _id: req.user.id }, { _id: 1 });
             let totalHired = [];
-
-            for(let i=0; i<hiredList.length; i++){
-                if(hiredList[i].hired.supervisor_id.equals(currentSupervisor._id)){
-                    totalHired.push(hiredList[i]);
-                }
+    
+            // Filter hiredList for users supervised by the current supervisor
+            if (currentSupervisor) {
+                totalHired = hiredList.filter(hiredUser => hiredUser.hired && hiredUser.hired.supervisor_id.equals(currentSupervisor._id));
             }
-
-            res.status(200).json({message : "Date of Joining Assigned", success : true, totalHired});
+    
+            // Return response with the updated list of hired users
+            res.status(200).json({ message: "Date of Joining Assigned", success: true, totalHired });
+        } catch (error) {
+            // Catch and return error message in case of any server error
+            res.status(500).json({ message: 'Internal Server Error', success: false });
         }
-        catch(e){
-            res.status(500).json({ message : 'Internal Server Error', success : false});
-        }
-    })
+    });
+    
 
     router.get('/establishment/pending-pf-esic', auth, async(req, res) => {
         try{
