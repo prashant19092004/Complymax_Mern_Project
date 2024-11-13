@@ -830,6 +830,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
     router.post('/supervisor/assign-date-of-joining', auth, async (req, res) => {
         try {
             const { dateOfJoining, chooseUser } = req.body;
+
+            console.log(dateOfJoining);
     
             // Find the last hired user by employeeId in descending order
             const lastHired = await userModel.findOne().sort({ employeeId: -1 });
@@ -839,6 +841,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
             if (lastHired && lastHired.employeeId) {
                 newEmployeeId = lastHired.employeeId + 1;
             }
+
+            console.log(newEmployeeId);
     
             // Find the user to whom we are assigning the date of joining
             const currentUser = await userModel.findOne({ _id: chooseUser }, { date_of_joining_status: 1, date_of_joining: 1, hired: 1 })
@@ -847,12 +851,16 @@ router.get("/establisment/profile",auth, async (req, res) => {
             if (!currentUser) {
                 return res.status(404).json({ message: 'User not found', success: false });
             }
+
+            console.log(currentUser);
     
             // Assign date of joining and employee ID, then save
             currentUser.date_of_joining = dateOfJoining;
             currentUser.date_of_joining_status = true;
             currentUser.employeeId = newEmployeeId;
             await currentUser.save();
+
+            console.log("currentUser done");
     
             // Find all users who are hired but have not been assigned a date of joining
             const hiredList = await userModel.find({ job: true, date_of_joining_status: false })
@@ -866,6 +874,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
             if (currentSupervisor) {
                 totalHired = hiredList.filter(hiredUser => hiredUser.hired && hiredUser.hired.supervisor_id.equals(currentSupervisor._id));
             }
+
+            console.log(totalHired);
     
             // Return response with the updated list of hired users
             res.status(200).json({ message: "Date of Joining Assigned", success: true, totalHired });
