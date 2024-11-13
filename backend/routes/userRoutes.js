@@ -680,27 +680,44 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
     router.post("/supervisor/hire", auth, async(req, res) => {
         const { user_id, hiring_id } = req.body;
+        // console.log(user_id);
         try{
             const currentUser = await userModel.findOne({_id : user_id},{_id : 1, hired : 1, job : 1});
+            console.log(currentUser);
 
             if(currentUser.job){
                 return res.status(400).json({ success : false, message : "user has already has a job"})
             }
             const currentSupervisor = await supervisorModel.findOne({_id : req.user.id}, {_id : 1, hired : 1, establisment : 1, locations : 1});
             
-
             const currentHiring = await hiringModel.findOne({_id : hiring_id}, {_id : 1, hired : 1, no_of_hired : 1});
+
+            
+            // Find the last hired user by employeeId in descending order
+            const lastHired = await userModel.findOne().sort({ employeeId: -1 });
+            let newEmployeeId = 1001; // Default starting employeeId
+    
+            // Increment the last user's ID if a user exists
+            if (lastHired && lastHired.employeeId) {
+                newEmployeeId = lastHired.employeeId + 1;
+            }
+    
 
             const newHired = await hiredModel.create({
                 hiring_id,
                 user_id,
                 supervisor_id : req.user.id,
-                establishment_id : currentSupervisor.establisment
+                establishment_id : currentSupervisor.establisment,
+                employeeId : newEmployeeId
             });
+
 
             currentUser.job = true;
             currentUser.hired=newHired._id;
+            currentUser.employeeId=newEmployeeId;
             await currentUser.save();
+
+            console.log(currentUser);
 
             const temp = currentHiring.no_of_hired;
             currentHiring.hired.push(newHired._id);
@@ -757,7 +774,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
           const user = await userModel.findOne({ _id: req.user.id });
           if (!user) return res.status(404).json({ msg: 'User not found' });
       
-          user.profilePic = `../uploads/${req.file.filename}`; // Save the file path
+          user.profilePic = `/uploads/${req.file.filename}`;
           await user.save();
       
           res.json({ msg: 'Profile picture updated', user });
@@ -857,7 +874,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
             // Assign date of joining and employee ID, then save
             currentUser.date_of_joining = dateOfJoining;
             currentUser.date_of_joining_status = true;
-            currentUser.employeeId = newEmployeeId;
+            // currentUser.employeeId = newEmployeeId;
             await currentUser.save();
 
             console.log("currentUser done");

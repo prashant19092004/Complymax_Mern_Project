@@ -7,10 +7,7 @@ const path = require('path');
 
 
 app.use(cors());
-app.use('/uploads', express.static('uploads'));
 require("dotenv").config();
-
-const _dirname = path.resolve();
 
 // Serve static files (uploaded images)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -122,9 +122,10 @@ const userSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref : "Experience"
     },
-    hired : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Hired'
+    hired: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Hired',
+        default: null // no reference by default
     },
     resetPasswordToken: {
         type : String,

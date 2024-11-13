@@ -1,103 +1,83 @@
 const mongoose = require('mongoose');
 
-
 const hiredSchema = new mongoose.Schema({
-    hiring_id : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Hiring'
+    hiring_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Hiring'
     },
-    user_id : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'User'
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
-    employeeId : {
+    employeeId: {
         type: Number,
         unique: true
     },
-    supervisor_id : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Supervisor'
+    supervisor_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Supervisor'
     },
-    establishment_id : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Admin'
+    establishment_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin'
     },
-    createdAt : {
-        type : Date,
-        default : Date.now
+    createdAt: {
+        type: Date,
+        default: Date.now
     },
-    status : {
-        type : String,
-        default : '1'
+    status: {
+        type: String,
+        default: '1'
     },
-    date_of_joining : {
-        type : Date,
+    date_of_joining: {
+        type: Date
     },
-    date_of_joining_status : {
-        type : Boolean,
-        default : false
+    date_of_joining_status: {
+        type: Boolean,
+        default: false
     },
-    pf_esic_status : {
-        type : Boolean,
-        default : false
+    pf_esic_status: {
+        type: Boolean,
+        default: false
     },
-    basic : {
-        type : String,
+    basic: {
+        type: String
     },
-    da : {
-        type : String,
+    da: {
+        type: String
     },
-    hra : {
-        type : String,
+    hra: {
+        type: String
     },
-    other_allowance : {
-        type : String,
+    other_allowance: {
+        type: String
     },
-    leave_with_wages : {
-        type : String
+    leave_with_wages: {
+        type: String
     },
-    wages_status : {
-        type : Boolean,
-        default : false
+    wages_status: {
+        type: Boolean,
+        default: false
     },
-    active_user_status : {
-        type : Boolean,
-        default : false
+    active_user_status: {
+        type: Boolean,
+        default: false
     },
-    uan_number : {
-        type : String,
+    uan_number: {
+        type: String
     },
-    epf_number : {
-        type : String,
+    epf_number: {
+        type: String
     },
-    esi_number : {
-        type : String,
+    esi_number: {
+        type: String
     },
-    pf_esic_status : {
-        type : Boolean,
-        default : false
+    file1: {
+        type: String
     },
-    file1 : {
-        type : String
-    },
-    file2 : {
-        type : String
-    },
-    basic : {
-        type : String,
-    },
-    da : {
-        type : String,
-    },
-    hra : {
-        type : String,
-    },
-    other_allowance : {
-        type : String,
-    },
-    leave_with_wages : {
-        type : String
-    },
-})
+    file2: {
+        type: String
+    }
+});
 
 module.exports = mongoose.model("Hired", hiredSchema);
