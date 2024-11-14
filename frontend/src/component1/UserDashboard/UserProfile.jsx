@@ -98,6 +98,7 @@ const onSubmit = async (selectedFile) => {
     setUser({ ...user, profilePic: res.data.user.profilePic });
   } catch (err) {
     toast.error('Error uploading profile picture');
+    console.log(err);
   }
 };
 

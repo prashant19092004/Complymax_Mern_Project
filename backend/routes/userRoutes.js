@@ -779,7 +779,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
       
           res.json({ msg: 'Profile picture updated', user });
         } catch (error) {
-          res.status(500).json({ msg: 'Server error' });
+          res.status(500).json({ msg: 'Server error', error });
+          console.log(error);
         }
     });
 
