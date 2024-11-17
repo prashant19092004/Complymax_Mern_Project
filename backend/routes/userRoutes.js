@@ -769,20 +769,45 @@ router.get("/establisment/profile",auth, async (req, res) => {
     });
 
 
+    // router.post('/upload/profile-pic', uploadImage.single('profilePic'), auth, async (req, res) => {
+    //     try {
+    //       const user = await userModel.findOne({ _id: req.user.id });
+    //       if (!user) return res.status(404).json({ msg: 'User not found' });
+      
+    //       user.profilePic = `/uploads/${req.file.filename}`;
+    //       await user.save();
+      
+    //       res.json({ msg: 'Profile picture updated', user });
+    //     } catch (error) {
+    //       res.status(500).json({ msg: 'Server error', error });
+    //       console.log(error);
+    //     }
+    // });
+
+
     router.post('/upload/profile-pic', uploadImage.single('profilePic'), auth, async (req, res) => {
         try {
+          console.log('File details:', req.file); // Debug file details
+          console.log('User details:', req.user); // Debug user details
+      
           const user = await userModel.findOne({ _id: req.user.id });
-          if (!user) return res.status(404).json({ msg: 'User not found' });
+          if (!user) {
+            console.error('User not found');
+            return res.status(404).json({ msg: 'User not found' }); // Use return to prevent duplicate responses
+          }
       
           user.profilePic = `/uploads/${req.file.filename}`;
           await user.save();
       
           res.json({ msg: 'Profile picture updated', user });
         } catch (error) {
-          res.status(500).json({ msg: 'Server error', error });
-          console.log(error);
+          console.error('Upload error:', error); // Log the actual error
+          if (!res.headersSent) { // Only send the response if headers are not sent
+            res.status(500).json({ msg: 'Server error', error: error.message });
+          }
         }
-    });
+      });
+      
 
     router.post('/upload/file1', uploadPDF.single('file1'), auth, async (req, res) => {
         try {
