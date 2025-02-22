@@ -169,14 +169,14 @@ const side_bar=document.querySelector("#side_bar");
 
 
               <section class="hero-sec" id="home">
-                  <div class="full-body">
-                      <div class="inner-hero">
+                  <div class="full-body my-5">
+                      <div class="inner-hero my-5">
                           <div class="inner-hero-content">
                             <h1>Leading Payroll & Compliance Management Solutions.</h1>
                             <p>ComplyMax Management Pvt. Ltd. is a leading provider of Payroll & compliance management , Manpower solutions catering to a diverse range of industries</p>
                             <button><Link to="/client-signup" className='text-light'>Get Started <i class="fa-solid fa-arrow-right"></i></Link> </button>
                           </div>
-                          <img src="https://i.ibb.co/sVqYmS2/Illustration.png" alt="" />
+                          <img src="https://media-hosting.imagekit.io//17aec97659894c7f/hero_img.webp?Expires=1834599658&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=r5uK1Bexw2Nsx3--o-5hPiKOo2xs4-aaGv0QR9qxsZOtuwwh0R392c2RDHKBG8qDJGrsvdbQ-HuJAPB1BpqIr6Kl~h0tKow92yBCzSM-COpXjpbENFWxdXnxE~JS03fE56ttQzfI0ZBZAbxoy~yciVi~GPEvYQLblMFPojxXwY~yo~qr-atcN458TitPaP-GIlxTIRv2Wl1PNo-BQXJcaJe967CWu5epOCUTFy0oZy8H7OJAE28oe6-tbgl1fVEMNMNn-zkdjngyiu1qYQPzLjHt41o7BxW-gP45RBtbVmCtc5tiN1lsazNUIAkL2Ud990i7WHnbtF-6609-lJo0PA__" alt="" />
                       </div>
                   </div>
               </section>

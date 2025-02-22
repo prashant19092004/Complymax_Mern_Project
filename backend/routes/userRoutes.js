@@ -192,7 +192,25 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }catch(err){
             res.json({message : "error Occured", success : false});
         }
-    })
+    });
+
+    router.post("/user/profile/add_uan_esic",auth, async(req, res) => {
+        const { uanNumber, esicNumber} = req.body;
+
+        try{
+            const currentUser = await userModel.findOne({ _id : req.user.id});
+
+            currentUser.uan_number = uanNumber;
+            currentUser.esic_number = esicNumber;
+            currentUser.uan_esic_added = true;
+            await currentUser.save();
+            res.json({message : "UAN and ESIC Added", success : true});
+        }catch(err){
+            res.json({message : "error Occured", success : false});
+        }
+    });
+
+
     router.post("/user/profile/add_Account",auth, async(req, res) => {
         const { account_number, data} = req.body;
 
@@ -784,8 +802,6 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
     router.post('/upload/profile-pic', uploadImage.single('profilePic'), auth, async (req, res) => {
         try {
-          console.log('File details:', req.file); // Debug file details
-          console.log('User details:', req.user); // Debug user details
       
           const user = await userModel.findOne({ _id: req.user.id });
           if (!user) {
@@ -815,8 +831,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
             if (!user) return res.status(404).json({ msg: 'User not found' });
       
-          user.file1 = `../uploads/${req.file.filename}`; // Save the file path
-          user.hired.file1 = `../uploads/${req.file.filename}`;
+          user.file1 = `/uploads/${req.file.filename}`; // Save the file path
+          user.hired.file1 = `/uploads/${req.file.filename}`;
           await user.save();
       
           res.json({ msg: 'file1 updated' });
@@ -834,8 +850,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
             if (!user) return res.status(404).json({ msg: 'User not found' });
       
-          user.file2 = `../uploads/${req.file.filename}`; // Save the file path
-          user.hired.file2 = `../uploads/${req.file.filename}`;
+          user.file2 = `/uploads/${req.file.filename}`; // Save the file path
+          user.hired.file2 = `/uploads/${req.file.filename}`;
 
           await user.save();
       

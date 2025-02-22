@@ -177,8 +177,12 @@ const userSchema = new mongoose.Schema({
     epf_number : {
         type : String,
     },
-    esi_number : {
+    esic_number : {
         type : String,
+    },
+    uan_esic_added : {
+        type : Boolean,
+        default : false
     },
     file1 : {
         type : String

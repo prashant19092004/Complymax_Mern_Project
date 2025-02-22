@@ -47,6 +47,7 @@ import ClientProfile from './pages/Client/Profile/Profile';
 import ClientDashboardPage from './component1/Client_main/DashboardPage';
 import EstablishmentPanForm from './pages/Establishment/PanForm/PanForm';
 import EstablishmentAccountForm from './pages/Establishment/AccountForm/AccountForm';
+import UanEsicForm from './component1/UserDashboard/UanEsicForm';
 
 function App() {
 
@@ -243,6 +244,10 @@ function App() {
               {
                 path : "/user_dashboard/add_account",
                 element : <AccountForm />
+              },
+              {
+                path : "/user_dashboard/add_uan_esic",
+                element : <UanEsicForm />
               }
             ]
           },

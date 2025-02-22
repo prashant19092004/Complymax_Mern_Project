@@ -110,6 +110,10 @@ function addPan() {
   navigate('/user_dashboard/add_pan');
 }
 
+function addUan() {
+  navigate('/user_dashboard/add_uan_esic');
+}
+
 function addAccount() {
   navigate('/user_dashboard/add_account');
 }
@@ -273,7 +277,7 @@ let deleteEducation = async() => {
       </form>
       <div id="content">
         <div className='position-relative'>
-          <img id="user-avatar" src={user.profilePic ? `${process.env.REACT_APP_BACKEND_URL}/${user.profilePic}` : default_pic} alt="Avatar" />
+          <img id="user-avatar" src={user.profilePic ? `${process.env.REACT_APP_BACKEND_URL}${user.profilePic}` : default_pic} alt="Avatar" />
           <div onClick={handleProfilePicClick} className='position-absolute end-4 bottom-4 rounded-circle p-1 bg-light' style={{height : '30px', width : '30px'}}>
             <div className='bg-primary h-full w-full rounded-circle d-flex justify-content-center align-items-center'>
               <MdEdit className='text-light'  />
@@ -342,6 +346,22 @@ let deleteEducation = async() => {
               <div className="flex flex-col profile-content-box">
                 <dt>Name</dt>
                 <dd>{user.pan_name}</dd>
+              </div>
+            </div>
+        </div>
+        <div className='id_sec'>
+            <div className='pan_heading'>
+                <h1>Existing UAN/ESIC Number</h1>
+                <button onClick={addUan} >{user.uan_number ? 'Change' : 'Add'}</button>
+            </div>
+            <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-0 px-sm-5">
+              <div className="flex flex-col profile-content-box">
+                <dt>UAN Number</dt>
+                <dd>{user.uan_number}</dd>
+              </div>
+              <div className="flex flex-col profile-content-box">
+                <dt>ESIC Number</dt>
+                <dd>{user.esic_number}</dd>
               </div>
             </div>
         </div>
