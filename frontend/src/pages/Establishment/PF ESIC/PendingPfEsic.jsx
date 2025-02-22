@@ -202,7 +202,16 @@ const PendingPfEsic = () => {
                                         <p>{user.contact}</p>
                                     </div>
                                     <div className='list-right'>
-                                        <button class="btn custom-btn" onClick={() => {setSaveData({...saveData, user_id : user._id}); setUserId(user._id); enquiryref.current.style.scale = 1; }} style={buttonStyle}>Update</button>
+                                        <button class="btn custom-btn" onClick={() => {
+                                            setSaveData({
+                                                user_id: user._id,
+                                                uan_number: user.uan_number || '',
+                                                epf_number: user.epf_number || '',
+                                                esi_number: user.esi_number || ''
+                                            });
+                                            setUserId(user._id);
+                                            enquiryref.current.style.scale = 1;
+                                        }} style={buttonStyle}>Update</button>
                                     </div>
                                     </div>
                                     <p>Addhar No. : {user.aadhar_number}</p>
@@ -222,17 +231,17 @@ const PendingPfEsic = () => {
                 <div class="input-box w-full">
                     <div class="input-div w-full">
                         <label class="form-label" for="institute">UAN Number</label>
-                        <input required type="text" onChange={pfesicChangeHandler} name="uan_number" id="uan_number" placeholder="UAN Number" autocomplete="off"/>
+                        <input required type="text" value={saveData.uan_number} onChange={pfesicChangeHandler} name="uan_number" id="uan_number" placeholder="UAN Number" autocomplete="off"/>
                     </div>
                     <div class="input-div w-full">
                         <label class="form-label" for="institute">EPF Number</label>
-                        <input required type="text" onChange={pfesicChangeHandler} name="epf_number" id="epf_number" placeholder="EPF Number" autocomplete="off"/>
+                        <input required type="text" value={saveData.epf_number} onChange={pfesicChangeHandler} name="epf_number" id="epf_number" placeholder="EPF Number" autocomplete="off"/>
                     </div>
                 </div>
                 <div class="input-box w-full">
                     <div class="input-div w-full">
                         <label class="form-label" for="institute">ESI Number</label>
-                        <input required type="text" onChange={pfesicChangeHandler} name="esi_number" id="esi_number" placeholder="ESI Number" autocomplete="off"/>
+                        <input required type="text" value={saveData.esi_number} onChange={pfesicChangeHandler} name="esi_number" id="esi_number" placeholder="ESI Number" autocomplete="off"/>
                     </div>
                     <div class="input-div w-full">
                         <label class="form-label" for="institute">TIC Card</label>
