@@ -190,6 +190,10 @@ const userSchema = new mongoose.Schema({
     file2 : {
         type : String
     },
+    pan_image: {
+        type: String,
+        default: ''
+    },
  })
 
  module.exports = mongoose.model("User",userSchema)

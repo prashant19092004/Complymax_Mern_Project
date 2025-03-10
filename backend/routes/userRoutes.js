@@ -1401,4 +1401,23 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
+    router.post('/upload/pan-image', uploadImage.single('panImage'), auth, async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.user.id });
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            user.pan_image = `/uploads/${req.file.filename}`;
+            await user.save();
+        
+            res.json({ msg: 'Pan card image uploaded successfully', user });
+        } catch (error) {
+            console.error('Upload error:', error);
+            if (!res.headersSent) {
+                res.status(500).json({ msg: 'Server error', error: error.message });
+            }
+        }
+    });
+
 module.exports = router

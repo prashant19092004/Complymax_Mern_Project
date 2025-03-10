@@ -27,7 +27,8 @@ const UserProfile = () => {
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
     const [profilePicUrl, setProfilePicUrl] = useState('');
-    // const [editId, setEditId] = useState("");
+    const pan_image_input_ref = useRef();
+    const [panFile, setPanFile] = useState(null);
 
     const [educationData, setEducationData] = useState({
       institute: '',
@@ -58,6 +59,14 @@ const onFileChange = (e) => {
   if (selectedFile) {
     setFile(selectedFile);
     onSubmit(selectedFile);
+  }
+};
+
+const onPanImageChange = (e) => {
+  const selectedFile = e.target.files[0];
+  if (selectedFile) {
+    setPanFile(selectedFile);
+    onPanImageSubmit(selectedFile);
   }
 };
 
@@ -98,6 +107,29 @@ const onSubmit = async (selectedFile) => {
     setUser({ ...user, profilePic: res.data.user.profilePic });
   } catch (err) {
     toast.error('Error uploading profile picture');
+    console.log(err);
+  }
+};
+
+const onPanImageSubmit = async (selectedFile) => {
+  const formData = new FormData();
+  formData.append('panImage', selectedFile);
+
+  try {
+    const res = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/upload/pan-image`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    toast.success('Pan card image uploaded successfully!');
+    setUser({ ...user, pan_image: res.data.user.pan_image });
+  } catch (err) {
+    toast.error('Error uploading pan card image');
     console.log(err);
   }
 };
@@ -154,6 +186,10 @@ let closeEnquiry = () => {
 
 const handleProfilePicClick = () => {
   profile_pic_input_ref.current.click();
+};
+
+const handlePanImageClick = () => {
+  pan_image_input_ref.current.click();
 };
 
 let addEducation = async() => {
@@ -346,6 +382,31 @@ let deleteEducation = async() => {
               <div className="flex flex-col profile-content-box">
                 <dt>Name</dt>
                 <dd>{user.pan_name}</dd>
+              </div>
+              <div className="flex flex-col profile-content-box position-relative">
+                <dt>Pan Card Image</dt>
+                {user.pan_image ? (
+                  <img 
+                    src={`${process.env.REACT_APP_BACKEND_URL}${user.pan_image}`} 
+                    alt="Pan Card" 
+                    style={{maxWidth: '200px', cursor: 'pointer'}}
+                    onClick={handlePanImageClick}
+                  />
+                ) : (
+                  <button 
+                    onClick={handlePanImageClick}
+                    className="btn btn-primary mt-2"
+                  >
+                    Upload Pan Image
+                  </button>
+                )}
+                <input 
+                  ref={pan_image_input_ref} 
+                  type="file" 
+                  onChange={onPanImageChange} 
+                  className="d-none"
+                  accept="image/*"
+                />
               </div>
             </div>
         </div>
