@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Container, Row, Col, Image } from 'react-bootstrap';
 import axios from 'axios';
 import './style.css';
@@ -12,6 +12,10 @@ import { toast } from 'react-toastify';
 import { MdDeleteOutline } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 import default_pic from '../../assets/Default_pfp.svg.png'
+import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+import { createPortal } from 'react-dom';
+import CropModal from './CropModal';
 
 const UserProfile = () => {
 
@@ -29,6 +33,30 @@ const UserProfile = () => {
     const [profilePicUrl, setProfilePicUrl] = useState('');
     const pan_image_input_ref = useRef();
     const [panFile, setPanFile] = useState(null);
+    const [showCropModal, setShowCropModal] = useState(false);
+    const [crop, setCrop] = useState({
+      unit: 'px',
+      x: 0,
+      y: 0,
+      width: 200,
+      height: 150
+    });
+    const [tempImage, setTempImage] = useState(null);
+    const [completedCrop, setCompletedCrop] = useState(null);
+    const imageRef = useRef(null);
+    const [isPanImage, setIsPanImage] = useState(false);
+    const previewCanvasRef = useRef(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [aspectRatio, setAspectRatio] = useState(4/3);
+    const ASPECT_RATIOS = [
+      { label: '4:3', value: 4/3 },
+      { label: '3:2', value: 3/2 },
+      { label: '1:1', value: 1 },
+      { label: '2:3', value: 2/3 },
+      { label: '16:9', value: 16/9 },
+      { label: 'Free', value: null }
+    ];
 
     const [educationData, setEducationData] = useState({
       institute: '',
@@ -41,6 +69,11 @@ const UserProfile = () => {
       description: '',
       editId : ''
     });
+
+    const [scale, setScale] = useState(1);
+    const [rotate, setRotate] = useState(0);
+    const blobUrlRef = useRef('');
+    const hiddenAnchorRef = useRef(null);
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const years = [];
@@ -63,11 +96,26 @@ const onFileChange = (e) => {
 };
 
 const onPanImageChange = (e) => {
-  const selectedFile = e.target.files[0];
-  if (selectedFile) {
-    setPanFile(selectedFile);
-    onPanImageSubmit(selectedFile);
-  }
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setIsPanImage(true);
+  
+  // Create a URL for the image
+  const imageUrl = URL.createObjectURL(file);
+  setPanFile(file);
+  setTempImage(imageUrl);
+  setCrop({
+    unit: 'px',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 150
+  });
+  setShowCropModal(true);
+
+  // Clean up URL when component unmounts
+  return () => URL.revokeObjectURL(imageUrl);
 };
 
 async function fetchingProfile(){
@@ -111,12 +159,63 @@ const onSubmit = async (selectedFile) => {
   }
 };
 
-const onPanImageSubmit = async (selectedFile) => {
-  const formData = new FormData();
-  formData.append('panImage', selectedFile);
+const onSelectFile = (e) => {
+  if (e.target.files && e.target.files.length > 0) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result);
+      setCrop(null);
+      setShowCropModal(true);
+    };
 
+    reader.readAsDataURL(file);
+  }
+};
+
+const generatePreview = useCallback((completedCrop, imgRef) => {
+  if (!completedCrop || !imgRef.current) return;
+
+  const image = imgRef.current;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    throw new Error('No 2d context');
+  }
+
+  const scaleX = image.naturalWidth / image.width;
+  const scaleY = image.naturalHeight / image.height;
+
+  canvas.width = completedCrop.width;
+  canvas.height = completedCrop.height;
+
+  ctx.drawImage(
+    image,
+    completedCrop.x * scaleX,
+    completedCrop.y * scaleY,
+    completedCrop.width * scaleX,
+    completedCrop.height * scaleY,
+    0,
+    0,
+    completedCrop.width,
+    completedCrop.height
+  );
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      resolve(blob);
+    }, 'image/jpeg', 1);
+  });
+}, []);
+
+const handleCroppedImage = async (blob) => {
   try {
-    const res = await axios.post(
+    const formData = new FormData();
+    formData.append('panImage', blob, 'cropped-pan-image.jpeg');
+
+    const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/upload/pan-image`,
       formData,
       {
@@ -126,11 +225,19 @@ const onPanImageSubmit = async (selectedFile) => {
         },
       }
     );
-    toast.success('Pan card image uploaded successfully!');
-    setUser({ ...user, pan_image: res.data.user.pan_image });
-  } catch (err) {
-    toast.error('Error uploading pan card image');
-    console.log(err);
+
+    if (response.data.user) {
+      setUser(prev => ({
+        ...prev,
+        pan_image: response.data.user.pan_image
+      }));
+      toast.success('Pan card image uploaded successfully!');
+      setShowCropModal(false);
+      setPreviewUrl(null);
+    }
+  } catch (error) {
+    console.error('Upload error:', error);
+    toast.error('Failed to upload image');
   }
 };
 
@@ -385,28 +492,48 @@ let deleteEducation = async() => {
               </div>
               <div className="flex flex-col profile-content-box position-relative">
                 <dt>Pan Card Image</dt>
-                {user.pan_image ? (
-                  <img 
-                    src={`${process.env.REACT_APP_BACKEND_URL}${user.pan_image}`} 
-                    alt="Pan Card" 
-                    style={{maxWidth: '200px', cursor: 'pointer'}}
-                    onClick={handlePanImageClick}
+                <dd className="d-flex align-items-center gap-2">
+                  {user.pan_image ? (
+                    <>
+                      <span className="text-success">
+                        <i className="fas fa-check-circle"></i> Uploaded
+                      </span>
+                      <div className="d-flex gap-2">
+                        <button 
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${user.pan_image}`, '_blank')}
+                        >
+                          View Image
+                        </button>
+                        <button 
+                          className="btn btn-primary btn-sm"
+                          onClick={() => pan_image_input_ref.current.click()}
+                        >
+                          Update
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-warning">
+                        <i className="fas fa-exclamation-circle"></i> Not uploaded
+                      </span>
+                      <button 
+                        onClick={() => pan_image_input_ref.current.click()}
+                        className="btn btn-primary btn-sm"
+                      >
+                        Upload Now
+                      </button>
+                    </>
+                  )}
+                  <input 
+                    ref={pan_image_input_ref}
+                    type="file"
+                    onChange={onSelectFile}
+                    accept="image/*"
+                    className="d-none"
                   />
-                ) : (
-                  <button 
-                    onClick={handlePanImageClick}
-                    className="btn btn-primary mt-2"
-                  >
-                    Upload Pan Image
-                  </button>
-                )}
-                <input 
-                  ref={pan_image_input_ref} 
-                  type="file" 
-                  onChange={onPanImageChange} 
-                  className="d-none"
-                  accept="image/*"
-                />
+                </dd>
               </div>
             </div>
         </div>
@@ -577,6 +704,16 @@ let deleteEducation = async() => {
             </form>
           </div>
         </section>
+        <CropModal
+          showModal={showCropModal}
+          imageUrl={previewUrl}
+          onClose={() => {
+            setShowCropModal(false);
+            setPreviewUrl(null);
+          }}
+          onSave={handleCroppedImage}
+          aspectRatio={4/3}
+        />
     </div>
   );
 };

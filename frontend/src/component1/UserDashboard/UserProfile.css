@@ -18,3 +18,43 @@
     border-radius: 10px;
     background-color: green;
 }
+
+.profile-content-box {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.profile-content-box dt {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-content-box dd {
+  margin-bottom: 0;
+  font-size: 1rem;
+  color: #212529;
+}
+
+.profile-content-box .btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.profile-content-box .text-success,
+.profile-content-box .text-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.profile-content-box .text-success i {
+  color: #198754;
+}
+
+.profile-content-box .text-warning i {
+  color: #ffc107;
+}
