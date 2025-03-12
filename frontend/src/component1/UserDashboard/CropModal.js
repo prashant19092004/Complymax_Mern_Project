@@ -6,7 +6,8 @@ const CropModal = ({
   showModal, 
   imageUrl, 
   onClose, 
-  onSave
+  onSave,
+  imageType = 'pan' // 'pan' or 'aadhar'
 }) => {
   const [crop, setCrop] = useState({
     unit: 'px',
@@ -92,7 +93,7 @@ const CropModal = ({
         maxHeight: '80%',
         overflow: 'auto'
       }}>
-        <h3>Crop Image</h3>
+        <h3>Crop {imageType === 'pan' ? 'Pan Card' : 'Aadhar Card'} Image</h3>
 
         <div style={{
           maxWidth: '500px',

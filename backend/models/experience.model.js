@@ -33,6 +33,10 @@ const experienceSchema = new mongoose.Schema({
     description: {
         type: String
     },
+    certificate: {
+        type: String,
+        default: null
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

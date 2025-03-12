@@ -75,7 +75,8 @@ const userSchema = new mongoose.Schema({
         type : Boolean
     },
     aadhar_image : {
-        type : String
+        type : String,
+        default: ''
     },
     zip : {
         type : String

@@ -17,6 +17,7 @@ const hiredModel = require("../models/hired.model.js");
 const { uploadImage } = require('../middleware/multer.js');
 const { uploadPDF } = require('../middleware/multer.js');
 const path = require('path');
+const fs = require('fs');
 
 
 
@@ -1417,6 +1418,148 @@ router.get("/establisment/profile",auth, async (req, res) => {
             if (!res.headersSent) {
                 res.status(500).json({ msg: 'Server error', error: error.message });
             }
+        }
+    });
+
+    router.post('/upload/aadhar-image', uploadImage.single('aadharImage'), auth, async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.user.id });
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            user.aadhar_image = `/uploads/${req.file.filename}`;
+            await user.save();
+        
+            res.json({ msg: 'Aadhar card image uploaded successfully', user });
+        } catch (error) {
+            console.error('Upload error:', error);
+            if (!res.headersSent) {
+                res.status(500).json({ msg: 'Server error', error: error.message });
+            }
+        }
+    });
+
+    router.post('/delete/pan-image', auth, async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.user.id });
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            // Delete the file from uploads folder if needed
+            if (user.pan_image) {
+                const filePath = path.join(__dirname, '..', 'public', user.pan_image);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+        
+            user.pan_image = null;
+            await user.save();
+        
+            res.json({ msg: 'Pan card image deleted successfully', user });
+        } catch (error) {
+            console.error('Delete error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    router.post('/delete/aadhar-image', auth, async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.user.id });
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            // Delete the file from uploads folder if needed
+            if (user.aadhar_image) {
+                const filePath = path.join(__dirname, '..', 'public', user.aadhar_image);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+        
+            user.aadhar_image = null;
+            await user.save();
+        
+            res.json({ msg: 'Aadhar card image deleted successfully', user });
+        } catch (error) {
+            console.error('Delete error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    // Add this route for certificate upload
+    router.post('/upload/certificate', uploadImage.single('certificate'), auth, async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.user.id });
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+
+            const { id, type } = req.body;
+            const Model = type === 'experience' ? experienceModel : educationModel;
+            
+            const entry = await Model.findById(id);
+            if (!entry) {
+                return res.status(404).json({ msg: `${type} entry not found` });
+            }
+
+            // Delete old certificate if exists
+            if (entry.certificate) {
+                const oldPath = path.join(__dirname, '..', 'public', entry.certificate);
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
+
+            entry.certificate = `/uploads/${req.file.filename}`;
+            await entry.save();
+
+            // Get updated user data
+            const updatedUser = await userModel.findOne({ _id: req.user.id })
+                .populate('qualifications')
+                .populate('experiences');
+
+            res.json({ msg: 'Certificate uploaded successfully', user: updatedUser });
+        } catch (error) {
+            console.error('Upload error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    // Add this route for certificate deletion
+    router.post('/delete/certificate', auth, async (req, res) => {
+        try {
+            const { id, type } = req.body;
+            const Model = type === 'experience' ? experienceModel : educationModel;
+            
+            const entry = await Model.findById(id);
+            if (!entry) {
+                return res.status(404).json({ msg: `${type} entry not found` });
+            }
+
+            // Delete the file
+            if (entry.certificate) {
+                const filePath = path.join(__dirname, '..', 'public', entry.certificate);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+
+            entry.certificate = null;
+            await entry.save();
+
+            // Get updated user data
+            const updatedUser = await userModel.findOne({ _id: req.user.id })
+                .populate('qualifications')
+                .populate('experiences');
+
+            res.json({ msg: 'Certificate deleted successfully', user: updatedUser });
+        } catch (error) {
+            console.error('Delete error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
         }
     });
 
