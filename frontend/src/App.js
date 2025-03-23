@@ -18,8 +18,8 @@ import Dashboard from './component1/Client_main/Dashboard';
 import SupervisorDashboard from './component1/Supervisor_dashboard/SupervisorDashboard';
 import UserDashboardPage from './component1/UserDashboard/UserDashboardPage';
 import SupervisorDashboardPage from './component1/Supervisor_dashboard/SupervisorDashboardPage';
-import EstablismentProfile from './component1/Client_dashboard/EstablismentProfile';
-import UserProfile from './component1/UserDashboard/UserProfile';
+import EstablishmentProfile from './pages/Establishment/Profile/Profile';
+import UserProfile from './pages/User/UserProfile/UserProfile';
 import PanForm from './component1/UserDashboard/PanForm';
 import AccountForm from './component1/UserDashboard/AccountForm';
 import ClientDetail from './component1/Client_dashboard/ClientDetail';
@@ -48,6 +48,10 @@ import ClientDashboardPage from './component1/Client_main/DashboardPage';
 import EstablishmentPanForm from './pages/Establishment/PanForm/PanForm';
 import EstablishmentAccountForm from './pages/Establishment/AccountForm/AccountForm';
 import UanEsicForm from './component1/UserDashboard/UanEsicForm';
+import OfferLetter from './pages/Client/OfferLetter/OfferLetter';
+import SendOfferLetter from './pages/Client/OfferLetter/SendOfferLetter';
+// import EstablismentProfile from './pages/Establishment/Profile/Profile';
+
 
 function App() {
 
@@ -121,7 +125,7 @@ function App() {
               },
               {
                 path : "/establisment_dashboard/establisment_profile",
-                element : <EstablismentProfile />
+                element : <EstablishmentProfile />
               },
               {
                 path:"/establisment_dashboard/client_detail",
@@ -165,6 +169,14 @@ function App() {
               {
                 path : '/client_dashboard/',
                 element : <ClientDashboardPage />
+              },
+              {
+                path : '/client_dashboard/offer-letter',
+                element : <OfferLetter />
+              },
+              {
+                path : '/client_dashboard/send-offer-letter',
+                element : <SendOfferLetter />
               },
               {
                 path : '/client_dashboard/profile',

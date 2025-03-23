@@ -4,37 +4,22 @@ const superadminModel = require("../models/superadmin.model");
 
 require("dotenv").config();
 
-exports.auth = async (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
-    const token =
-      // req.body.token ||
-      // req.cookies.token ||
-      req.header("Authorization").replace("Bearer ", "");
-    // console.log(token);
-    try {
-      const decode = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decode;
-    } catch (e) {
-      return res.status(401).json({
-        success: false,
-        message: "token is invalid",
-      });
-    }
-
+    const token = req.header('Authorization').replace('Bearer ', '');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     next();
-  } catch (e) {
-    return res.status(500).json({
-      success: false,
-      message: "internal server error",
-    });
+  } catch (error) {
+    res.status(401).json({ message: 'Authentication failed' });
   }
 };
 
-exports.isSupervisor = async (req, res, next) => {
+const isSupervisor = async (req, res, next) => {
   try {
     const supervisor = await supervisorModel.findOne({email : req.user.email}, {_id:1});
     if (!supervisor) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
         role: req.user.role,
         message: "this is for Supervisor stay away",
@@ -49,11 +34,11 @@ exports.isSupervisor = async (req, res, next) => {
   }
 };
 
-exports.isSuperadmin = async (req, res, next) => {
+const isSuperadmin = async (req, res, next) => {
   try {
     const superadmin = await superadminModel.findOne({email : req.user.email}, {_id:1});
     if (!superadmin) {
-      res.status(401).json({
+      return res.status(401).json({
         success: false,
         message: "this is for Superadmin stay away",
       });
@@ -67,7 +52,7 @@ exports.isSuperadmin = async (req, res, next) => {
   }
 };
 
-exports.isAdmin = async (req, res, next) => {
+const isAdmin = async (req, res, next) => {
   try {
     if (req.user.role !== "Admin") {
       return res.status(401).json({
@@ -83,4 +68,11 @@ exports.isAdmin = async (req, res, next) => {
       message: "internal server error",
     });
   }
+};
+
+module.exports = {
+  auth,
+  isSupervisor,
+  isSuperadmin,
+  isAdmin
 };

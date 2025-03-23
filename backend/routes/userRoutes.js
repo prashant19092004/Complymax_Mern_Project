@@ -23,7 +23,7 @@ const fs = require('fs');
 
 const { userlogin, usersignup, adminsignup, adminlogin, clientregister, clientlogin, supervisorlogin, supervisorregister, superadminlogin, superadminsignup } = require("../controller/auth")
 
-const { auth, isStudent, isAdmin, isSuperadmin } = require("../middleware/auth");
+const { auth, isStudent, isAdmin, isSuperadmin, isSupervisor } = require("../middleware/auth");
 const clientModel = require("../models/client.model.js");
 const supervisorModel = require("../models/supervisor.model.js");
 
@@ -801,17 +801,19 @@ router.get("/establisment/profile",auth, async (req, res) => {
     // });
 
 
-    router.post('/upload/profile-pic', uploadImage.single('profilePic'), auth, async (req, res) => {
+    router.post('/upload/profile-pic', uploadImage.single('image'), auth, async (req, res) => {
         try {
       
-          const user = await userModel.findOne({ _id: req.user.id });
+          const user = await userModel.findOneAndUpdate(
+            { _id: req.user.id },
+            { pan_image: `/uploads/${req.file.filename}` },
+            { new: true, runValidators: false } // Disable validation for this update
+          );
+      
           if (!user) {
             console.error('User not found');
             return res.status(404).json({ msg: 'User not found' }); // Use return to prevent duplicate responses
           }
-      
-          user.profilePic = `/uploads/${req.file.filename}`;
-          await user.save();
       
           res.json({ msg: 'Profile picture updated', user });
         } catch (error) {
@@ -1040,7 +1042,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
-    router.get('/supervisor/active-users', auth, async(req, res) => {
+    router.get('/supervisor/active-users', auth, isSupervisor, async(req, res) => {
         try{
             const users = await userModel.find({active_user_status : true})
             .populate('hired');
@@ -1402,41 +1404,41 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
-    router.post('/upload/pan-image', uploadImage.single('panImage'), auth, async (req, res) => {
+    router.post('/upload/pan-image', uploadImage.single('image'), auth, async (req, res) => {
         try {
-            const user = await userModel.findOne({ _id: req.user.id });
+            const user = await userModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { pan_image: `/uploads/${req.file.filename}` },
+                { new: true, runValidators: false } // Disable validation for this update
+            );
+
             if (!user) {
                 return res.status(404).json({ msg: 'User not found' });
             }
-        
-            user.pan_image = `/uploads/${req.file.filename}`;
-            await user.save();
         
             res.json({ msg: 'Pan card image uploaded successfully', user });
         } catch (error) {
             console.error('Upload error:', error);
-            if (!res.headersSent) {
-                res.status(500).json({ msg: 'Server error', error: error.message });
-            }
+            res.status(500).json({ msg: 'Server error', error: error.message });
         }
     });
 
-    router.post('/upload/aadhar-image', uploadImage.single('aadharImage'), auth, async (req, res) => {
+    router.post('/upload/aadhar-image', uploadImage.single('image'), auth, async (req, res) => {
         try {
-            const user = await userModel.findOne({ _id: req.user.id });
+            const user = await userModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { aadhar_image: `/uploads/${req.file.filename}` },
+                { new: true, runValidators: false } // Disable validation for this update
+            );
+
             if (!user) {
                 return res.status(404).json({ msg: 'User not found' });
             }
         
-            user.aadhar_image = `/uploads/${req.file.filename}`;
-            await user.save();
-        
             res.json({ msg: 'Aadhar card image uploaded successfully', user });
         } catch (error) {
             console.error('Upload error:', error);
-            if (!res.headersSent) {
-                res.status(500).json({ msg: 'Server error', error: error.message });
-            }
+            res.status(500).json({ msg: 'Server error', error: error.message });
         }
     });
 
@@ -1559,6 +1561,91 @@ router.get("/establisment/profile",auth, async (req, res) => {
             res.json({ msg: 'Certificate deleted successfully', user: updatedUser });
         } catch (error) {
             console.error('Delete error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    // Add account image upload route
+    router.post('/upload/account-image', uploadImage.single('image'), auth, async (req, res) => {
+        try {
+            const user = await userModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { account_image: `/uploads/${req.file.filename}` },
+                { new: true, runValidators: false }
+            );
+
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            res.json({ msg: 'Account image uploaded successfully', user });
+        } catch (error) {
+            console.error('Upload error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    // Add account image delete route
+    router.post('/delete/account-image', auth, async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.user.id });
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            // Delete the file from uploads folder if needed
+            if (user.account_image) {
+                const filePath = path.join(__dirname, '..', 'public', user.account_image);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+        
+            user.account_image = null;
+            await user.save();
+        
+            res.json({ msg: 'Account image deleted successfully', user });
+        } catch (error) {
+            console.error('Delete error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    // Add these routes for Aadhar front and back image upload
+    router.post('/upload/aadhar-front-image', uploadImage.single('image'), auth, async (req, res) => {
+        try {
+            const user = await userModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { aadhar_front_image: `/uploads/${req.file.filename}` },
+                { new: true, runValidators: false }
+            );
+
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            res.json({ msg: 'Aadhar front image uploaded successfully', user });
+        } catch (error) {
+            console.error('Upload error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    router.post('/upload/aadhar-back-image', uploadImage.single('image'), auth, async (req, res) => {
+        try {
+            const user = await userModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { aadhar_back_image: `/uploads/${req.file.filename}` },
+                { new: true, runValidators: false }
+            );
+
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            res.json({ msg: 'Aadhar back image uploaded successfully', user });
+        } catch (error) {
+            console.error('Upload error:', error);
             res.status(500).json({ msg: 'Server error', error: error.message });
         }
     });

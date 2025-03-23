@@ -120,6 +120,11 @@ const Client_dashboard = () => {
                             <i className="bi bi-people"></i> Support 24/7
                         </Link>
                     </li>
+                    <li className="nav-item" id='nav_item'>
+                        <Link className="nav-link" to="/establisment_dashboard/establisment_profile">
+                            <i className="bi bi-people"></i> Profile
+                        </Link>
+                    </li>
                 </ul>
             </div>
         </div>

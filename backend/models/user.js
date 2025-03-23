@@ -195,6 +195,24 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
- })
+    account_image: {
+        type: String,
+        default: ''
+    },
+    role: {
+        type: String,
+        enum: ['admin', 'client', 'supervisor', 'employee'],
+        required: true,
+        default: 'employee'
+    },
+    aadhar_front_image: {
+        type: String,
+        default: ''
+    },
+    aadhar_back_image: {
+        type: String,
+        default: ''
+    },
+})
 
- module.exports = mongoose.model("User",userSchema)
+module.exports = mongoose.model("User",userSchema)

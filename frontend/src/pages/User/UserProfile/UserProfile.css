@@ -1,0 +1,211 @@
+#screen .enquiry-section{
+    z-index: 9999;
+    /* scale : 1; */
+    left : 0;
+}
+
+#screen .input-box>*{
+    width: 99%;
+}
+
+#screen .input-box{
+    align-items: end;
+}
+
+
+#screen .enquiry-button{
+    width : 20%;
+    border-radius: 10px;
+    background-color: green;
+}
+
+.profile-content-box {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.profile-content-box dt {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-content-box dd {
+  margin-bottom: 0;
+  font-size: 1rem;
+  color: #212529;
+}
+
+.profile-content-box .btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.profile-content-box .text-success,
+.profile-content-box .text-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.profile-content-box .text-success i {
+  color: #198754;
+}
+
+.profile-content-box .text-warning i {
+  color: #ffc107;
+}
+
+/* Update the enquiry section styles */
+.enquiry-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  scale: 0;
+  transition: scale 0.3s ease;
+}
+
+.enquiry-form {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.enquiry-form h2 {
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.enquiry-form .input-box {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  align-items: flex-end;
+}
+
+.enquiry-form .input-box.date-fields {
+  margin-bottom: 0.5rem;
+}
+
+.enquiry-form .input-div {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.2rem;
+}
+
+.enquiry-form .form-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.enquiry-form .input-div label:empty {
+  display: none;
+}
+
+.enquiry-form .input-div:has(label:empty) {
+  margin-top: 1.25rem;
+}
+
+.enquiry-form input,
+.enquiry-form select,
+.enquiry-form textarea {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  height: 36px;
+}
+
+.enquiry-form textarea {
+  min-height: 70px;
+  height: auto;
+  margin-top: 0.25rem;
+}
+
+.enquiry-form .input-div:last-child {
+  margin-top: 0.5rem;
+}
+
+.enquiry-form .d-flex.justify-content-between {
+  margin-top: 0.75rem;
+  align-items: center;
+}
+
+.enquiry-form .enquiry-button {
+  min-width: 120px;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #198754;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.enquiry-form .enquiry-button:hover {
+  background-color: #157347;
+}
+
+/* Fix the delete entry text styling */
+.enquiry-form .fs-6.cursor-pointer {
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.enquiry-form .fs-6.cursor-pointer:hover {
+  text-decoration: underline;
+}
+
+/* Improve select dropdowns alignment */
+.enquiry-form .input-box .input-div select {
+  height: 38px; /* Match input height */
+}
+
+/* Remove margin from last input box */
+.enquiry-form .input-box:last-of-type {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .enquiry-form .input-box {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .enquiry-form {
+    padding: 1rem;
+  }
+  
+  .enquiry-form h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .enquiry-form .input-div:has(label:empty) {
+    margin-top: 0;
+  }
+}

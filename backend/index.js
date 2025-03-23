@@ -4,6 +4,7 @@ const connectDB = require("./config/database");
 const cors = require("cors");
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
 
 
 app.use(cors());
@@ -20,10 +21,12 @@ app.use(cokkieParser());
 app.use(express.json());
 const userRoutes = require("./routes/userRoutes");
 const establismentResetPasswordRoutes = require("./routes/establismentResetPasswordRoute");
+const clientRoutes = require('./routes/clientRoutes');
 
 const port = process.env.PORT || 8000;
 
 app.use("/", userRoutes);
+app.use('/client', clientRoutes);
 app.use("/api/establisment/reset-password/", establismentResetPasswordRoutes);
 
 // app.use(express.static(path.join(_dirname, "/frontend/build")));
@@ -36,5 +39,9 @@ app.listen(port, () => {
 });
 
 connectDB();
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log('MongoDB is connected'))
+.catch((err) => console.log(err));
 
 
