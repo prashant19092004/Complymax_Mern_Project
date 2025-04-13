@@ -3,20 +3,21 @@ const router = express.Router();
 const { auth } = require('../middleware/auth');
 const userModel = require('../models/user');
 const clientModel = require('../models/client.model');
+const supervisorModel = require('../models/supervisor.model');
 
 // Test route to verify router is working
 router.get('/test', (req, res) => {
-    res.json({ message: 'Client routes working' });
+    res.json({ message: 'Supervisor routes working' });
 });
 
 // Get all employees for offer letters
 router.get('/offer-letters', auth, async (req, res) => {
     try {
-        const currentClient = await clientModel.findOne({ email: req.user.email });
-        if (!currentClient) {
+        const currentSupervisor = await supervisorModel.findOne({ email: req.user.email });
+        if (!currentSupervisor) {
             return res.status(404).json({
                 success: false,
-                message: 'Client not found'
+                message: 'Supervisor not found'
             });
         }
 
@@ -26,7 +27,7 @@ router.get('/offer-letters', auth, async (req, res) => {
 
         const activeUsers = users.filter(user => 
             user.hired && user.hired.establishment_id && 
-            user.hired.establishment_id.equals(currentClient.establisment)
+            user.hired.establishment_id.equals(currentSupervisor.establisment)
         );
 
         res.status(200).json({
@@ -47,7 +48,7 @@ router.get('/offer-letters', auth, async (req, res) => {
 // Add this route to get employee details
 router.get('/employee/:id', auth, async (req, res) => {
     try {
-        const employee = await userModel.findById(req.params.id).populate('hired');
+        const employee = await userModel.findById(req.params.id);
         if (!employee) {
             return res.status(404).json({
                 success: false,
@@ -65,5 +66,8 @@ router.get('/employee/:id', auth, async (req, res) => {
         });
     }
 });
+
+
+
 
 module.exports = router;

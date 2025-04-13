@@ -4,15 +4,12 @@ const bcrypt = require('bcrypt');
 const adminModel = require("../models/admin.js");
 const superadminModel = require("../models/superadmin.model.js");
 const userModel = require("../models/user.js");
-const requestModel = require("../models/request.js")
-const batchModel = require("../models/batch.model.js")
-const trainerModel = require("../models/trainer.model.js")
-const trainingModel = require("../models/subject.model.js")
-const classModel = require("../models/class.model.js")
-const educationModel = require("../models/education.model.js")
-const experienceModel = require("../models/experience.model.js")
-const clientlocationModel = require("../models/clientlocation.model.js")
-const hiringModel = require("../models/hiring.model.js")
+const clientModel = require("../models/client.model.js");
+const supervisorModel = require("../models/supervisor.model.js");
+const educationModel = require("../models/education.model.js");
+const experienceModel = require("../models/experience.model.js");
+const clientlocationModel = require("../models/clientlocation.model.js");
+const hiringModel = require("../models/hiring.model.js");
 const hiredModel = require("../models/hired.model.js");
 const { uploadImage } = require('../middleware/multer.js');
 const { uploadPDF } = require('../middleware/multer.js');
@@ -24,8 +21,6 @@ const fs = require('fs');
 const { userlogin, usersignup, adminsignup, adminlogin, clientregister, clientlogin, supervisorlogin, supervisorregister, superadminlogin, superadminsignup } = require("../controller/auth")
 
 const { auth, isStudent, isAdmin, isSuperadmin, isSupervisor } = require("../middleware/auth");
-const clientModel = require("../models/client.model.js");
-const supervisorModel = require("../models/supervisor.model.js");
 
 
 // router.post("/login", login)
@@ -1647,6 +1642,165 @@ router.get("/establisment/profile",auth, async (req, res) => {
         } catch (error) {
             console.error('Upload error:', error);
             res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    // Add this route for establishment profile picture upload
+    router.post('/establishment/upload-profile-pic', uploadImage.single('image'), auth, async (req, res) => {
+        try {
+            const establishment = await adminModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { profilePic: `/uploads/${req.file.filename}` },
+                { new: true, runValidators: false }
+            );
+
+            if (!establishment) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Establishment not found'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: 'Profile picture updated successfully',
+                establishment
+            });
+        } catch (error) {
+            console.error('Upload error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to update profile picture',
+                error: error.message
+            });
+        }
+    });
+
+    // Add this route for establishment profile update
+    router.post('/establishment/update-profile', auth, async (req, res) => {
+        try {
+            const { name, email, contact, address, registration_number, gst_number } = req.body;
+
+            // Check if email already exists for other establishments
+            if (email !== req.user.email) {
+                const existingEstablishment = await adminModel.findOne({ 
+                    email, 
+                    _id: { $ne: req.user.id } 
+                });
+                
+                if (existingEstablishment) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Email already exists'
+                    });
+                }
+            }
+
+            const establishment = await adminModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { 
+                    name,
+                    email,
+                    contact,
+                    address,
+                    registration_number,
+                    gst_number
+                },
+                { new: true, runValidators: true }
+            );
+
+            if (!establishment) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Establishment not found'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: 'Profile updated successfully',
+                establishment
+            });
+        } catch (error) {
+            console.error('Update error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to update profile',
+                error: error.message
+            });
+        }
+    });
+
+    // Add logo upload route
+    router.post('/establishment/upload-logo', uploadImage.single('logo'), auth, async (req, res) => {
+        try {
+            const establishment = await adminModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { logo: `/uploads/${req.file.filename}` },
+                { new: true, runValidators: false }
+            );
+
+            if (!establishment) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Establishment not found'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: 'Logo updated successfully',
+                establishment
+            });
+        } catch (error) {
+            console.error('Upload error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to update logo',
+                error: error.message
+            });
+        }
+    });
+
+    // Add logo delete route
+    router.post('/establishment/delete-logo', auth, async (req, res) => {
+        try {
+            const establishment = await adminModel.findOne({ _id: req.user.id });
+            
+            if (!establishment) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Establishment not found'
+                });
+            }
+
+            // Delete the physical file if it exists
+            if (establishment.logo) {
+                const filePath = path.join(__dirname, '..', 'public', establishment.logo);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+
+            // Update the establishment document using findOneAndUpdate
+            const updatedEstablishment = await adminModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { $set: { logo: null } },
+                { new: true }
+            );
+
+            res.json({
+                success: true,
+                message: 'Logo removed successfully',
+                establishment: updatedEstablishment
+            });
+        } catch (error) {
+            console.error('Delete error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to remove logo',
+                error: error.message
+            });
         }
     });
 

@@ -38,7 +38,11 @@ const supervisorSchema = new mongoose.Schema({
     status : {
         type : Boolean,
         default : true
-    }
+    },
+    offerLetters : [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OfferLetter'
+    }]
 });
 
 module.exports = mongoose.model("Supervisor", supervisorSchema);

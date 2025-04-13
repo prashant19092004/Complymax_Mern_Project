@@ -1,0 +1,425 @@
+/* Container for the A4 page */
+.container.mt-4 {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: #f5f5f5;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Page wrapper */
+.page-wrapper {
+    background: #f5f5f5;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* A4 page styling */
+.offer-letter {
+    background: white;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    font-size: 14px; /* Reduced base font size */
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+/* Remove the individual content scaling */
+.offer-letter > * {
+    transform-origin: unset;
+    transform: none;
+}
+
+/* Update text scaling */
+.offer-letter h4 {
+    font-size: 20px;
+    margin-bottom: 1.5rem;
+}
+
+.offer-letter h5 {
+    font-size: 18px;
+    margin-bottom: 1rem;
+}
+
+.offer-letter h6 {
+    font-size: 16px;
+    margin-bottom: 1rem;
+}
+
+.offer-letter p, 
+.offer-letter ul, 
+.offer-letter li,
+.editable-field {
+    font-size: 16px;
+}
+
+/* Adjust spacing to be relative to scale */
+.offer-letter .header {
+    margin-bottom: 40px;
+    min-height: 100px;
+}
+
+.offer-letter .signature {
+    width: 200px;
+    font-size: 14px;
+}
+
+/* Logo scaling */
+.logo-wrapper {
+    transform: scale(var(--scale, 1));
+    transform-origin: top left;
+}
+
+/* Remove media queries that might interfere with scaling */
+@media screen and (max-width: 210mm) {
+    .offer-letter,
+    .offer-letter * {
+        transform-origin: center;
+    }
+}
+
+/* Company name and logo styles */
+.company-name {
+    font-size: 22px;
+    color: #333;
+    /* margin-bottom: 0.5rem; */
+}
+
+.logo-wrapper {
+    position: relative;
+    width: auto;
+    height: auto;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+}
+
+.logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: transparent;
+}
+
+.signature {
+    display: inline-block;
+    border-top: 1px solid black;
+    width: 200px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Content spacing and layout */
+.header {
+    position: relative;
+    margin-bottom: 40px;
+    min-height: 100px;
+}
+
+.text-end {
+    text-align: right;
+    flex: 1;
+}
+
+/* Content styles */
+.offer-letter p {
+    margin-bottom: 1rem;
+    text-align: justify;
+}
+
+/* Remove all other responsive styles */
+@media screen and (max-width: 768px) {
+    .container.mt-4 {
+        padding: 20px;
+    }
+
+    .header {
+        flex-direction: row;
+    }
+
+    .text-end {
+        text-align: right;
+    }
+}
+
+/* Ensure content stays within bounds */
+.offer-letter * {
+    max-width: 100%;
+}
+
+/* Remove any existing transform styles from the zoom controls */
+.zoom-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.zoom-controls button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+}
+
+/* Print styles */
+@media print {
+    .container.mt-4 {
+        padding: 0;
+        background: none;
+    }
+
+    .offer-letter {
+        width: 210mm;
+        height: 297mm;
+        padding: 30px;
+        margin: 0;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .zoom-controls {
+        display: none;
+    }
+}
+
+/* Prevent scrolling on body when zooming */
+body.zooming {
+    overflow: hidden;
+}
+
+/* Prevent horizontal scrolling */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Add styles for Rnd component */
+.react-draggable {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+/* Editable content styles */
+.editable-field {
+    min-width: 50px;
+    min-height: 1.2em;
+    padding: 2px 5px;
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+    outline: none;
+    cursor: text;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.editable-field:hover {
+    border-color: #ddd;
+    background: rgba(0,0,0,0.02);
+}
+
+.editable-field:focus {
+    border-color: #007bff;
+    background: #fff;
+}
+
+.editable-field.inline {
+    display: inline;
+    min-width: 20px;
+}
+
+.editable-field.text-end {
+    text-align: right;
+}
+
+.editable-field.text-center {
+    text-align: center;
+}
+
+.editable-field.fw-bold {
+    font-weight: bold;
+}
+
+/* Ensure proper spacing for editable fields */
+.company-details .editable-field {
+    margin-bottom: 5px;
+}
+
+.contact-info .editable-field {
+    margin-right: 5px;
+}
+
+/* Signature section styling */
+.signature-section {
+    margin-top: 50px;
+}
+
+.signature-container {
+    position: relative;
+    height: 100px;
+    margin: 20px 0;
+}
+
+.signature-line {
+    margin-top: 20px;
+}
+
+/* Ensure proper spacing between sections */
+h4, h5, h6 {
+    margin: 20px 0 10px;
+}
+
+p {
+    margin: 10px 0;
+}
+
+ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+/* Action buttons */
+.action-buttons {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Ensure proper display of strong tags */
+.editable-field strong {
+    font-weight: bold;
+}
+
+/* Prevent unwanted line breaks */
+.editable-field br {
+    display: none;
+}
+
+/* Ensure proper display of inline elements */
+.editable-field span {
+    display: inline;
+}
+
+.signature-image {
+    max-width: 200px;
+    max-height: 100px;
+    object-fit: contain;
+}
+
+/* Add these styles if you haven't already */
+.rnd-signature {
+    z-index: 100;
+    cursor: move;
+}
+
+.rnd-signature:hover {
+    outline: 1px dashed #ccc;
+}
+
+.rnd-signature .react-resizable-handle {
+    background: transparent;
+}
+
+.signature-placeholder {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.signature-container:hover {
+    border-color: #ddd !important;
+}
+
+/* Add space for signatures at bottom */
+.mt-5 {
+    margin-top: 2rem !important;
+}
+
+/* Ensure the offer letter container can handle absolute positioning */
+.offer-letter {
+    position: relative;
+    overflow: visible !important;
+}
+
+/* Employee details section */
+.employee-details {
+    margin-bottom: 2rem;
+}
+
+/* List styling */
+.offer-letter ul {
+    margin-bottom: 1.5rem;
+    padding-left: 20px;
+}
+
+.offer-letter li {
+    margin-bottom: 0.5rem;
+}
+
+/* Update/add these styles */
+.company-details {
+    flex: 1;
+    padding-left: 20px;
+    margin-left: 1rem;
+}
+
+.company-details .company-name {
+    margin-bottom: 0.2rem;
+}
+
+.company-details .text-end {
+    margin-bottom: 0.2rem;
+    line-height: 1.2;
+}
+
+.contact-info {
+    margin-top: 5px;
+    line-height: 1.2;
+}
+
+.contact-info .editable-field {
+    margin: 0 2px;
+}
+
+.text-end {
+    text-align: right !important;
+}
+
+.text-end .editable-field {
+    text-align: right;
+}
+
+/* Ensure inline fields maintain right alignment */
+.text-end .editable-field.inline {
+    display: inline-block;
+    text-align: right;
+}
+
+/* Add spacing between contact elements */
+.mx-1 {
+    margin: 0 4px;
+}
+  

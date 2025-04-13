@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import './Client_dashboard.css';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import close from '../../assets/close.png';
 import Logo from '../../assets/logo2.png'
+import LogoHalf from '../../assets/logo-half.png';
 import axios from 'axios';
 import ProfileDropdown from './ProfileDropdown';
 import NotificationIcon from './NotificationIcon';
 import { toast } from 'react-toastify';
+import { FaHome, FaChartBar, FaBriefcase, FaUserPlus, FaUsers, FaUserTie, FaHeadset, FaUserCircle } from 'react-icons/fa';
+import { IoNotificationsOutline } from "react-icons/io5";
+import { motion } from "framer-motion";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { HiMenuAlt2 } from 'react-icons/hi';
 
 const Client_dashboard = () => {
-
+    const location = useLocation();
     const token = localStorage.getItem("token");
     const [user, setUser] = useState();
     const [loading, setLoading] = useState(true);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   async function fetchingProfile(){
     try{
         setLoading(true);
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/profile`, {
+            const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/profile`, {
         headers: {
-          Authorization : `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
         }
-      })
-      .then((res) => {
+            });
         setUser(res.data);
         setLoading(false);
-      })
     }catch(err){
         setLoading(false);
         toast.error('Internal Server Error');
@@ -36,147 +41,135 @@ const Client_dashboard = () => {
     fetchingProfile();
   }, []);
 
+    const toggleSidebar = () => {
+        setSidebarCollapsed(!sidebarCollapsed);
+    };
 
-
-    function menuClickHandler(){
-        document.querySelector('#sidebarCollapse').style.left = '0';
-        document.querySelector('.menu-close').style.display = 'block';
-        document.querySelector('#menu_button').style.display = 'none';
-    }
-    
-    function closeClickHandler(){
-        document.querySelector('#sidebarCollapse').style.left = '-100%';
-        document.querySelector('.menu-close').style.display = 'none';
-        document.querySelector('#menu_button').style.display = 'block';
-    }
+    const navItems = [
+        { path: "/establisment_dashboard/", icon: <FaHome />, label: "Dashboard" },
+        { path: "/establisment_dashboard/analytics", icon: <FaChartBar />, label: "Analytics" },
+        { path: "/establisment_dashboard/job-categories", icon: <FaBriefcase />, label: "Job Categories" },
+        { path: "/establisment_dashboard/client_registration", icon: <FaUserPlus />, label: "Client Registration" },
+        { path: "/establisment_dashboard/sub-admins", icon: <FaUsers />, label: "Sub Admins" },
+        { path: "/establisment_dashboard/supervisor_registration", icon: <FaUserTie />, label: "Supervisor Registration" },
+        { path: "/establisment_dashboard/support", icon: <FaHeadset />, label: "Support 24/7" },
+        { path: "/establisment_dashboard/establisment_profile", icon: <FaUserCircle />, label: "Profile" }
+    ];
 
     if(loading){
-        return <div>Loading....</div>
+        return (
+            <div className="loading-screen">
+                <div className="spinner"></div>
+                <p>Loading dashboard...</p>
+            </div>
+        );
     }
 
   return (
-    <div>
-
-{/* <!-- Dashboard --> */}
-<div className="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
-    {/* <!-- Vertical Navbar --> */}
-    <nav className="navbar show navbar-vertical h-lg-screen navbar-expand-lg px-0 py-0 navbar-light bg-white border-bottom border-bottom-lg-0 border-end-lg" id="navbarVertical">
-        <div className="container-fluid" id='sidebar_div'>
-            {/* <!-- Toggler --> */}
-            
-            {/* <!-- Brand --> */}
-            <a className="" id='navbar_brand' href="#">
-                <img src={Logo} alt="..." />
-            </a>
-            {/* <!-- User menu (mobile) --> */}
-            <div className=' gap-4' id='nav_menu_div'>
-            
-                <ProfileDropdown /> 
-                <button className="navbar-toggler ms-n2" type="button" onClick={menuClickHandler} id='menu_button'>
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <img onClick={closeClickHandler} className="menu-close" src={close} alt="" />
+        <div className="dashboard-wrapper">
+            <div className={`dashboard-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+                <nav className="sidebar">
+                    <div className="sidebar-header">
+                        <motion.img 
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.3 }}
+                            src={sidebarCollapsed ? LogoHalf : Logo} 
+                            alt="Company Logo" 
+                            className={`company-logo ${sidebarCollapsed ? 'logo-small' : ''}`}
+                        />
+                        <motion.button 
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="sidebar-toggle desktop-only"
+                            onClick={toggleSidebar}
+                            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                        >
+                            {sidebarCollapsed ? <MdKeyboardArrowRight /> : <MdKeyboardArrowLeft />}
+                        </motion.button>
             </div>
             
-            {/* <!-- Collapse --> */}
-            <div className="sidebarCollapse" id="sidebarCollapse">
-                {/* <img onClick={closeClickHandler} className="menu-close" src={close} alt="" /> */}
-                {/* <!-- Navigation --> */}
-                <ul className="navbar-nav" id='nav_div'>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to="/establisment_dashboard/">
-                            <i className="bi bi-house"></i> Dashboard
+                    <div className="nav-links">
+                        {navItems.map((item, index) => (
+                            <motion.div
+                                key={index}
+                                whileHover={{ x: 5 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                            >
+                                <Link
+                                    to={item.path}
+                                    className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                                >
+                                    <span className="nav-icon">{item.icon}</span>
+                                    <span className={`nav-label ${sidebarCollapsed ? 'collapsed' : ''}`}>
+                                        {item.label}
+                                    </span>
                         </Link>
-                    </li>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to="/establisment_dashboard/">
-                            <i className="bi bi-bar-chart"></i> Analitycs
-                        </Link>
-                    </li>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to="/establisment_dashboard/">
-                            <i className="bi bi-bar-chart"></i>Job Categories
-                        </Link>
-                    </li>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to="/establisment_dashboard/client_registration">
-                            <i className="bi bi-person"></i> Client Registration
-                            {/* <span className="badge bg-soft-primary text-primary rounded-pill d-inline-flex align-items-center ms-auto">6</span> */}
-                        </Link>
-                    </li>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to='/establisment_dashboard/'>
-                            <i className="bi bi-person-plus"></i> Sub Admins
-                            {/* <span className="badge bg-soft-primary text-primary rounded-pill d-inline-flex align-items-center ms-auto">6</span> */}
-                        </Link>
-                    </li>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to='/establisment_dashboard/supervisor_registration'>
-                            <i className="bi bi-bookmarks"></i> Supervisor Registration
-                        </Link>
-                    </li>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to="/establisment_dashboard/">
-                            <i className="bi bi-people"></i> Support 24/7
-                        </Link>
-                    </li>
-                    <li className="nav-item" id='nav_item'>
-                        <Link className="nav-link" to="/establisment_dashboard/establisment_profile">
-                            <i className="bi bi-people"></i> Profile
-                        </Link>
-                    </li>
-                </ul>
-            </div>
+                            </motion.div>
+                        ))}
         </div>
     </nav>
-    {/* <!-- Main content --> */}
-    <div className="flex-grow-1 overflow-y-lg-auto" id='main_div'>
-        {/* <!-- Header --> */}
-        <header className="bg-surface-primary border-bottom" id="dashboard_header">
-            <div className="container-fluid" style={{paddingInline : '0px'}}>
-                <div className="mb-npx py-3" style={{paddingInline : '25px'}}>
-                    <div className="row align-items-center">
-                        <div className="col-sm-10 col-12 mb-sm-0 mb-0">
-                            {/* <!-- Title --> */}
-                            <h1 className="h2 mb-0 ls-tight" id='name_heading'>Welcome {user && user.name}</h1>
+
+                <main className="main-content">
+                    {/* Mobile Header */}
+                    <div className="mobile-header">
+                        <div className="mobile-logo">
+                            <img 
+                                src={Logo} 
+                                alt="Company Logo" 
+                                className="mobile-company-logo"
+                            />
                         </div>
-                        {/* <!-- Actions --> */}
-                        <div className="col-sm-2 col-12 text-sm-end">
-                            {/* <div className="mx-n1">
-                                <a href="#" className="btn d-inline-flex btn-sm btn-neutral border-base mx-1">
-                                    <span className=" pe-2">
-                                        <i className="bi bi-pencil"></i>
-                                    </span>
-                                    <span>Edit</span>
-                                </a>
-                                <a href="#" className="btn d-inline-flex btn-sm btn-primary mx-1">
-                                    <span className=" pe-2">
-                                        <i className="bi bi-plus"></i>
-                                    </span>
-                                    <span>Create</span>
-                                </a>
-                            </div> */}
-                            <div className='profile_pic_toggle'>
-                                <NotificationIcon />
-                                <ProfileDropdown profile_pic={user.profilePic} />
+                        <div className="mobile-actions">
+                            <ProfileDropdown profile_pic={user?.profilePic} />
+                            <button 
+                                className="mobile-menu-btn"
+                                onClick={toggleSidebar}
+                            >
+                                {sidebarCollapsed ? <MdKeyboardArrowLeft size={24} /> : <HiMenuAlt2 size={24} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile Welcome Section */}
+                    <div className="mobile-welcome-section">
+                        <h1 className="mobile-welcome-text">
+                            Welcome back, <span className="user-name">{user?.name}</span>
+                        </h1>
+                        <p className="mobile-date-text">{new Date().toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        })}</p>
+                    </div>
+
+                    {/* Desktop Header */}
+                    <div className="dashboard-header">
+                        <div className="desktop-header">
+                            <div className="header-left">
+                                <h1 className="welcome-text">
+                                    Welcome back, <span className="user-name">{user?.name}</span>
+                                </h1>
+                                <p className="date-text">{new Date().toLocaleDateString('en-US', { 
+                                    weekday: 'long', 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                })}</p>
                             </div>
-                            
+                            <div className="header-actions">
+                                <NotificationIcon />
+                                <div className="divider-vertical"></div>
+                                <ProfileDropdown profile_pic={user?.profilePic} />
+                            </div>
                         </div>
-                        
                     </div>
                     
-                    {/* <!-- Nav --> */}
-                    {/* <ul className="nav nav-tabs mt-4 overflow-x border-0">
-                  
-                    </ul> */}
+                    <div className="content-area">
+                        <Outlet />
                 </div>
-            </div>
-        </header>
-        {/* <!-- Main --> */}
-        <div id='outlet_div'>
-            <Outlet />
-        </div>
-    </div>
+                </main>
 </div>
     </div>
   )

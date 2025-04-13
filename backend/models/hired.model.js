@@ -77,6 +77,15 @@ const hiredSchema = new mongoose.Schema({
     },
     file2: {
         type: String
+    },
+    offerLetterId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OfferLetter'
+    },
+    offerLetterStatus: {
+        type: String,
+        enum: ['pending', 'offer_sent', 'offer_accepted', 'offer_rejected'],
+        default: 'pending'
     }
 });
 

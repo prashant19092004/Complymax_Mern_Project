@@ -213,6 +213,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    offerLetters: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OfferLetter'
+    }],
+    sentOfferLetters: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OfferLetter'
+    }]
 })
 
 module.exports = mongoose.model("User",userSchema)

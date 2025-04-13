@@ -64,40 +64,40 @@ const AadharSection = ({
           <dt>Aadhar Card Images</dt>
           <div className="d-flex flex-column gap-3">
             {/* Front Image Section */}
-            <dd className="d-flex align-items-center gap-2">
+          <dd className="d-flex align-items-center gap-2">
               <span className="text-muted me-2">Front:</span>
               {user.aadhar_front_image ? (
-                <>
-                  <span className="text-success">
-                    <i className="fas fa-check-circle"></i> Uploaded
-                  </span>
-                  <div className="d-flex gap-2">
-                    <button 
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${user.aadhar_front_image}`, '_blank')}
-                    >
-                      View Front
-                    </button>
-                    <button 
-                      className="btn btn-primary btn-sm"
-                      onClick={() => aadhar_front_image_input_ref.current.click()}
-                    >
-                      Update
-                    </button>
-                    <button 
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={handleDeleteAadharFrontImage}
-                    >
-                      <MdDeleteOutline size={18} />
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span className="text-warning">
-                    <i className="fas fa-exclamation-circle"></i> Not uploaded
-                  </span>
+              <>
+                <span className="text-success">
+                  <i className="fas fa-check-circle"></i> Uploaded
+                </span>
+                <div className="d-flex gap-2">
                   <button 
+                    className="btn btn-outline-primary btn-sm"
+                      onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${user.aadhar_front_image}`, '_blank')}
+                  >
+                      View Front
+                  </button>
+                  <button 
+                    className="btn btn-primary btn-sm"
+                      onClick={() => aadhar_front_image_input_ref.current.click()}
+                  >
+                    Update
+                  </button>
+                  <button 
+                    className="btn btn-outline-danger btn-sm"
+                      onClick={handleDeleteAadharFrontImage}
+                  >
+                    <MdDeleteOutline size={18} />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="text-warning">
+                  <i className="fas fa-exclamation-circle"></i> Not uploaded
+                </span>
+                <button 
                     onClick={() => aadhar_front_image_input_ref.current.click()}
                     className="btn btn-primary btn-sm"
                   >
@@ -143,12 +143,12 @@ const AadharSection = ({
                   </span>
                   <button 
                     onClick={() => aadhar_back_image_input_ref.current.click()}
-                    className="btn btn-primary btn-sm"
-                  >
+                  className="btn btn-primary btn-sm"
+                >
                     Upload Back
-                  </button>
-                </>
-              )}
+                </button>
+              </>
+            )}
             </dd>
           </div>
 
@@ -181,16 +181,16 @@ const AadharSection = ({
             accept="image/*"
             className="d-none"
           />
-          <input 
+            <input 
             ref={aadhar_back_image_input_ref}
-            type="file"
-            onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0) {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onloadend = () => {
-                  setPreviewUrl(reader.result);
+              type="file"
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  const file = e.target.files[0];
+                  const reader = new FileReader();
+                  
+                  reader.onloadend = () => {
+                    setPreviewUrl(reader.result);
                   setCrop({
                     unit: 'px',
                     x: 0,
@@ -198,17 +198,17 @@ const AadharSection = ({
                     width: 200,
                     height: 150
                   });
-                  setShowCropModal(true);
+                    setShowCropModal(true);
                   setIsAadharFront(false);
                   setIsPanImage(false);
-                };
+                  };
 
-                reader.readAsDataURL(file);
-              }
-            }}
-            accept="image/*"
-            className="d-none"
-          />
+                  reader.readAsDataURL(file);
+                }
+              }}
+              accept="image/*"
+              className="d-none"
+            />
         </div>
       </div>
     </div>

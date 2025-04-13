@@ -18,7 +18,8 @@ const adminSchema = new mongoose.Schema({
         trim:true
     },
     contact: {
-        type: Number
+        type: String,
+        default: ''
     },
     role: {
         type: String
@@ -45,6 +46,34 @@ const adminSchema = new mongoose.Schema({
     resetPasswordExpires: {
         type : Date,
     },
+    profilePic: {
+        type: String,
+        default: ''
+    },
+    address: {
+        type: String,
+        default: ''
+    },
+    registration_number: {
+        type: String,
+        default: ''
+    },
+    gst_number: {
+        type: String,
+        default: ''
+    },
+    logo: {
+        type: String,
+        default: null
+    },
+    signature: {
+        type: String,
+        default: null
+    },
+    offerLetters: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'OfferLetter'
+  }]
  })
 
  module.exports = mongoose.model("Admin",adminSchema)

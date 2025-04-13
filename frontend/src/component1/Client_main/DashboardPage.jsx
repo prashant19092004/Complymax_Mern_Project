@@ -12,7 +12,7 @@ const DashboardPage = () => {
                 <div className="row g-6 mb-6">
                     <div className="col-xl-3 col-sm-6 col-12 py-3">
                         <div className="card shadow border-0">
-                            <Link to="/client_dashboard/offer-letter">
+                            {/* <Link to="/client_dashboard/offer-letter"> */}
                                 <div className="card-body">
                                     <div className="row">
                                         <div className="col">
@@ -32,7 +32,7 @@ const DashboardPage = () => {
                                         <span className="text-nowrap text-xs text-muted">Since last month</span>
                                     </div> */}
                                 </div>
-                            </Link>
+                            {/* </Link> */}
                         </div>
                     </div>
                     <div className="col-xl-3 col-sm-6 col-12 py-3">

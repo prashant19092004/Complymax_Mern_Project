@@ -48,8 +48,8 @@ import ClientDashboardPage from './component1/Client_main/DashboardPage';
 import EstablishmentPanForm from './pages/Establishment/PanForm/PanForm';
 import EstablishmentAccountForm from './pages/Establishment/AccountForm/AccountForm';
 import UanEsicForm from './component1/UserDashboard/UanEsicForm';
-import OfferLetter from './pages/Client/OfferLetter/OfferLetter';
-import SendOfferLetter from './pages/Client/OfferLetter/SendOfferLetter';
+import OfferLetter from './pages/Supervisor/OfferLetter/OfferLetter';
+import SendOfferLetter from './pages/Supervisor/OfferLetter/SendOfferLetter';
 // import EstablismentProfile from './pages/Establishment/Profile/Profile';
 
 
@@ -171,14 +171,6 @@ function App() {
                 element : <ClientDashboardPage />
               },
               {
-                path : '/client_dashboard/offer-letter',
-                element : <OfferLetter />
-              },
-              {
-                path : '/client_dashboard/send-offer-letter',
-                element : <SendOfferLetter />
-              },
-              {
                 path : '/client_dashboard/profile',
                 element : <ClientProfile />
               }
@@ -215,7 +207,15 @@ function App() {
               {
                 path : '/supervisor_dashboard/profile',
                 element : <Profile />
-              }
+              },
+              {
+                path : '/supervisor_dashboard/offer-letter',
+                element : <OfferLetter />
+              },
+              {
+                path : '/supervisor_dashboard/send-offer-letter',
+                element : <SendOfferLetter />
+              },
             ]
           },
           {
