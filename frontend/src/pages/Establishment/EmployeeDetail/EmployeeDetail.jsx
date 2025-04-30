@@ -17,18 +17,7 @@ const EmployeeDetail = () => {
     const [profilePicUrl, setProfilePicUrl] = useState('');
     const { state } = useLocation();
 
-    if (!state?.employeeId) {
-        return (
-            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-                <div className="text-center">
-                    <h4 className="text-danger">Invalid Employee ID</h4>
-                    <p>Please go back and try again</p>
-                </div>
-            </div>
-        );
-    }
-
-    const userId = state.employeeId;
+    const userId = state?.employeeId;
 
     async function fetchingProfile() {
         try {
@@ -54,8 +43,22 @@ const EmployeeDetail = () => {
     }
 
     useEffect(() => {
+        if (!userId) {
+            return;
+        }
         fetchingProfile();
-    }, []);
+    }, [userId]);
+
+    if (!userId) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                <div className="text-center">
+                    <h4 className="text-danger">Invalid Employee ID</h4>
+                    <p>Please go back and try again</p>
+                </div>
+            </div>
+        );
+    }
 
     if (loading) {
         return (
@@ -96,8 +99,6 @@ const EmployeeDetail = () => {
     function addAccount() {
         navigate('/establisment_dashboard/add_account', { state: { userId } });
     }
-
-    // console.log(user_);
 
     return (
         <div id="screen">
