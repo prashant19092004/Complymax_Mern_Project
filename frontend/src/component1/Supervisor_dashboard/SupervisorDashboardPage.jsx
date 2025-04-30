@@ -142,6 +142,25 @@ const SupervisorDashboardPage = () => {
                             </Link>
                         </div>
                     </div>
+                    <div className="col-xl-3 col-sm-6 col-12 py-3">
+                        <div className="card shadow border-0">
+                            <Link to="/supervisor_dashboard/users">
+                                <div className="card-body">
+                                    <div className="row">
+                                        <div className="col">
+                                            <span className="h6 font-semibold text-muted text-sm d-block mb-2">Users</span>
+                                            {/* <span className="h3 font-bold mb-0">95%</span> */}
+                                        </div>
+                                        <div className="col-auto">
+                                            <div className="icon icon-shape text-white text-lg rounded-circle" id='icon_shape'>
+                                            <i className="bi bi-file-earmark-person"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

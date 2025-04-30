@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 // import { Parser } from "json2csv";
 import Papa from 'papaparse';
-import { FaDownload } from "react-icons/fa";
+import { FaDownload, FaSearch, FaIdCard, FaUser, FaPhone, FaAddressCard } from 'react-icons/fa';
 
 
 const ActiveUsers = () => {
@@ -104,7 +104,13 @@ const ActiveUsers = () => {
     }, []);
 
     if(loading){
-        return (<div>Loading...</div>)
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
     }
 
     let changeHandle = (e) => {
@@ -136,45 +142,160 @@ const ActiveUsers = () => {
 
 
   return (
-    <div className='supervisor_hire position-relative w-full'>
-        <div className='w-full d-flex justify-content-center mt-5'>
-            <h1 className='fs-2 text-center' style={{color : 'green'}}>Active Employees</h1>
-        </div>
-        <div className='ragister_div' style={{paddingTop : '0px', alignItems : 'center', cursor: 'pointer'}}>
-            <div className='search_container mb-5'>
-                  <input type="text" id="box" placeholder="Search...." class="search__box" onChange={changeHandle} />
-                  <i class="fas fa-search search__icon" id="icon" onClick={toggleShow}></i>
+    <div className="container-fluid py-3 py-md-4">
+        <div className="row mb-3 mb-md-4">
+            <div className="col-12">
+                <h1 className="text-center text-primary fw-bold mb-0">Active Employees</h1>
             </div>
-            <FaDownload onClick={downloadCSV} />
-            {/* <Button className='mt-2' onClick={postHiringButtonHandler} varient='primary'>Post Hiring</Button> */}
         </div>
-        <div>
-            <ul className='list_box px-5' style={{padding : '0px'}}>
-                {
-                    filteredList?.map((user, index) => {
-                        return ( 
-                            <li className='list' key={index}>
-                                <img className='' src={defaultProfile} alt='' />
-                                <div className='w-full'>
-                                    <div className='list_content w-full' style={{justifyContent : 'space-between'}}>
-                                        <div>{user.employeeId}</div>
-                                        <div className='list-left'>
-                                            <p>{user.full_Name}</p>
-                                        </div>
-                                        <div className='list-middle'>
-                                            <p>{user.contact}</p>
-                                        </div>
-                                        <div className='list-right'>
-                                            <button class="btn custom-btn" onClick={() => {navigate('/establisment_dashboard/employee-detail', { state : { employeeId : user._id } })}} style={buttonStyle}>View</button>
+
+        <div className="row mb-3 mb-md-4">
+            <div className="col-12 col-md-6 mx-auto">
+                <div className="input-group shadow-sm">
+                    <span className="input-group-text bg-white border-end-0">
+                        <FaSearch className="text-muted" />
+                    </span>
+                    <input 
+                        type="text" 
+                        className="form-control border-start-0 ps-0" 
+                        placeholder="Search by employee name..." 
+                        onChange={changeHandle} 
+                        style={{ boxShadow: 'none' }}
+                    />
+                    <button 
+                        className="btn btn-outline-primary" 
+                        onClick={downloadCSV}
+                        title="Download CSV"
+                    >
+                        <FaDownload />
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {/* Desktop View */}
+        <div className="d-none d-md-block">
+            <div className="row">
+                <div className="col-12">
+                    <div className="card shadow-sm">
+                        <div className="card-body p-0">
+                            <div className="table-responsive">
+                                <table className="table table-hover mb-0">
+                                    <thead className="table-light">
+                                        <tr>
+                                            <th className="text-center">Profile</th>
+                                            <th>Employee ID</th>
+                                            <th>Name</th>
+                                            <th>Contact</th>
+                                            <th>Aadhar Number</th>
+                                            <th className="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredList?.map((user, index) => (
+                                            <tr key={index} className="align-middle">
+                                                <td className="text-center">
+                                                    <img 
+                                                        src={defaultProfile} 
+                                                        alt="Profile" 
+                                                        className="rounded-circle"
+                                                        style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <div className="d-flex align-items-center">
+                                                        <FaIdCard className="me-2 text-primary" />
+                                                        {user.employeeId}
+                                                    </div>
+                                                </td>
+                                                <td className="fw-medium">{user.full_Name}</td>
+                                                <td>{user.contact}</td>
+                                                <td>{user.aadhar_number}</td>
+                                                <td className="text-center">
+                                                    <button 
+                                                        className="btn btn-primary btn-sm"
+                                                        onClick={() => navigate('/supervisor_dashboard/employee-detail', { state: { employeeId: user._id } })}
+                                                    >
+                                                        View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {filteredList.length === 0 && (
+                                            <tr>
+                                                <td colSpan="6" className="text-center py-4">
+                                                    <div className="text-muted">
+                                                        No employees found
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Mobile View */}
+        <div className="d-block d-md-none">
+            <div className="row g-3">
+                {filteredList?.map((user, index) => (
+                    <div key={index} className="col-12">
+                        <div className="card shadow-sm">
+                            <div className="card-body">
+                                <div className="d-flex align-items-center mb-3">
+                                    <img 
+                                        src={defaultProfile} 
+                                        alt="Profile" 
+                                        className="rounded-circle me-3"
+                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                    />
+                                    <div>
+                                        <h6 className="mb-1 fw-bold">{user.full_Name}</h6>
+                                        <small className="text-muted">ID: {user.employeeId}</small>
+                                    </div>
+                                </div>
+                                <div className="row g-2">
+                                    <div className="col-6">
+                                        <div className="d-flex align-items-center text-muted">
+                                            <FaPhone className="me-2" />
+                                            <small>{user.contact}</small>
                                         </div>
                                     </div>
-                                    <p>Addhar No. : {user.aadhar_number}</p>
-                                </div>  
-                            </li>
-                        )
-                    })
-                }
-            </ul>
+                                    <div className="col-6">
+                                        <div className="d-flex align-items-center text-muted">
+                                            <FaAddressCard className="me-2" />
+                                            <small>{user.aadhar_number}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mt-3">
+                                    <button 
+                                        className="btn btn-primary w-100"
+                                        onClick={() => navigate('/supervisor_dashboard/employee-detail', { state: { employeeId: user._id } })}
+                                    >
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                {filteredList.length === 0 && (
+                    <div className="col-12">
+                        <div className="card shadow-sm">
+                            <div className="card-body text-center py-4">
+                                <div className="text-muted">
+                                    No employees found
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     </div>
   )

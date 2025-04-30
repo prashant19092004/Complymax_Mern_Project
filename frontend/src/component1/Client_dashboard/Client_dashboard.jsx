@@ -47,12 +47,12 @@ const Client_dashboard = () => {
 
     const navItems = [
         { path: "/establisment_dashboard/", icon: <FaHome />, label: "Dashboard" },
-        { path: "/establisment_dashboard/analytics", icon: <FaChartBar />, label: "Analytics" },
-        { path: "/establisment_dashboard/job-categories", icon: <FaBriefcase />, label: "Job Categories" },
+        { path: "/establisment_dashboard/", icon: <FaChartBar />, label: "Analytics" },
+        { path: "/establisment_dashboard/", icon: <FaBriefcase />, label: "Job Categories" },
         { path: "/establisment_dashboard/client_registration", icon: <FaUserPlus />, label: "Client Registration" },
-        { path: "/establisment_dashboard/sub-admins", icon: <FaUsers />, label: "Sub Admins" },
+        { path: "/establisment_dashboard/", icon: <FaUsers />, label: "Sub Admins" },
         { path: "/establisment_dashboard/supervisor_registration", icon: <FaUserTie />, label: "Supervisor Registration" },
-        { path: "/establisment_dashboard/support", icon: <FaHeadset />, label: "Support 24/7" },
+        { path: "/establisment_dashboard/", icon: <FaHeadset />, label: "Support 24/7" },
         { path: "/establisment_dashboard/establisment_profile", icon: <FaUserCircle />, label: "Profile" }
     ];
 

@@ -7,9 +7,36 @@ const Establishment = require('../models/admin');
 const Supervisor = require('../models/supervisor.model');
 const Hiring = require('../models/hiring.model');
 const {auth} = require('../middleware/auth');
+const offerLetterController = require('../controllers/offerLetterController');
+
+router.get('/:id', auth, async function(req, res){
+    try{
+        
+
+        const supervisorId = req.user.id;
+        const hiredId = req.params.id;
+
+        let offerLetter = await OfferLetter.findOne({
+            supervisorId,
+            hiredId
+        });
+
+        res.status(200).json({
+            message : "status checked",
+            offerLetter
+        })
+    } catch (error) {
+        console.error('Error in checking status :', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to check the status',
+            error: error.message
+        });
+    }
+})
 
 router.post('/send', auth, async function(req, res) {
-    console.log('Received offer letter data:', JSON.stringify(req.body, null, 2));
+    // console.log('Received offer letter data:', JSON.stringify(req.body, null, 2));
     try {
         // Validate required fields
         const requiredFields = [
@@ -57,7 +84,8 @@ router.post('/send', auth, async function(req, res) {
                 address: req.body.letterContent?.header?.address || '',
                 email: req.body.letterContent?.header?.email || '',
                 phone: req.body.letterContent?.header?.phone || ''
-            }
+            },
+            status: req.body.status || 'pending'
         };
 
         console.log('Processed letter content:', JSON.stringify(letterContent, null, 2));
@@ -202,5 +230,14 @@ router.get('/establishment/:establishmentId', auth, async function(req, res) {
         });
     }
 });
+
+// Get all offer letters for a user
+router.get('/user/offer-letters', auth, offerLetterController.getUserOfferLetters);
+
+// Get a specific offer letter
+router.get('/user/offer-letter/:id', auth, offerLetterController.getOfferLetterById);
+
+// Accept or reject an offer letter
+router.post('/user/offer-letter/:id/respond', auth, offerLetterController.respondToOfferLetter);
 
 module.exports = router; 

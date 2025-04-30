@@ -170,27 +170,16 @@ const UserDashboard = () => {
                     </div>
                     
                     {/* Alert Section */}
-                    <div className='w-full d-flex flex-wrap gap-2 px-3 alert-section'>
-                        {(!user?.account_added) && 
-                            <div className='alert-item'>
-                                <p>You haven't added your Account</p>
-                                <button 
-                                    onClick={() => navigate('/user_dashboard/add_account')}
-                                    className='alert-button'
-                                >
-                                    Add Account
-                                </button>
+                    <div className='w-full d-flex flex-wrap gap-2 px-3' style={{backgroundColor : '#1e3686', paddingBlock : '4px'}}>                    {(!user.account_added) && 
+                        <div className='d-flex gap-1'>
+                            <p className='' style={{color : 'white', fontSize : '0.8rem', margin : '0px'}}>You haven't add your Account</p>
+                            <button onClick={() => {navigate('/user_dashboard/add_account');}} className='' style={{background : 'transparent',fontSize : '0.7rem', paddingInline : '2px', color : 'white', border : '1px solid white'}}>Add Account</button>
                         </div>
                     }
-                        {(!user?.pan_added) &&
-                            <div className='alert-item'>
-                                <p>You haven't added your Pan</p>
-                                <button 
-                                    onClick={() => navigate('/user_dashboard/add_pan')}
-                                    className='alert-button'
-                                >
-                                    Add Pan
-                                </button>
+                    {(!user.pan_added) &&
+                        <div className='d-flex gap-1'>
+                            <p className='' style={{color : 'white', fontSize : '0.8rem', margin : '0px'}}>You haven't add your Pan</p>
+                            <button onClick={() => {navigate('/user_dashboard/add_pan');}} className='' style={{background : 'transparent',fontSize : '0.7rem', paddingInline : '2px', color : 'white', border : '1px solid white'}}>Add Pan</button>
                         </div>
                     }
                 </div>

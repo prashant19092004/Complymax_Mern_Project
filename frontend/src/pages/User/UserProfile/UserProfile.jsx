@@ -4,16 +4,14 @@ import axios from "axios";
 import "../../../component1/UserDashboard/style.css";
 import "../../../component1/Home/style.css";
 import "./UserProfile.css";
-import PanForm from "../../../component1/UserDashboard/PanForm";
+// import PanForm from "../../../component1/UserDashboard/PanForm";
 import { useNavigate } from "react-router-dom";
-import { FaRegEdit, FaIdCard, FaCalendar, FaUser, FaPhone, FaMapMarkerAlt, FaGlobe, FaEnvelope } from "react-icons/fa";
+import { FaRegEdit, FaIdCard, FaCalendar, FaUser, FaPhone, FaMapMarkerAlt, FaGlobe, FaEnvelope, FaSignature } from "react-icons/fa";
 import close from "../../../assets/close.png";
 import { toast } from "react-toastify";
 import { MdDeleteOutline, MdEdit } from "react-icons/md";
 import default_pic from "../../../assets/Default_pfp.svg.png";
-import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { createPortal } from "react-dom";
 import CropModal from "./CropModal";
 import AadharSection from "./UserProfileComponent/AadharSection";
 import EducationSection from './UserProfileComponent/EducationSection';
@@ -89,6 +87,10 @@ const UserProfile = () => {
     const aadhar_front_image_input_ref = useRef();
     const aadhar_back_image_input_ref = useRef();
     const [isAadharFront, setIsAadharFront] = useState(false);
+    const [isAadharBack, setIsAadharBack] = useState(false);
+
+    const [isSignature, setIsSignature] = useState(false);
+    const signature_input_ref = useRef();
 
   const months = [
     "January",
@@ -483,6 +485,66 @@ const handleDeleteAccountImage = async () => {
   } catch (error) {
       console.error("Delete error:", error);
       toast.error("Failed to delete image");
+  }
+};
+
+const handleSignatureCroppedImage = async (blob) => {
+  try {
+    const formData = new FormData();
+    const file = new File([blob], "cropped-signature.jpeg", {
+      type: "image/jpeg",
+    });
+    formData.append("image", file);
+
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/upload/signature`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data.user) {
+      setUser((prev) => ({
+        ...prev,
+        signature: response.data.user.signature,
+      }));
+      toast.success("Signature uploaded successfully!");
+      setShowCropModal(false);
+      setPreviewUrl(null);
+      setIsSignature(false);
+    }
+  } catch (error) {
+    console.error("Upload error:", error);
+    toast.error(error.response?.data?.message || "Failed to upload signature");
+  }
+};
+
+const handleDeleteSignature = async () => {
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/delete/signature`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data.user) {
+      setUser((prev) => ({
+        ...prev,
+        signature: null,
+      }));
+      toast.success("Signature deleted successfully!");
+    }
+  } catch (error) {
+    console.error("Delete error:", error);
+    toast.error("Failed to delete signature");
   }
 };
 
@@ -972,6 +1034,84 @@ const handleDeleteCertificate = async (id) => {
           certificate_input_ref={certificate_input_ref}
         />
         </div>
+
+        <div className="col-12">
+          <div className="card shadow-sm border-0">
+            <div className="card-body p-3 p-md-4">
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 mb-md-4">
+                <h4 className="card-title mb-2 mb-md-0 fw-bold text-primary">
+                  <FaSignature className="me-2" />
+                  Signature
+                </h4>
+                <div className="d-flex gap-2">
+                  {user.signature ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setIsSignature(true);
+                          signature_input_ref.current.click();
+                        }}
+                        className="btn btn-primary btn-sm"
+                      >
+                        Change
+                      </button>
+                      <button
+                        onClick={handleDeleteSignature}
+                        className="btn btn-danger btn-sm"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsSignature(true);
+                        signature_input_ref.current.click();
+                      }}
+                      className="btn btn-primary btn-sm"
+                    >
+                      Add Signature
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-12">
+                  <div className="signature-preview-container" style={{ 
+                    minHeight: '200px', 
+                    width: '100%', 
+                    border: '1px dashed #dee2e6',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    {user.signature ? (
+                      <img
+                        src={user.signature.startsWith('http') ? user.signature : `${process.env.REACT_APP_BACKEND_URL}${user.signature}`}
+                        alt="Signature"
+                        className="signature-preview"
+                        style={{ 
+                          maxHeight: '150px',
+                          maxWidth: '100%',
+                          objectFit: 'contain',
+                          display: 'block'
+                        }}
+                      />
+                    ) : (
+                      <div className="no-signature-placeholder">
+                        <FaSignature size={48} className="text-muted" />
+                        <p className="text-muted mt-2">No signature uploaded</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -994,15 +1134,23 @@ const handleDeleteCertificate = async (id) => {
         .info-card {
           background-color: #f8f9fa;
           transition: all 0.3s ease;
+          border-radius: 12px;
+          border: 1px solid rgba(0,0,0,0.05);
         }
         
         .info-card:hover {
           background-color: #fff;
-          box-shadow: 0 0 15px rgba(0,0,0,0.1);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+          transform: translateY(-2px);
         }
         
         .icon-container {
           transition: all 0.3s ease;
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         
         .icon-container:hover {
@@ -1012,16 +1160,154 @@ const handleDeleteCertificate = async (id) => {
         .badge {
           padding: 0.5rem 0.75rem;
           font-weight: 500;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+        }
+
+        .badge:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         .profile-info {
           flex: 1;
         }
 
+        .card {
+          border-radius: 16px;
+          transition: all 0.3s ease;
+        }
+
+        .card:hover {
+          box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        }
+
+        .card-title {
+          font-size: 1.25rem;
+          letter-spacing: -0.02em;
+        }
+
+        .btn-primary {
+          padding: 0.5rem 1.25rem;
+          font-weight: 500;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(13,110,253,0.2);
+        }
+
+        .alert-section {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          margin-top: 1rem;
+        }
+
+        .alert-item {
+          flex: 1;
+          min-width: 280px;
+          background: #fff3cd;
+          border: 1px solid #ffeeba;
+          border-radius: 12px;
+          padding: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          transition: all 0.3s ease;
+        }
+
+        .alert-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(255,193,7,0.15);
+        }
+
+        .alert-item p {
+          margin: 0;
+          color: #856404;
+          font-weight: 500;
+        }
+
+        .alert-button {
+          background: #ffc107;
+          color: #856404;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .alert-button:hover {
+          background: #ffca2c;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(255,193,7,0.2);
+        }
+
+        .enquiry-section {
+          backdrop-filter: blur(8px);
+        }
+
+        .enquiry-form {
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+          padding: 2rem;
+          max-width: 90%;
+          width: 500px;
+        }
+
+        .enquiry-form h2 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          color: #1a1a1a;
+        }
+
+        .input-div {
+          margin-bottom: 1rem;
+        }
+
+        .input-div input,
+        .input-div select,
+        .input-div textarea {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 1px solid #dee2e6;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+        }
+
+        .input-div input:focus,
+        .input-div select:focus,
+        .input-div textarea:focus {
+          border-color: #0d6efd;
+          box-shadow: 0 0 0 4px rgba(13,110,253,0.1);
+          outline: none;
+        }
+
+        .enquiry-button {
+          background: #0d6efd;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .enquiry-button:hover {
+          background: #0b5ed7;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(13,110,253,0.2);
+        }
+
         @media (max-width: 768px) {
           .profile-pic {
-            width: 100px !important;
-            height: 100px !important;
+            width: 80px !important;
+            height: 80px !important;
           }
           
           .card-body {
@@ -1031,6 +1317,50 @@ const handleDeleteCertificate = async (id) => {
           .info-card {
             margin-bottom: 0.5rem;
           }
+
+          .icon-container {
+            width: 40px;
+            height: 40px;
+          }
+
+          .card-title {
+            font-size: 1.1rem;
+          }
+
+          .alert-item {
+            min-width: 100%;
+          }
+        }
+
+        .signature-preview-container {
+          background-color: #f8f9fa;
+          border-radius: 12px;
+          padding: 2rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 200px;
+          width: 100%;
+          border: 2px dashed #dee2e6;
+          transition: all 0.3s ease;
+          margin: 1rem 0;
+        }
+
+        .signature-preview {
+          max-width: 100%;
+          max-height: 150px;
+          object-fit: contain;
+          display: block;
+          margin: 0 auto;
+        }
+
+        .no-signature-placeholder {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          color: #6c757d;
         }
       `}
     </style>
@@ -1241,7 +1571,11 @@ const handleDeleteCertificate = async (id) => {
             ? handleAccountCroppedImage
             : isAadharFront
               ? handleAadharFrontCroppedImage
-              : handleAadharBackCroppedImage
+              : isAadharBack
+              ? handleAadharBackCroppedImage
+              : isSignature
+              ? handleSignatureCroppedImage
+              : handleCertificateCroppedImage
       }
       imageType={
         isPanImage 
@@ -1250,7 +1584,11 @@ const handleDeleteCertificate = async (id) => {
             ? "account"
             : isAadharFront
             ? "aadhar front"
-            : "aadhar back"
+            : isAadharBack
+            ? "aadhar back"
+            : isSignature
+            ? "signature"
+            : "certificate"
       }
     />
 
@@ -1265,6 +1603,25 @@ const handleDeleteCertificate = async (id) => {
             setPreviewUrl(reader.result);
             setCrop(null);
             setShowCertificateModal(true);
+          };
+          reader.readAsDataURL(file);
+        }
+      }}
+      accept="image/*"
+      className="d-none"
+    />
+
+    <input
+      ref={signature_input_ref}
+      type="file"
+      onChange={(e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewUrl(reader.result);
+            setCrop(null);
+            setShowCropModal(true);
           };
           reader.readAsDataURL(file);
         }

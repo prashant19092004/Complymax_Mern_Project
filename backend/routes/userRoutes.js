@@ -15,13 +15,11 @@ const { uploadImage } = require('../middleware/multer.js');
 const { uploadPDF } = require('../middleware/multer.js');
 const path = require('path');
 const fs = require('fs');
-
-
+const { uploadSignature, deleteSignature } = require('../controllers/userController');
 
 const { userlogin, usersignup, adminsignup, adminlogin, clientregister, clientlogin, supervisorlogin, supervisorregister, superadminlogin, superadminsignup } = require("../controller/auth")
 
 const { auth, isStudent, isAdmin, isSuperadmin, isSupervisor } = require("../middleware/auth");
-
 
 // router.post("/login", login)
 router.post("/usersignup", usersignup)
@@ -1181,44 +1179,87 @@ router.get("/establisment/profile",auth, async (req, res) => {
     })
 
     router.post('/supervisor/save-pf-esic', auth, async(req, res) => {
-        try{
-            const { user_id, uan_number, epf_number, esi_number} = req.body;
-            const currentUser = await userModel.findOne({_id : user_id}, {uan_number : 1, epf_number : 1, esi_number : 1, pf_esic_status : 1, hired : 1, active_user_status : 1})
-            .populate('hired');
+        try {
+            // Input validation
+            const { user_id, uan_number, epf_number, esi_number } = req.body;
+            
+            if (!user_id || !uan_number || !epf_number || !esi_number) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "All fields (user_id, uan_number, epf_number, esi_number) are required" 
+                });
+            }
 
+            // Find and validate user
+            const currentUser = await userModel.findOne({ _id: user_id })
+                .populate('hired');
 
+            if (!currentUser) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: "User not found" 
+                });
+            }
+
+            if (!currentUser.hired) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "User is not hired" 
+                });
+            }
+
+            // Update user data
             currentUser.uan_number = uan_number;
             currentUser.epf_number = epf_number;
             currentUser.esi_number = esi_number;
             currentUser.pf_esic_status = true;
             currentUser.active_user_status = true;
 
-
+            // Update hired data
             currentUser.hired.uan_number = uan_number;
             currentUser.hired.epf_number = epf_number;
             currentUser.hired.esi_number = esi_number;
             currentUser.hired.pf_esic_status = true;
             currentUser.hired.active_user_status = true;
-            await currentUser.save();
 
-            const pfEsic = await userModel.find({wages_status : true, pf_esic_status : false})
-            .populate('hired');
+            // Save both documents
+            await Promise.all([
+                currentUser.save(),
+                currentUser.hired.save()
+            ]);
 
-            const currentSupervisor = await supervisorModel.findOne({_id : req.user.id}, {_id : 1});
-            let pendingPfEsic = [];
-
-            for(let i=0; i<pfEsic.length; i++){
-                if(pfEsic[i].hired.supervisor_id.equals(currentSupervisor._id)){
-                    pendingPfEsic.push(pfEsic[i]);
-                }
+            // Get pending PF/ESIC users for current supervisor
+            const currentSupervisor = await supervisorModel.findOne({ _id: req.user.id }, {_id : 1});
+            if (!currentSupervisor) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: "Supervisor not found" 
+                });
             }
 
-            res.status(200).json({success : true, message : "PF/ESIC Saved", pendingPfEsic});
+            const pfEsic = await userModel.find({ 
+                wages_status: true, 
+                pf_esic_status: false 
+            }).populate('hired');
+
+            const pendingPfEsic = pfEsic.filter(user => 
+                user.hired && user.hired.supervisor_id.equals(currentSupervisor._id)
+            );
+
+            res.status(200).json({ 
+                success: true, 
+                message: "PF/ESIC details saved successfully", 
+                pendingPf_Esic: pendingPfEsic 
+            });
         }
-        catch(err){
-            res.status(500).json({ success : false, message : "Internal Server Error"});
+        catch (err) {
+            console.error('Error in save-pf-esic:', err);
+            res.status(500).json({ 
+                success: false, 
+                message: err.message || "An error occurred while saving PF/ESIC details" 
+            });
         }
-    })
+    });
 
     router.get('/establishment/employee-detail', auth, async(req, res) => {
         try{
@@ -1803,5 +1844,9 @@ router.get("/establisment/profile",auth, async (req, res) => {
             });
         }
     });
+
+    // Signature routes
+    router.post('/upload/signature', auth, uploadImage.single('image'), uploadSignature);
+    router.post('/delete/signature', auth, deleteSignature);
 
 module.exports = router

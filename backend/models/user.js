@@ -178,6 +178,10 @@ const userSchema = new mongoose.Schema({
     epf_number : {
         type : String,
     },
+    esi_number : {
+        type : String,
+        default : ''
+    },
     esic_number : {
         type : String,
     },
@@ -210,6 +214,10 @@ const userSchema = new mongoose.Schema({
         default: ''
     },
     aadhar_back_image: {
+        type: String,
+        default: ''
+    },
+    signature: {
         type: String,
         default: ''
     },

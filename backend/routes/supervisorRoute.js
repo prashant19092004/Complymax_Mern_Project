@@ -67,6 +67,14 @@ router.get('/employee/:id', auth, async (req, res) => {
     }
 });
 
+router.get('/users', auth, async (req, res) => {
+    try {
+        const users = await userModel.find();
+        res.status(200).json({ users });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching users' });
+    }
+});
 
 
 
