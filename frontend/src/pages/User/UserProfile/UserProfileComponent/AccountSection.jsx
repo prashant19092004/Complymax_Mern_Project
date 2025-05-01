@@ -1,16 +1,95 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const AccountSection = ({ 
   user, 
+  setUser,
   addAccount,
-  account_image_input_ref,
-  handleDeleteAccountImage,
+  setShowCropModal,
   setPreviewUrl,
   setCrop,
-  setShowCropModal,
+  token,
   setIsAccountImage
 }) => {
+  const account_image_input_ref = useRef();
+
+  const handleAccountCroppedImage = async (blob) => {
+    try {
+      const formData = new FormData();
+      const file = new File([blob], "cropped-account-image.jpeg", {
+        type: "image/jpeg",
+      });
+      formData.append("image", file);
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/upload/account-image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          account_image: response.data.user.account_image,
+        }));
+        toast.success("Account image uploaded successfully!");
+        setShowCropModal(false);
+        setPreviewUrl(null);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(error.response?.data?.message || "Failed to upload image");
+    }
+  };
+
+  const handleDeleteAccountImage = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/delete/account-image`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          account_image: null,
+        }));
+        toast.success("Account image deleted successfully!");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete image");
+    }
+  };
+
+  const handleAccountImageChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+        setCrop(null);
+        setShowCropModal(true);
+        setIsAccountImage(true);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="id_sec">
       <div className="pan_heading">
@@ -82,21 +161,7 @@ const AccountSection = ({
             <input
               ref={account_image_input_ref}
               type="file"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  const file = e.target.files[0];
-                  const reader = new FileReader();
-
-                  reader.onloadend = () => {
-                    setPreviewUrl(reader.result);
-                    setCrop(null);
-                    setShowCropModal(true);
-                    setIsAccountImage(true);
-                  };
-
-                  reader.readAsDataURL(file);
-                }
-              }}
+              onChange={handleAccountImageChange}
               accept="image/*"
               className="d-none"
             />

@@ -353,68 +353,85 @@ router.get("/establisment/profile",auth, async (req, res) => {
     })
 
     router.post("/user/add_experience", auth, async(req, res) => {
-        
-        try{
-            const { institute, degree, starting_month, starting_year, ending_month, ending_year, score, description, editId } = req.body;
+        try {
+            const { company, role, starting_month, starting_year, ending_month, ending_year, location, description, editId } = req.body;
 
-            if(!institute || !degree || !starting_month || !starting_year || !ending_month || !ending_year || !score){
-                res.json({message : "Please Enter all the data", success : false});
+            if(!company || !role || !starting_month || !starting_year || !location){
+                return res.status(400).json({message : "Please Enter all the required data", success : false});
             }
 
-            if(editId !== ''){
+            if(editId && editId !== ''){
                 const currentExperience = await experienceModel.findOne({ _id : editId });
+                
+                if (!currentExperience) {
+                    return res.status(404).json({ 
+                        success: false, 
+                        message: "Experience not found" 
+                    });
+                }
 
-                currentExperience.company = institute;
-                currentExperience.role = degree;
+                currentExperience.company = company;
+                currentExperience.role = role;
                 currentExperience.starting_month = starting_month;
                 currentExperience.starting_year = starting_year;
-                currentExperience.ending_month = ending_month;
-                currentExperience.ending_year = ending_year;
-                currentExperience.location = score;
-                currentExperience.description = description;
+                currentExperience.ending_month = ending_month || "";
+                currentExperience.ending_year = ending_year || "";
+                currentExperience.location = location;
+                currentExperience.description = description || "";
 
                 await currentExperience.save();
 
                 const currentUser1 = await userModel.findOne({ _id : currentExperience.user })
-                .populate('qualifications')
-                .populate('experiences')
+                    .populate('qualifications')
+                    .populate('experiences');
 
-                return res.status(200).json({ success : true, message : "education Updated", currentUser1});
+                return res.status(200).json({ 
+                    success: true, 
+                    message: "Experience Updated", 
+                    currentUser1 
+                });
             }
 
-            const currentUser = await userModel.findOne({
-                _id : req.user.id
-            });
-
-            
+            const currentUser = await userModel.findOne({ _id : req.user.id });
+            if (!currentUser) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: "User not found" 
+                });
+            }
 
             const newExperience = await experienceModel.create({
-                company : institute, role : degree, starting_month, starting_year, ending_month, ending_year, location : score, description, user : currentUser._id
+                company, 
+                role, 
+                starting_month, 
+                starting_year, 
+                ending_month: ending_month || "", 
+                ending_year: ending_year || "", 
+                location, 
+                description: description || "", 
+                user: currentUser._id
             });
-
-            
 
             currentUser.experiences.push(newExperience._id);
             await currentUser.save();
 
-            const currentUser1 = await userModel.findOne({
-                _id : req.user.id
-            })
-            .populate('qualifications')
-            .populate('experiences')
+            const currentUser1 = await userModel.findOne({ _id : req.user.id })
+                .populate('qualifications')
+                .populate('experiences');
 
             return res.status(200).json({
-                success : true,
-                message : "Experience Added",
+                success: true,
+                message: "Experience Added",
                 currentUser1
-            })
-        }catch(err){
+            });
+        } catch (err) {
+            console.error("Add experience error:", err);
             return res.status(500).json({
                 success: false,
-                message: "plz try again later"
-            })
+                message: "Please try again later"
+            });
         }
-    })
+    });
 
     router.post("/user/delete_education", auth, async(req, res) => {
 
@@ -796,26 +813,41 @@ router.get("/establisment/profile",auth, async (req, res) => {
 
     router.post('/upload/profile-pic', uploadImage.single('image'), auth, async (req, res) => {
         try {
-      
-          const user = await userModel.findOneAndUpdate(
-            { _id: req.user.id },
-            { pan_image: `/uploads/${req.file.filename}` },
-            { new: true, runValidators: false } // Disable validation for this update
-          );
-      
-          if (!user) {
-            console.error('User not found');
-            return res.status(404).json({ msg: 'User not found' }); // Use return to prevent duplicate responses
-          }
-      
-          res.json({ msg: 'Profile picture updated', user });
+            if (!req.file) {
+                return res.status(400).json({ 
+                    success: false,
+                    message: 'No image file provided' 
+                });
+            }
+
+            const user = await userModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { profilePic: `/uploads/${req.file.filename}` },
+                { new: true }
+            );
+
+            if (!user) {
+                return res.status(404).json({ 
+                    success: false,
+                    message: 'User not found' 
+                });
+            }
+
+            return res.status(200).json({ 
+                success: true,
+                message: 'Profile picture updated successfully',
+                user 
+            });
+
         } catch (error) {
-          console.error('Upload error:', error); // Log the actual error
-          if (!res.headersSent) { // Only send the response if headers are not sent
-            res.status(500).json({ msg: 'Server error', error: error.message });
-          }
+            console.error('Upload error:', error);
+            return res.status(500).json({ 
+                success: false,
+                message: 'Server error',
+                error: error.message 
+            });
         }
-      });
+    });
       
 
     router.post('/upload/file1', uploadPDF.single('file1'), auth, async (req, res) => {
@@ -1503,7 +1535,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     });
 
-    router.post('/delete/aadhar-image', auth, async (req, res) => {
+    router.post('/delete/aadhar-front-image', auth, async (req, res) => {
         try {
             const user = await userModel.findOne({ _id: req.user.id });
             if (!user) {
@@ -1511,17 +1543,42 @@ router.get("/establisment/profile",auth, async (req, res) => {
             }
         
             // Delete the file from uploads folder if needed
-            if (user.aadhar_image) {
-                const filePath = path.join(__dirname, '..', 'public', user.aadhar_image);
+            if (user.aadhar_front_image) {
+                const filePath = path.join(__dirname, '..', 'public', user.aadhar_front_image);
                 if (fs.existsSync(filePath)) {
                     fs.unlinkSync(filePath);
                 }
             }
         
-            user.aadhar_image = null;
+            user.aadhar_front_image = null;
             await user.save();
         
-            res.json({ msg: 'Aadhar card image deleted successfully', user });
+            res.json({ msg: 'Aadhar card front image deleted successfully', user });
+        } catch (error) {
+            console.error('Delete error:', error);
+            res.status(500).json({ msg: 'Server error', error: error.message });
+        }
+    });
+
+    router.post('/delete/aadhar-back-image', auth, async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.user.id });
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+        
+            // Delete the file from uploads folder if needed
+            if (user.aadhar_back_image) {
+                const filePath = path.join(__dirname, '..', 'public', user.aadhar_back_image);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+        
+            user.aadhar_back_image = null;
+            await user.save();
+        
+            res.json({ msg: 'Aadhar card back image deleted successfully', user });
         } catch (error) {
             console.error('Delete error:', error);
             res.status(500).json({ msg: 'Server error', error: error.message });

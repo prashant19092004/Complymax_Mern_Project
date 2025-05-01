@@ -8,23 +8,87 @@ const AadharSection = ({
   setUser, 
   setShowCropModal, 
   setPreviewUrl, 
-  setIsPanImage,
   setCrop,
   token,
   isAadharFront,
-  setIsAadharFront,
-  handleAadharFrontCroppedImage,
-  handleAadharBackCroppedImage,
-  handleDeleteAadharFrontImage,
-  handleDeleteAadharBackImage
+  setIsAadharFront
 }) => {
   const aadhar_front_image_input_ref = useRef();
   const aadhar_back_image_input_ref = useRef();
 
-  const handleDeleteAadharImage = async () => {
+  const handleAadharFrontCroppedImage = async (blob) => {
     try {
+      const formData = new FormData();
+      const file = new File([blob], "cropped-aadhar-front.jpeg", {
+        type: "image/jpeg",
+      });
+      formData.append("image", file);
+
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/aadhar-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-front-image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          aadhar_front_image: response.data.user.aadhar_front_image,
+        }));
+        toast.success("Aadhar front image uploaded successfully!");
+        setShowCropModal(false);
+        setPreviewUrl(null);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(error.response?.data?.message || "Failed to upload image");
+    }
+  };
+
+  const handleAadharBackCroppedImage = async (blob) => {
+    try {
+      const formData = new FormData();
+      const file = new File([blob], "cropped-aadhar-back.jpeg", {
+        type: "image/jpeg",
+      });
+      formData.append("image", file);
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-back-image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          aadhar_back_image: response.data.user.aadhar_back_image,
+        }));
+        toast.success("Aadhar back image uploaded successfully!");
+        setShowCropModal(false);
+        setPreviewUrl(null);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(error.response?.data?.message || "Failed to upload image");
+    }
+  };
+
+  const handleDeleteAadharFrontImage = async () => {
+    try {
+      console.log("Attempting to delete Aadhar front image...");
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/delete/aadhar-front-image`,
         {},
         {
           headers: {
@@ -33,16 +97,102 @@ const AadharSection = ({
         }
       );
 
+      console.log("Delete response:", response);
+
       if (response.data.user) {
-        setUser(prev => ({
+        setUser((prev) => ({
           ...prev,
-          aadhar_image: null
+          aadhar_front_image: null,
         }));
-        toast.success('Aadhar card image deleted successfully!');
+        toast.success("Aadhar front image deleted successfully!");
+      } else {
+        throw new Error("Invalid response format");
       }
     } catch (error) {
-      console.error('Delete error:', error);
-      toast.error('Failed to delete image');
+      console.error("Delete error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      toast.error(error.response?.data?.message || "Failed to delete image");
+    }
+  };
+
+  const handleDeleteAadharBackImage = async () => {
+    try {
+      console.log("Attempting to delete Aadhar back image...");
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/delete/aadhar-back-image`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Delete response:", response);
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          aadhar_back_image: null,
+        }));
+        toast.success("Aadhar back image deleted successfully!");
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error("Delete error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      toast.error(error.response?.data?.message || "Failed to delete image");
+    }
+  };
+
+  const handleAadharFrontImageChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+        setCrop({
+          unit: 'px',
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 150
+        });
+        setShowCropModal(true);
+        setIsAadharFront(true);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAadharBackImageChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+        setCrop({
+          unit: 'px',
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 150
+        });
+        setShowCropModal(true);
+        setIsAadharFront(false);
+      };
+
+      reader.readAsDataURL(file);
     }
   };
 
@@ -156,56 +306,14 @@ const AadharSection = ({
           <input 
             ref={aadhar_front_image_input_ref}
             type="file"
-            onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0) {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onloadend = () => {
-                  setPreviewUrl(reader.result);
-                  setCrop({
-                    unit: 'px',
-                    x: 0,
-                    y: 0,
-                    width: 200,
-                    height: 150
-                  });
-                  setShowCropModal(true);
-                  setIsAadharFront(true);
-                  setIsPanImage(false);
-                };
-
-                reader.readAsDataURL(file);
-              }
-            }}
+            onChange={handleAadharFrontImageChange}
             accept="image/*"
             className="d-none"
           />
             <input 
             ref={aadhar_back_image_input_ref}
               type="file"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  const file = e.target.files[0];
-                  const reader = new FileReader();
-                  
-                  reader.onloadend = () => {
-                    setPreviewUrl(reader.result);
-                  setCrop({
-                    unit: 'px',
-                    x: 0,
-                    y: 0,
-                    width: 200,
-                    height: 150
-                  });
-                    setShowCropModal(true);
-                  setIsAadharFront(false);
-                  setIsPanImage(false);
-                  };
-
-                  reader.readAsDataURL(file);
-                }
-              }}
+            onChange={handleAadharBackImageChange}
               accept="image/*"
               className="d-none"
             />

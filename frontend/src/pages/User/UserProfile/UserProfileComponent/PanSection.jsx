@@ -1,16 +1,96 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const PanSection = ({ 
   user, 
+  setUser,
   addPan,
-  pan_image_input_ref,
-  handleDeletePanImage,
+  setShowCropModal,
   setPreviewUrl,
   setCrop,
-  setShowCropModal,
+  token,
   setIsPanImage
 }) => {
+  const pan_image_input_ref = useRef();
+
+  const handlePanCroppedImage = async (blob) => {
+    try {
+      const formData = new FormData();
+      const file = new File([blob], "cropped-pan-image.jpeg", {
+        type: "image/jpeg",
+      });
+      formData.append("image", file);
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/upload/pan-image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          pan_image: response.data.user.pan_image,
+        }));
+        toast.success("Pan card image uploaded successfully!");
+        setShowCropModal(false);
+        setPreviewUrl(null);
+        setIsPanImage(false);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(error.response?.data?.message || "Failed to upload image");
+    }
+  };
+
+  const handleDeletePanImage = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/delete/pan-image`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          pan_image: null,
+        }));
+        toast.success("Pan card image deleted successfully!");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete image");
+    }
+  };
+
+  const handlePanImageChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+        setCrop(null);
+        setShowCropModal(true);
+        setIsPanImage(true);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className='id_sec'>
       <div className='pan_heading'>
@@ -71,21 +151,7 @@ const PanSection = ({
             <input 
               ref={pan_image_input_ref}
               type="file"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  const file = e.target.files[0];
-                  const reader = new FileReader();
-                  
-                  reader.onloadend = () => {
-                    setPreviewUrl(reader.result);
-                    setCrop(null);
-                    setShowCropModal(true);
-                    setIsPanImage(true);
-                  };
-
-                  reader.readAsDataURL(file);
-                }
-              }}
+              onChange={handlePanImageChange}
               accept="image/*"
               className="d-none"
             />

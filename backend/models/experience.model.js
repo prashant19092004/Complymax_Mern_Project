@@ -17,21 +17,21 @@ const experienceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    
     ending_month: {
         type: String,
-        required: true
+        default: ""
     },
     ending_year: {
         type: String,
-        required: true
+        default: ""
     },
     location : {
         type : String,
         required : true
     },
     description: {
-        type: String
+        type: String,
+        default: ""
     },
     certificate: {
         type: String,
