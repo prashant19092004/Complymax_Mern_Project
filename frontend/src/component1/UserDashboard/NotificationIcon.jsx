@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const NotificationIcon = () => {
 
+  const navigate = useNavigate();
+  
     const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
         <a
           href=""
