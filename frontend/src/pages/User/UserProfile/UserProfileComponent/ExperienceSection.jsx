@@ -7,7 +7,8 @@ import CropModal from '../CropModal';
 const ExperienceSection = ({ 
   user, 
   setUser,
-  token
+  token,
+  handleExperiencePdfUpload
 }) => {
   const [isExperience, setIsExperience] = useState(true);
   const [experienceEdit, setExperienceEdit] = useState(false);
@@ -43,6 +44,36 @@ const ExperienceSection = ({
     });
   };
 
+  const handleCertificateChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      
+      // Check file size (e.g., 5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        toast.error("File size too large. Please upload a file smaller than 5MB.");
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // Check if file is PDF
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        handleExperiencePdfUpload(file, currentEducationId);
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // For images, proceed with cropping
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+        setShowCertificateModal(true);
+        e.target.value = ''; // Clear the file input after setting preview
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCertificateCroppedImage = async (blob) => {
     try {
       const formData = new FormData();
@@ -69,10 +100,16 @@ const ExperienceSection = ({
         toast.success("Experience certificate uploaded successfully!");
         setShowCertificateModal(false);
         setPreviewUrl(null);
+        if (certificate_input_ref.current) {
+          certificate_input_ref.current.value = ''; // Clear the file input after successful upload
+        }
       }
     } catch (error) {
       console.error("Upload error:", error);
       toast.error("Failed to upload certificate");
+      if (certificate_input_ref.current) {
+        certificate_input_ref.current.value = ''; // Clear the file input even if upload fails
+      }
     }
   };
 
@@ -237,60 +274,63 @@ const ExperienceSection = ({
 
   return (
     <>
-      <div className='id_sec'>
-        <div className='pan_heading'>
-          <h1>Experience</h1>
-          <button onClick={() => {setIsExperience(true); openEnquiry();}}>Add Experience</button>
-        </div>
-        <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
-          {
-            user.experiences?.map((experience) => {
-              return(
-                <div key={experience._id} className='w-full d-flex gap-3 justify-content-between align-items-center'>
-                  <div>
-                    <h1 className='fs-6'>{experience.company}</h1>
-                    <p>{`${experience.role}  • ${experience.starting_month} ${experience.starting_year} - ${experience.ending_month} ${experience.ending_year}  • Location: ${experience.location}`}</p>
-                  </div>
-                  <div className="d-flex gap-2 align-items-center">
-                    {experience.certificate && (
-                      <>
-                        <button 
-                          className="btn btn-outline-primary btn-sm"
-                          onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${experience.certificate}`, '_blank')}
-                        >
-                          <i className="fas fa-file-pdf"></i>
-                        </button>
-                        <button 
-                          className="btn btn-outline-danger btn-sm"
-                          onClick={() => handleDeleteCertificate(experience._id)}
-                        >
-                          <MdDeleteOutline size={18} />
-                        </button>
-                      </>
-                    )}
-                    <label 
-                      className="btn btn-outline-success btn-sm mb-0" 
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setCurrentEducationId(experience._id);
-                        certificate_input_ref.current.click();
-                      }}
-                    >
-                      <i className="fas fa-upload"></i>
-                    </label>
-                    <button 
-                      className="btn btn-outline-secondary btn-sm"
-                      onClick={() => editExperience(experience._id)}
-                    >
-                      <MdEdit size={18} />
-                    </button>
-                  </div>
-                </div>
-              )
-            })
-          }
-        </div>
+    <div className='id_sec'>
+      <div className='pan_heading'>
+        <h1>Experience</h1>
+        <button onClick={() => {setIsExperience(true); openEnquiry();}}>Add Experience</button>
       </div>
+      <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
+        {
+          user.experiences?.map((experience) => {
+            return(
+              <div key={experience._id} className='w-full d-flex gap-3 justify-content-between align-items-center'>
+                <div>
+                  <h1 className='fs-6'>{experience.company}</h1>
+                  <p>{`${experience.role}  • ${experience.starting_month} ${experience.starting_year} - ${experience.ending_month} ${experience.ending_year}  • Location: ${experience.location}`}</p>
+                </div>
+                <div className="d-flex gap-2 align-items-center">
+                  {experience.certificate && (
+                    <>
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => {
+                          const url = `${process.env.REACT_APP_BACKEND_URL}${experience.certificate}`;
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }}
+                      >
+                        <i className="fas fa-file-pdf"></i>
+                      </button>
+                      <button 
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => handleDeleteCertificate(experience._id)}
+                      >
+                        <MdDeleteOutline size={18} />
+                      </button>
+                    </>
+                  )}
+                  <label 
+                    className="btn btn-outline-success btn-sm mb-0" 
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      setCurrentEducationId(experience._id);
+                      certificate_input_ref.current.click();
+                    }}
+                  >
+                    <i className="fas fa-upload"></i>
+                  </label>
+                  <button 
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() => editExperience(experience._id)}
+                  >
+                    <MdEdit size={18} />
+                  </button>
+                </div>
+              </div>
+            )
+          })
+        }
+      </div>
+    </div>
 
       <section ref={enquiryref} className="enquiry-section">
         <div className="enquiry-form">
@@ -473,18 +513,8 @@ const ExperienceSection = ({
       <input 
         ref={certificate_input_ref}
         type="file"
-        onChange={(e) => {
-          if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setPreviewUrl(reader.result);
-              setShowCertificateModal(true);
-            };
-            reader.readAsDataURL(file);
-          }
-        }}
-        accept="image/*"
+        onChange={handleCertificateChange}
+        accept="image/*,.pdf"
         className="d-none"
       />
 

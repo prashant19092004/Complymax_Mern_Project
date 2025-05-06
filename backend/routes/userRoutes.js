@@ -13,9 +13,13 @@ const hiringModel = require("../models/hiring.model.js");
 const hiredModel = require("../models/hired.model.js");
 const { uploadImage } = require('../middleware/multer.js');
 const { uploadPDF } = require('../middleware/multer.js');
+const { uploadImageAndPdf } = require('../middleware/multer.js');
 const path = require('path');
 const fs = require('fs');
 const { uploadSignature, deleteSignature } = require('../controllers/userController');
+
+// Increase EventEmitter max listeners
+require('events').EventEmitter.defaultMaxListeners = 15;
 
 const { userlogin, usersignup, adminsignup, adminlogin, clientregister, clientlogin, supervisorlogin, supervisorregister, superadminlogin, superadminsignup } = require("../controller/auth")
 
@@ -298,7 +302,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
             const { institute, degree, starting_month, starting_year, ending_month, ending_year, score, description, editId } = req.body;
 
             if(!institute || !degree || !starting_month || !starting_year || !ending_month || !ending_year || !score){
-                res.json({message : "Please Enter all the data", success : false});
+                return res.json({message : "Please Enter all the data", success : false});
             }
 
             if(editId !== ''){
@@ -1472,7 +1476,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     })
 
-    router.post('/upload/pan-image', uploadImage.single('image'), auth, async (req, res) => {
+    router.post('/upload/pan-image', uploadImageAndPdf.single('image'), auth, async (req, res) => {
         try {
             const user = await userModel.findOneAndUpdate(
                 { _id: req.user.id },
@@ -1491,7 +1495,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     });
 
-    router.post('/upload/aadhar-image', uploadImage.single('image'), auth, async (req, res) => {
+    router.post('/upload/aadhar-image', uploadImageAndPdf.single('image'), auth, async (req, res) => {
         try {
             const user = await userModel.findOneAndUpdate(
                 { _id: req.user.id },
@@ -1586,7 +1590,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
     });
 
     // Add this route for certificate upload
-    router.post('/upload/certificate', uploadImage.single('certificate'), auth, async (req, res) => {
+    router.post('/upload/certificate', uploadImageAndPdf.single('certificate'), auth, async (req, res) => {
         try {
             const user = await userModel.findOne({ _id: req.user.id });
             if (!user) {
@@ -1659,7 +1663,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
     });
 
     // Add account image upload route
-    router.post('/upload/account-image', uploadImage.single('image'), auth, async (req, res) => {
+    router.post('/upload/account-image', uploadImageAndPdf.single('image'), auth, async (req, res) => {
         try {
             const user = await userModel.findOneAndUpdate(
                 { _id: req.user.id },
@@ -1705,7 +1709,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
     });
 
     // Add these routes for Aadhar front and back image upload
-    router.post('/upload/aadhar-front-image', uploadImage.single('image'), auth, async (req, res) => {
+    router.post('/upload/aadhar-front-image', uploadImageAndPdf.single('image'), auth, async (req, res) => {
         try {
             const user = await userModel.findOneAndUpdate(
                 { _id: req.user.id },
@@ -1724,7 +1728,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
         }
     });
 
-    router.post('/upload/aadhar-back-image', uploadImage.single('image'), auth, async (req, res) => {
+    router.post('/upload/aadhar-back-image', uploadImageAndPdf.single('image'), auth, async (req, res) => {
         try {
             const user = await userModel.findOneAndUpdate(
                 { _id: req.user.id },

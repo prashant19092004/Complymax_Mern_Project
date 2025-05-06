@@ -7,7 +7,8 @@ import CropModal from '../CropModal';
 const EducationSection = ({ 
   user, 
   setUser,
-  token
+  token,
+  handleEducationPdfUpload
 }) => {
   const [isExperience, setIsExperience] = useState(false);
   const [educationEdit, setEducationEdit] = useState(false);
@@ -43,6 +44,40 @@ const EducationSection = ({
     });
   };
 
+  const handleCertificateChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      
+      // Check file size (e.g., 5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        toast.error("File size too large. Please upload a file smaller than 5MB.");
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // Check if file is PDF
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        handleEducationPdfUpload(file, currentEducationId);
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // For images, proceed with cropping
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+        setShowCertificateModal(true);
+        e.target.value = ''; // Clear the file input after setting preview
+      };
+      reader.onerror = () => {
+        toast.error("Error reading file");
+        e.target.value = ''; // Clear the file input on error
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCertificateCroppedImage = async (blob) => {
     try {
       const formData = new FormData();
@@ -69,10 +104,16 @@ const EducationSection = ({
         toast.success("Education certificate uploaded successfully!");
         setShowCertificateModal(false);
         setPreviewUrl(null);
+        if (certificate_input_ref.current) {
+          certificate_input_ref.current.value = ''; // Clear the file input after successful upload
+        }
       }
     } catch (error) {
       console.error("Upload error:", error);
       toast.error("Failed to upload certificate");
+      if (certificate_input_ref.current) {
+        certificate_input_ref.current.value = ''; // Clear the file input on error
+      }
     }
   };
 
@@ -213,63 +254,66 @@ const EducationSection = ({
 
   return (
     <>
-      <div className='id_sec'>
-        <div className='pan_heading'>
-          <h1>Education</h1>
-          <button onClick={() => {setIsExperience(false); openEnquiry();}} >Add Education</button>
-        </div>
-        <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
-          {
-            user.qualifications?.map((qualification) => {
-              return(
-                <div key={qualification._id} className='w-full d-flex gap-3 justify-content-between align-items-center'>
-                  <div>
-                    <h1 className='fs-6'>{qualification.institute}</h1>
-                    <p>{`${qualification.degree}  • ${qualification.starting_month} ${qualification.starting_year} - ${qualification.ending_month} ${qualification.ending_year}  • Score: ${qualification.score}`}</p>
-                  </div>
-                  <div className="d-flex gap-2 align-items-center">
-                    {qualification.certificate && (
-                      <>
-                        <button 
-                          className="btn btn-outline-primary btn-sm"
-                          onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${qualification.certificate}`, '_blank')}
-                        >
-                          <i className="fas fa-file-pdf"></i>
-                        </button>
-                        <button 
-                          className="btn btn-outline-danger btn-sm"
-                          onClick={() => handleDeleteCertificate(qualification._id)}
-                        >
-                          <MdDeleteOutline size={18} />
-                        </button>
-                      </>
-                    )}
-                    <label 
-                      className="btn btn-outline-success btn-sm mb-0" 
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setCurrentEducationId(qualification._id);
-                        certificate_input_ref.current.click();
-                      }}
-                    >
-                      <i className="fas fa-upload"></i>
-                    </label>
-                    <button 
-                      className="btn btn-outline-secondary btn-sm"
-                      onClick={() => {
-                        setIsExperience(false); 
-                        editEducation(qualification._id);
-                      }}
-                    >
-                      <MdEdit size={18} />
-                    </button>
-                  </div>
-                </div>
-              )
-            })
-          }
-        </div>
+    <div className='id_sec'>
+      <div className='pan_heading'>
+        <h1>Education</h1>
+        <button onClick={() => {setIsExperience(false); openEnquiry();}} >Add Education</button>
       </div>
+      <div className="profile-content-section d-flex gap-3 justify-content-center justify-content-sm-between flex-wrap px-3 px-sm-5">
+        {
+          user.qualifications?.map((qualification) => {
+            return(
+              <div key={qualification._id} className='w-full d-flex gap-3 justify-content-between align-items-center'>
+                <div>
+                  <h1 className='fs-6'>{qualification.institute}</h1>
+                  <p>{`${qualification.degree}  • ${qualification.starting_month} ${qualification.starting_year} - ${qualification.ending_month} ${qualification.ending_year}  • Score: ${qualification.score}`}</p>
+                </div>
+                <div className="d-flex gap-2 align-items-center">
+                  {qualification.certificate && (
+                    <>
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => {
+                          const url = `${process.env.REACT_APP_BACKEND_URL}${qualification.certificate}`;
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }}
+                      >
+                        <i className="fas fa-file-pdf"></i>
+                      </button>
+                      <button 
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => handleDeleteCertificate(qualification._id)}
+                      >
+                        <MdDeleteOutline size={18} />
+                      </button>
+                    </>
+                  )}
+                  <label 
+                    className="btn btn-outline-success btn-sm mb-0" 
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      setCurrentEducationId(qualification._id);
+                      certificate_input_ref.current.click();
+                    }}
+                  >
+                    <i className="fas fa-upload"></i>
+                  </label>
+                  <button 
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() => {
+                      setIsExperience(false); 
+                      editEducation(qualification._id);
+                    }}
+                  >
+                    <MdEdit size={18} />
+                  </button>
+                </div>
+              </div>
+            )
+          })
+        }
+      </div>
+    </div>
 
       <section ref={enquiryref} className="enquiry-section">
         <div className="enquiry-form">
@@ -458,18 +502,8 @@ const EducationSection = ({
       <input 
         ref={certificate_input_ref}
         type="file"
-        onChange={(e) => {
-          if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setPreviewUrl(reader.result);
-              setShowCertificateModal(true);
-            };
-            reader.readAsDataURL(file);
-          }
-        }}
-        accept="image/*"
+        onChange={handleCertificateChange}
+        accept="image/*,.pdf"
         className="d-none"
       />
 

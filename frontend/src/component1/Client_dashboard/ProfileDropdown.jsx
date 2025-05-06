@@ -33,7 +33,7 @@ const ProfileDropdown = () => {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item><Link to='/user_dashboard/user_profile'>Profile</Link></Dropdown.Item>
+        <Dropdown.Item><Link to='/establisment_dashboard/establisment_profile'>Profile</Link></Dropdown.Item>
         <Dropdown.Item>Settings</Dropdown.Item>
         <Dropdown.Item onClick={logout}>Log Out</Dropdown.Item>
       </Dropdown.Menu>

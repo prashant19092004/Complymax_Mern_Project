@@ -57,6 +57,15 @@ const SignatureSection = ({
   const handleSignatureChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      
+      // Check for specific image types
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.warning('Please upload signature in JPG or PNG format only');
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
       const reader = new FileReader();
       
       reader.onloadend = () => {
@@ -79,9 +88,10 @@ const SignatureSection = ({
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/delete/signature`,
-        {},
+        {},  // Send an empty object instead of nothing
         {
           headers: {
+            "Content-Type": "application/json",  // Specify content type for empty body
             Authorization: `Bearer ${token}`,
           },
         }
@@ -112,7 +122,7 @@ const SignatureSection = ({
             <div className="d-flex gap-2">
               {user.signature ? (
                 <>
-                  <button
+                  {/* <button
                     onClick={() => signature_input_ref.current.click()}
                     className="btn btn-primary btn-sm"
                   >
@@ -123,7 +133,7 @@ const SignatureSection = ({
                     className="btn btn-danger btn-sm"
                   >
                     Delete
-                  </button>
+                  </button> */}
                 </>
               ) : (
                 <button
@@ -174,7 +184,7 @@ const SignatureSection = ({
           ref={signature_input_ref}
           type="file"
           onChange={handleSignatureChange}
-          accept="image/*"
+          accept="image/jpeg,image/png,image/jpg"
           className="d-none"
         />
       </div>

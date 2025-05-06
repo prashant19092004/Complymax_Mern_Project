@@ -5,65 +5,65 @@ import close from "../../../assets/close.png";
 import { toast } from "react-toastify";
 
 const PendingPF_ESIC = () => {
-  const [pendingPfEsicList, setPendingPfEsicList] = useState([]);
-  const [filteredList, setFilteredList] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [pendingPfEsicList, setPendingPfEsicList] = useState([]);
+    const [filteredList, setFilteredList] = useState([]);
+    const [loading, setLoading] = useState(true);
   const [notApplicable, setNotApplicable] = useState(false);
   const token = localStorage.getItem("token");
-  const [file1, setFile1] = useState(null);
-  const [file2, setFile2] = useState(null);
+    const [file1, setFile1] = useState(null);
+    const [file2, setFile2] = useState(null);
   const [userId, setUserId] = useState("");
-  const [saveData, setSaveData] = useState({
+    const [saveData, setSaveData] = useState({
     user_id: "",
     uan_number: "",
     epf_number: "",
     esi_number: "",
   });
-  const buttonStyle = {
+    const buttonStyle = {
     backgroundColor: "green",
     color: "white",
     height: "30px", // Adjust the height as needed
     padding: "0 15px", // Adjust padding for a more compact look
     fontSize: "14px", // Adjust font size if needed
     borderRadius: "5px", // Optional: Adjust border radius
-  };
-  const enquiryref = useRef();
-  const warningref = useRef();
+    };
+    const enquiryref = useRef();
+    const warningref = useRef();
 
   const fetchingHired = async () => {
     try {
-      setLoading(true);
+            setLoading(true);
       const response = await axios
         .get(
           `${process.env.REACT_APP_BACKEND_URL}/supervisor/pending-pf-esic`,
           {
-            headers: {
+                headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
             },
-          }
+                }
         )
-        .then((res) => {
-          setPendingPfEsicList(res.data.pendingPfEsic);
-          setFilteredList(res.data.pendingPfEsic);
-          setLoading(false);
+            .then((res) => {
+                setPendingPfEsicList(res.data.pendingPfEsic);
+                setFilteredList(res.data.pendingPfEsic);
+                setLoading(false);
         });
     } catch (e) {
-      toast.error(e.response.data.message);
-      setLoading(false);
-    }
+            toast.error(e.response.data.message);
+            setLoading(false);
+        }
   };
 
-  useEffect(() => {
-    fetchingHired();
-  }, []);
+    useEffect(() => {
+        fetchingHired();
+    }, []);
 
   if (loading) {
     return <div>Loading...</div>;
-  }
+    }
 
-  let pfesicChangeHandler = (e) => {
-    const query = e.target.value;
+    let pfesicChangeHandler = (e) => {
+        const query = e.target.value;
     setSaveData({ ...saveData, [e.target.name]: query });
   };
 
@@ -81,18 +81,18 @@ const PendingPF_ESIC = () => {
     }
   };
 
-  let file2ChangeHandler = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile2(selectedFile);
-    }
+    let file2ChangeHandler = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile2(selectedFile);
+        }
   };
 
-  let file1ChangeHandler = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile1(selectedFile);
-    }
+    let file1ChangeHandler = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile1(selectedFile);
+        }
   };
 
   let savePfEsic = async () => {
@@ -102,39 +102,39 @@ const PendingPF_ESIC = () => {
           `${process.env.REACT_APP_BACKEND_URL}/supervisor/save-pf-esic`,
           saveData,
           {
-            headers: {
+                headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
             },
-          }
+                }
         )
-        .then((res) => {
-          setPendingPfEsicList(res.data.pendingPf_Esic);
-          setFilteredList(res.data.pendingPfEsic);
-          warningref.current.style.scale = 0;
+            .then((res) => {
+                setPendingPfEsicList(res.data.pendingPf_Esic);
+                setFilteredList(res.data.pendingPfEsic);
+                warningref.current.style.scale = 0;
           enquiryref.current.style.scale = 0;
-          toast.success(res.data.message);
+                toast.success(res.data.message);
         });
     } catch (err) {
-      toast.error(err.response.data.message);
+            toast.error(err.response.data.message);
     }
   };
 
-  const onFile1Submit = async () => {
+    const onFile1Submit = async () => {
     if (!notApplicable) {
         const formData = new FormData();
         formData.append("file1", file1);
         formData.append("userId", userId);
-  
+      
         try {
           const res = await axios.post(
             `${process.env.REACT_APP_BACKEND_URL}/upload/file1`,
             formData,
             {
-              headers: {
+            headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`,
-              },
+              Authorization: `Bearer ${token}`,
+            },
             }
           );
           if (res.status === 200) {
@@ -144,60 +144,60 @@ const PendingPF_ESIC = () => {
           console.error("Error uploading profile picture:", err);
           toast.error("Error uploading PDF");
         }
-    } 
-  };
+        }
+    };
 
-  const onFile2Submit = async () => {
-    const formData = new FormData();
+    const onFile2Submit = async () => {
+        const formData = new FormData();
     formData.append("file2", file2);
     formData.append("userId", userId);
-
-    try {
+      
+        try {
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/upload/file2`,
         formData,
         {
-          headers: {
+            headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
+                Authorization: `Bearer ${token}`,
+            },
         }
       );
       if (res.status === 200) {
-        savePfEsic();
-      }
-    } catch (err) {
+            savePfEsic();
+          }
+        } catch (err) {
       toast.error("Error uploading PDF");
-    }
-  };
-
-  let changeHandle = (e) => {
-    let query = e.target.value.toLowerCase();
-
+        }
+    };
+    
+    let changeHandle = (e) => {
+        let query = e.target.value.toLowerCase();
+  
     const filteredData =
       pendingPfEsicList && pendingPfEsicList.length
         ? pendingPfEsicList.filter(
             (hired) => hired.full_Name.toLowerCase().indexOf(query) > -1
           )
         : [];
-    setFilteredList(filteredData);
-    // setShowDropDown(true);
+        setFilteredList(filteredData);
+        // setShowDropDown(true);
   };
 
   function toggleShow() {
-    var el = document.getElementById("box");
-    el.classList.toggle("show");
-  }
+        var el = document.getElementById("box");
+        el.classList.toggle("show");
+    }
 
-  let openEnquiry = () => {
-    const enquiry_pop_up = document.querySelector(".enquiry-section");
-    enquiry_pop_up.style.scale = 1;
+    let openEnquiry = () => {
+        const enquiry_pop_up = document.querySelector(".enquiry-section");
+        enquiry_pop_up.style.scale = 1;
   };
-
-  let closeEnquiry = () => {
-    const enquiry_pop_up = document.querySelector(".enquiry-section");
-    enquiry_pop_up.style.scale = 0;
-  };
+      
+      let closeEnquiry = () => {
+        const enquiry_pop_up = document.querySelector(".enquiry-section");
+        enquiry_pop_up.style.scale = 0;
+      };
 
   return (
     <div className="supervisor_hire position-relative w-full">
@@ -220,51 +220,51 @@ const PendingPF_ESIC = () => {
             id="icon"
             onClick={toggleShow}
           ></i>
+            </div>
+            {/* <Button className='mt-2' onClick={postHiringButtonHandler} varient='primary'>Post Hiring</Button> */}
         </div>
-        {/* <Button className='mt-2' onClick={postHiringButtonHandler} varient='primary'>Post Hiring</Button> */}
-      </div>
-      <div>
+        <div>
         <ul className="list_box px-5" style={{ padding: "0px" }}>
           {filteredList?.map((user) => {
-            return (
+                        return ( 
               <li className="list">
                 <img className="" src={defaultProfile} alt="" />
                 <div className="w-full">
                   <div className="list_content">
                     <div className="list-left">
-                      <p>{user.full_Name}</p>
-                    </div>
+                                        <p>{user.full_Name}</p>
+                                    </div>
                     <div className="list-middle">
-                      <p>{user.contact}</p>
-                    </div>
+                                        <p>{user.contact}</p>
+                                    </div>
                     <div className="list-right">
                       <button
                         className="btn custom-btn"
                         onClick={() => {
-                          setSaveData({
-                            user_id: user._id,
+                                            setSaveData({
+                                                user_id: user._id,
                             uan_number: user.uan_number || "",
                             epf_number: user.epf_number || "",
                             esi_number: user.esic_number || "",
-                          });
-                          setUserId(user._id);
-                          enquiryref.current.style.scale = 1;
+                                            });
+                                            setUserId(user._id);
+                                            enquiryref.current.style.scale = 1;
                         }}
                         style={buttonStyle}
                       >
                         Update
                       </button>
-                    </div>
-                  </div>
-                  <p>Addhar No. : {user.aadhar_number}</p>
-                </div>
-              </li>
+                                    </div>
+                                    </div>
+                                    <p>Addhar No. : {user.aadhar_number}</p>
+                                </div>  
+                            </li>
             );
           })}
-        </ul>
-      </div>
+            </ul>
+        </div>
       <section ref={enquiryref} className="enquiry-section">
-        <div className="enquiry-form">
+          <div className="enquiry-form">
           <img
             onClick={() => {
               closeEnquiry();
@@ -273,8 +273,8 @@ const PendingPF_ESIC = () => {
             src={close}
             alt=""
           />
-          <h2>PF/ESIC Form</h2>
-          {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
+            <h2>PF/ESIC Form</h2>
+            {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
           <form
             action="#"
             onSubmit={(e) => {
@@ -320,8 +320,8 @@ const PendingPF_ESIC = () => {
                 </label>
               </div>
             </div>
-            <div className="input-box w-full">
-              <div className="input-div w-full">
+                <div className="input-box w-full">
+                    <div className="input-div w-full">
                 <label className="form-label" htmlFor="uan_number">
                   UAN Number
                 </label>
@@ -336,8 +336,8 @@ const PendingPF_ESIC = () => {
                   autoComplete="off"
                   disabled={notApplicable}
                 />
-              </div>
-              <div className="input-div w-full">
+                    </div>
+                    <div className="input-div w-full">
                 <label className="form-label" htmlFor="epf_number">
                   EPF Number
                 </label>
@@ -352,10 +352,10 @@ const PendingPF_ESIC = () => {
                   autoComplete="off"
                   disabled={notApplicable}
                 />
-              </div>
-            </div>
-            <div className="input-box w-full">
-              <div className="input-div w-full">
+                    </div>
+                </div>
+                <div className="input-box w-full">
+                    <div className="input-div w-full">
                 <label className="form-label" htmlFor="esi number">
                   ESI Number
                 </label>
@@ -370,8 +370,8 @@ const PendingPF_ESIC = () => {
                   autoComplete="off"
                   disabled={notApplicable}
                 />
-              </div>
-              <div className="input-div w-full">
+                    </div>
+                    <div className="input-div w-full">
                 <label className="form-label" htmlFor="file1">
                   File1
                 </label>
@@ -385,10 +385,10 @@ const PendingPF_ESIC = () => {
                   autoComplete="off"
                   disabled={notApplicable}
                 />
-              </div>
-            </div>
-            <div className="input-box w-full">
-              <div className="input-div w-full">
+                    </div>
+                </div>
+                <div className="input-box w-full">
+                    <div className="input-div w-full">
                 <label className="form-label" htmlFor="file2">
                   File2
                 </label>
@@ -402,20 +402,20 @@ const PendingPF_ESIC = () => {
                   autoComplete="off"
                   disabled={notApplicable}
                 />
-              </div>
-            </div>
+                    </div>
+                </div>
             <div className="d-flex justify-content-between align-items-center mt-2">
-              {/* <h2 onClick={() => deleteEducation()} className='fs-6 cursor-pointer'>{educationEdit ? 'Delete this entry' : ''}</h2> */}
+                {/* <h2 onClick={() => deleteEducation()} className='fs-6 cursor-pointer'>{educationEdit ? 'Delete this entry' : ''}</h2> */}
               <button className="enquiry-button" type="submit">
                 Save
               </button>
-            </div>
-          </form>
-        </div>
-      </section>
+              </div>
+            </form>
+          </div>
+        </section>
       <div className="warning_box" ref={warningref}>
         <div className="inner_warning_box">
-          <p>Are you Sure?</p>
+            <p>Are you Sure?</p>
           <div className="d-flex justify-content-center align-items-center gap-3">
             <button
               onClick={() => {
@@ -435,8 +435,8 @@ const PendingPF_ESIC = () => {
               Yes
             </button>
           </div>
+          </div>
         </div>
-      </div>
     </div>
   );
 };

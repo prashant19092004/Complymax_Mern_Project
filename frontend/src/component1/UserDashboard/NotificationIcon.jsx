@@ -18,6 +18,11 @@ const NotificationIcon = () => {
         </a>
       ));
 
+      function logout(){
+        localStorage.removeItem("token");
+        navigate("/");
+      }
+
   return (
     <Dropdown>
       <Dropdown.Toggle as={CustomToggle}>
@@ -25,8 +30,8 @@ const NotificationIcon = () => {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
-        <Dropdown.Item href="#/action-2">Log Out</Dropdown.Item>
+        <Dropdown.Item><Link to='/user_dashboard/user_profile'>Profile</Link></Dropdown.Item>
+        <Dropdown.Item onClick={logout}>Log Out</Dropdown.Item>
         {/* <Dropdown.Item href="#/action-3">Something else</Dropdown.Item> */}
       </Dropdown.Menu>
     </Dropdown>

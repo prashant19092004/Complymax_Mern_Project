@@ -7,19 +7,24 @@ const path = require('path');
 const mongoose = require('mongoose');
 const supervisorRoutes = require('./routes/supervisorRoute');
 const establishmentRoutes = require('./routes/establishmentRoute');
+const bodyParser = require('body-parser');
 
+// CORS configuration
 app.use(cors());
+
 require("dotenv").config();
+
+// Body parser configuration with increased limits
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Serve static files (uploaded images)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 const cokkieParser = require("cookie-parser");
-
 app.use(cokkieParser());
 
-app.use(express.json());
+// Routes setup
 const userRoutes = require("./routes/userRoutes");
 const establismentResetPasswordRoutes = require("./routes/establismentResetPasswordRoute");
 const clientRoutes = require('./routes/clientRoutes');
@@ -27,16 +32,23 @@ const offerLetterRoutes = require('./routes/offerLetterRoutes');
 
 const port = process.env.PORT || 8000;
 
+// Route middleware
 app.use("/", userRoutes);
 app.use('/client', clientRoutes);
 app.use('/supervisor', supervisorRoutes);
 app.use("/api/establisment/reset-password/", establismentResetPasswordRoutes);
 app.use('/establishment', establishmentRoutes);
 app.use('/api/offer-letter', offerLetterRoutes);
-// app.use(express.static(path.join(_dirname, "/frontend/build")));
-// app.get('*', (req, res) => {
-//   res.sendFile(path.resolve(_dirname, "frontend", "build", "index.html"));
-// })
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    success: false,
+    message: 'Something broke!',
+    error: err.message 
+  });
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -102,7 +102,7 @@ router.post('/send', auth, async function(req, res) {
                 { new: true }
             );
 
-            console.log('Updated offer letter:', JSON.stringify(offerLetter, null, 2));
+            // console.log('Updated offer letter:', JSON.stringify(offerLetter, null, 2));
 
             // Update Hired document status
             await Hired.findByIdAndUpdate(
@@ -132,7 +132,7 @@ router.post('/send', auth, async function(req, res) {
         // Save the offer letter first to get its ID
         await offerLetter.save();
 
-        console.log('Created new offer letter:', JSON.stringify(offerLetter, null, 2));
+        // console.log('Created new offer letter:', JSON.stringify(offerLetter, null, 2));
 
         // Update all related documents with the offer letter ID
         const updatePromises = [

@@ -84,6 +84,53 @@ const AadharSection = ({
     }
   };
 
+  const handlePdfUpload = async (file, isFront) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const endpoint = isFront 
+        ? `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-front-image`
+        : `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-back-image`;
+
+      const response = await axios({
+        method: 'post',
+        url: endpoint,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity
+      });
+
+      if (response.data.user) {
+        setUser((prev) => ({
+          ...prev,
+          [isFront ? 'aadhar_front_image' : 'aadhar_back_image']: response.data.user[isFront ? 'aadhar_front_image' : 'aadhar_back_image'],
+        }));
+        toast.success(`Aadhar ${isFront ? 'front' : 'back'} document uploaded successfully!`);
+        setShowCropModal(false);
+        setPreviewUrl(null);
+        setIsAadharFront(false);
+      }
+    } catch (error) {
+      console.error("Upload error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      if (error.response?.status === 413) {
+        toast.error("File size too large. Please upload a smaller file.");
+      } else if (error.response?.status === 415) {
+        toast.error("Unsupported file type. Please upload a PDF or image file.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to upload document");
+      }
+    }
+  };
+
   const handleDeleteAadharFrontImage = async () => {
     try {
       console.log("Attempting to delete Aadhar front image...");
@@ -104,7 +151,7 @@ const AadharSection = ({
           ...prev,
           aadhar_front_image: null,
         }));
-        toast.success("Aadhar front image deleted successfully!");
+        toast.success("Aadhar front document deleted successfully!");
       } else {
         throw new Error("Invalid response format");
       }
@@ -114,7 +161,7 @@ const AadharSection = ({
         response: error.response?.data,
         status: error.response?.status
       });
-      toast.error(error.response?.data?.message || "Failed to delete image");
+      toast.error(error.response?.data?.message || "Failed to delete document");
     }
   };
 
@@ -138,7 +185,7 @@ const AadharSection = ({
           ...prev,
           aadhar_back_image: null,
         }));
-        toast.success("Aadhar back image deleted successfully!");
+        toast.success("Aadhar back document deleted successfully!");
       } else {
         throw new Error("Invalid response format");
       }
@@ -148,15 +195,31 @@ const AadharSection = ({
         response: error.response?.data,
         status: error.response?.status
       });
-      toast.error(error.response?.data?.message || "Failed to delete image");
+      toast.error(error.response?.data?.message || "Failed to delete document");
     }
   };
 
   const handleAadharFrontImageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const reader = new FileReader();
       
+      // Check file size (e.g., 5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        toast.error("File size too large. Please upload a file smaller than 5MB.");
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // Check if file is PDF
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        handlePdfUpload(file, true);
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // For images, proceed with cropping
+      const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result);
         setCrop({
@@ -168,8 +231,12 @@ const AadharSection = ({
         });
         setShowCropModal(true);
         setIsAadharFront(true);
+        e.target.value = ''; // Clear the file input after setting preview
       };
-
+      reader.onerror = () => {
+        toast.error("Error reading file");
+        e.target.value = ''; // Clear the file input on error
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -177,8 +244,24 @@ const AadharSection = ({
   const handleAadharBackImageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const reader = new FileReader();
       
+      // Check file size (e.g., 5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        toast.error("File size too large. Please upload a file smaller than 5MB.");
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // Check if file is PDF
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        handlePdfUpload(file, false);
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
+      // For images, proceed with cropping
+      const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result);
         setCrop({
@@ -190,8 +273,12 @@ const AadharSection = ({
         });
         setShowCropModal(true);
         setIsAadharFront(false);
+        e.target.value = ''; // Clear the file input after setting preview
       };
-
+      reader.onerror = () => {
+        toast.error("Error reading file");
+        e.target.value = ''; // Clear the file input on error
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -211,7 +298,7 @@ const AadharSection = ({
           <dd>{user.full_Name}</dd>
         </div>
         <div className="flex flex-col profile-content-box position-relative">
-          <dt>Aadhar Card Images</dt>
+          <dt>Aadhar Card Documents</dt>
           <div className="d-flex flex-column gap-3">
             {/* Front Image Section */}
           <dd className="d-flex align-items-center gap-2">
@@ -224,22 +311,26 @@ const AadharSection = ({
                 <div className="d-flex gap-2">
                   <button 
                     className="btn btn-outline-primary btn-sm"
-                      onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${user.aadhar_front_image}`, '_blank')}
+                      onClick={() => {
+                        const url = `${process.env.REACT_APP_BACKEND_URL}${user.aadhar_front_image}`;
+                        // Open PDF in a new tab
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
                   >
                       View Front
                   </button>
-                  <button 
+                    {/* <button 
                     className="btn btn-primary btn-sm"
                       onClick={() => aadhar_front_image_input_ref.current.click()}
                   >
                     Update
-                  </button>
-                  <button 
+                    </button> */}
+                    {/* <button 
                     className="btn btn-outline-danger btn-sm"
                       onClick={handleDeleteAadharFrontImage}
                   >
                     <MdDeleteOutline size={18} />
-                  </button>
+                    </button> */}
                 </div>
               </>
             ) : (
@@ -268,22 +359,26 @@ const AadharSection = ({
                   <div className="d-flex gap-2">
                     <button 
                       className="btn btn-outline-primary btn-sm"
-                      onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}${user.aadhar_back_image}`, '_blank')}
+                      onClick={() => {
+                        const url = `${process.env.REACT_APP_BACKEND_URL}${user.aadhar_back_image}`;
+                        // Open PDF in a new tab
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
                     >
                       View Back
                     </button>
-                    <button 
+                    {/* <button 
                       className="btn btn-primary btn-sm"
                       onClick={() => aadhar_back_image_input_ref.current.click()}
                     >
                       Update
-                    </button>
-                    <button 
+                    </button> */}
+                    {/* <button 
                       className="btn btn-outline-danger btn-sm"
                       onClick={handleDeleteAadharBackImage}
                     >
                       <MdDeleteOutline size={18} />
-                    </button>
+                    </button> */}
                   </div>
                 </>
               ) : (
@@ -307,14 +402,14 @@ const AadharSection = ({
             ref={aadhar_front_image_input_ref}
             type="file"
             onChange={handleAadharFrontImageChange}
-            accept="image/*"
+            accept="image/*,.pdf"
             className="d-none"
           />
             <input 
             ref={aadhar_back_image_input_ref}
               type="file"
             onChange={handleAadharBackImageChange}
-              accept="image/*"
+            accept="image/*,.pdf"
               className="d-none"
             />
         </div>

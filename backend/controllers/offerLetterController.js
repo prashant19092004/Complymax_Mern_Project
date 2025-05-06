@@ -7,7 +7,7 @@ const User = require('../models/user');
 // Get all offer letters for the authenticated user
 exports.getUserOfferLetters = async (req, res) => {
   try {
-    console.log('User ID:', req.user.id);
+    // console.log('User ID:', req.user.id);
     
     // Find all offer letters for this user and populate hiring and establishment details
     const offerLetters = await OfferLetter.find({ userId: req.user.id })
@@ -18,7 +18,7 @@ exports.getUserOfferLetters = async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
-    console.log('Found Offer Letters:', offerLetters);
+    // console.log('Found Offer Letters:', offerLetters);
 
     // Transform the data to include job category and company name
     const transformedOfferLetters = offerLetters.map(offer => ({

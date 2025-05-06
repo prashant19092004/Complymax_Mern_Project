@@ -5,7 +5,7 @@ const path = require('path');
 // Upload signature
 exports.uploadSignature = async (req, res) => {
   try {
-    console.log('Upload request received:', req.file);
+    // console.log('Upload request received:', req.file);
 
     if (!req.file) {
       return res.status(400).json({ 
@@ -60,7 +60,7 @@ exports.uploadSignature = async (req, res) => {
 // Delete signature
 exports.deleteSignature = async (req, res) => {
   try {
-    console.log('Delete request received for user:', req.user.id);
+    // console.log('Delete request received for user:', req.user.id);
 
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -72,12 +72,12 @@ exports.deleteSignature = async (req, res) => {
 
     if (user.signature) {
       const signaturePath = path.join(__dirname, '..', 'uploads', user.signature.replace('/uploads/', ''));
-      console.log('Attempting to delete file at:', signaturePath);
+      // console.log('Attempting to delete file at:', signaturePath);
       
       try {
         if (fs.existsSync(signaturePath)) {
           fs.unlinkSync(signaturePath);
-          console.log('File deleted successfully');
+          // console.log('File deleted successfully');
         }
       } catch (fileError) {
         console.error('Error deleting file:', fileError);
@@ -87,7 +87,7 @@ exports.deleteSignature = async (req, res) => {
       // Update database
       user.signature = '';
       await user.save();
-      console.log('Database updated successfully');
+      // console.log('Database updated successfully');
 
       res.json({ 
         success: true, 

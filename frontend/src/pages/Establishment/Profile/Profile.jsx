@@ -53,6 +53,12 @@ const Profile = () => {
   const onFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      // Check if file is PDF
+      if (selectedFile.type === 'application/pdf') {
+        toast.warning('Please upload profile picture in JPG or PNG format only');
+        e.target.value = ''; // Clear the file input
+        return;
+      }
       setFile(selectedFile);
       onSubmit(selectedFile);
     }
@@ -162,6 +168,12 @@ const Profile = () => {
   const onLogoChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      // Check if file is PDF
+      if (selectedFile.type === 'application/pdf') {
+        toast.warning('Please upload logo in JPG or PNG format only');
+        e.target.value = ''; // Clear the file input
+        return;
+      }
       setLogoFile(selectedFile);
       handleLogoUpload(selectedFile);
     }
@@ -170,6 +182,13 @@ const Profile = () => {
   const handleSignatureUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check if file is PDF
+      if (file.type === 'application/pdf') {
+        toast.warning('Please upload signature in JPG or PNG format only');
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
       const formData = new FormData();
       formData.append('signature', file);
 
@@ -409,7 +428,7 @@ const Profile = () => {
             ref={logo_input_ref}
             type="file"
             onChange={onLogoChange}
-            accept="image/*"
+            accept="image/jpeg,image/png,image/jpg"
             className="hidden-input"
           />
         </div>
@@ -450,7 +469,7 @@ const Profile = () => {
             id="signature-upload"
             type="file"
             onChange={handleSignatureUpload}
-            accept="image/*"
+            accept="image/jpeg,image/png,image/jpg"
             className="hidden-input"
           />
         </div>
@@ -460,7 +479,7 @@ const Profile = () => {
         ref={profile_pic_input_ref}
         type="file"
         onChange={onFileChange}
-        accept="image/*"
+        accept="image/jpeg,image/png,image/jpg"
         className="hidden-input"
       />
 

@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
     await currentAuth.save();
   
     // Send password reset link via email
-    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
     const mailOptions = {
       from: 'prashantkumargupta19092004@gmail.com',
       to: currentAuth.email,

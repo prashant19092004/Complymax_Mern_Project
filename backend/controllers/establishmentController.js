@@ -4,7 +4,7 @@ const path = require('path');
 
 const uploadSignature = async (req, res) => {
   try {
-    console.log('Upload request received:', req.file);
+    // console.log('Upload request received:', req.file);
 
     if (!req.file) {
       return res.status(400).json({ 
@@ -55,12 +55,12 @@ const uploadSignature = async (req, res) => {
 
 const deleteSignature = async (req, res) => {
   try {
-    console.log('Delete request received for user:', req.user.id);
+    // console.log('Delete request received for user:', req.user.id);
 
     // Find the establishment
     const establishment = await Admin.findById(req.user.id);
     if (!establishment) {
-      console.log('Establishment not found');
+      // console.log('Establishment not found');
       return res.status(404).json({ 
         success: false, 
         message: 'Establishment not found' 
@@ -69,12 +69,12 @@ const deleteSignature = async (req, res) => {
 
     if (establishment.signature) {
       const signaturePath = path.join(__dirname, '..', 'uploads', establishment.signature);
-      console.log('Attempting to delete file at:', signaturePath);
+      // console.log('Attempting to delete file at:', signaturePath);
       
       try {
         if (fs.existsSync(signaturePath)) {
           fs.unlinkSync(signaturePath);
-          console.log('File deleted successfully');
+          // console.log('File deleted successfully');
         }
       } catch (fileError) {
         console.error('Error deleting file:', fileError);
@@ -84,7 +84,7 @@ const deleteSignature = async (req, res) => {
       // Update database
       establishment.signature = null;
       await establishment.save();
-      console.log('Database updated successfully');
+      // console.log('Database updated successfully');
 
       res.json({ 
         success: true, 
