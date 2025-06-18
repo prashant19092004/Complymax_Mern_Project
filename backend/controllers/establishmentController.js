@@ -1,6 +1,7 @@
 const Admin = require('../models/admin');
 const fs = require('fs');
 const path = require('path');
+const LeaveRequestModel = require('../models/leave.model');
 
 const uploadSignature = async (req, res) => {
   try {
@@ -106,7 +107,193 @@ const deleteSignature = async (req, res) => {
   }
 };
 
+const getLeaveRequests = async (req, res) => {
+  try {
+    // Fetch leave requests for the establishment
+    const leaveRequests = await LeaveRequestModel.find({ establishment_id: req.user.id })
+      .populate([
+        {
+        path: 'user_id',
+        select: 'full_Name _id casualLeave annualLeave medicalLeave'
+      },
+      {
+        path: 'supervisor_id',
+        select: 'name _id'
+      }
+    ]) // Populate employee details
+      .sort({ createdAt: -1 }); // Sort by creation date, most recent first
+
+    const establishment = await Admin.findById(req.user.id)
+    .select('_id casualLeave annualLeave medicalLeave');
+    res.status(200).json({
+      success: true,
+      message: 'Leave requests fetched successfully',
+      leaveRequests,
+      establishment
+    });
+  } catch (error) {
+    console.error('Error fetching leave requests:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching leave requests',
+      error: error.message
+    });
+  }
+};
+
+const allotLeave = async (req, res) => {
+  try {
+    const { casual, annual, medical } = req.body;
+
+    // Validate input
+    if (!casual && !annual && !medical) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide at least one type of leave to allot'
+      });
+    }
+
+    // Find the establishment
+    const establishment = await Admin.findById(req.user.id)
+      .select('casualLeave annualLeave medicalLeave');
+    if (!establishment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Establishment not found'
+      });
+    }
+
+    // Update leave balances
+    if (casual) establishment.casualLeave = casual;
+    if (annual) establishment.annualLeave = annual;
+    if (medical) establishment.medicalLeave = medical;
+
+    await establishment.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Leave allotted successfully',
+      establishment
+    });
+  } catch (error) {
+    console.error('Error allotting leave:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error allotting leave',
+      error: error.message
+    });
+  }
+};
+
+// Export the functions to be used in routes
+const updateLeaveStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const leaveRequestId = req.params.id;
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide status'
+      });
+    }
+
+    const leaveRequest = await LeaveRequestModel.findById(leaveRequestId)
+      .select('status respondedByEstablishment _id respondedAt user_id leaveType')
+      .populate('user_id', 'full_Name _id leaveTaken leaveYear leaveHistory medicalLeaveHistory casualLeaveHistory annualLeaveHistory casualLeave annualLeave medicalLeave');
+
+    if (leaveRequest) {
+      leaveRequest.respondedByEstablishment = req.user.id;
+      leaveRequest.respondedAt = new Date();
+      leaveRequest.status = status;
+      leaveRequest.updatedAt = new Date();
+      // leaveRequest.user_id.leaveTaken += 1; // Increment leave taken count
+      
+      
+      if(leaveRequest.user_id.leaveYear < new Date().getFullYear()) {
+          leaveRequest.user_id.casualLeaveHistory.push({
+            year: leaveRequest.user_id.leaveYear,
+            totalLeaves: leaveRequest.user_id.casualLeave
+          });
+          leaveRequest.user_id.casualLeave = 0; // Reset casual leave for the new
+          leaveRequest.user_id.annualLeaveHistory.push({
+            year: leaveRequest.user_id.leaveYear,
+            totalLeaves: leaveRequest.user_id.annualLeave
+          });
+          leaveRequest.user_id.annualLeave = 0; // Reset annual leave for the new year
+          leaveRequest.user_id.medicalLeaveHistory.push({
+            year: leaveRequest.user_id.leaveYear,
+            totalLeaves: leaveRequest.user_id.medicalLeave
+          });
+          leaveRequest.user_id.medicalLeave = 0; // Reset medical leave for the new year
+          leaveRequest.user_id.leaveHistory.push({
+            year: leaveRequest.user_id.leaveYear,
+            totalLeaves: leaveRequest.user_id.leaveTaken
+          });
+          leaveRequest.user_id.leaveTaken = 0; // Reset total leaves taken for the new year
+          // Update the leave year to the current year
+          leaveRequest.user_id.leaveYear = new Date().getFullYear();
+        }
+
+
+      if(status === 'Approved') {
+        // Increment the appropriate leave type based on the leaveType field
+        if (leaveRequest.leaveType === 'Casual') {
+          leaveRequest.user_id.casualLeave += 1;
+          leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
+        } else if (leaveRequest.leaveType === 'Annual') {
+          leaveRequest.user_id.annualLeave += 1;
+          leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
+        } else if (leaveRequest.leaveType === 'Medical') {
+          leaveRequest.user_id.medicalLeave += 1;
+          leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
+        }
+      }
+    }
+    // Save the user leave data
+    await leaveRequest.user_id.save();
+    
+    const updatedLeaveRequest = await leaveRequest.save();
+
+    if (!leaveRequest) {
+      return res.status(404).json({
+        success: false,
+        message: 'Leave request not found'
+      });
+    }
+
+    const leaveRequests = await LeaveRequestModel.find({ establishment_id: req.user.id })
+      .populate([
+        {
+          path: 'user_id',
+          select: 'full_Name _id casualLeave annualLeave medicalLeave'
+        },
+        {
+          path: 'supervisor_id',
+          select: 'name _id'
+        }
+      ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Leave request status updated successfully',
+      updatedLeaveRequest,
+      leaveRequests
+    });
+  } catch (error) {
+    console.error('Error updating leave request status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating leave request status',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   uploadSignature,
-  deleteSignature
-}; 
+  deleteSignature,
+  getLeaveRequests,
+  allotLeave,
+  updateLeaveStatus
+};

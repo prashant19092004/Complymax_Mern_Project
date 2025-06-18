@@ -1,6 +1,9 @@
 const jwt = require("jsonwebtoken");
 const supervisorModel = require("../models/supervisor.model");
 const superadminModel = require("../models/superadmin.model");
+const userModel = require("../models/user");
+const establishmentModel = require("../models/admin.js");
+const clientModel = require("../models/client.model");
 
 require("dotenv").config();
 
@@ -21,7 +24,6 @@ const isSupervisor = async (req, res, next) => {
     if (!supervisor) {
       return res.status(401).json({
         success: false,
-        role: req.user.role,
         message: "this is for Supervisor stay away",
       });
     }
@@ -32,7 +34,7 @@ const isSupervisor = async (req, res, next) => {
       message: "internal server error",
     });
   }
-};
+}
 
 const isSuperadmin = async (req, res, next) => {
   try {
@@ -70,9 +72,48 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+const isUser = async (req, res, next) => {
+  try {
+    const user = await userModel.findOne({email : req.user.email}, {_id:1});
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "this is for Supervisor stay away",
+      });
+    }
+    next();
+  } catch (e) {
+    res.status(401).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+}
+
+const isEstablishment = async (req, res, next) => {
+  try {
+    const establishment = await establishmentModel.findOne({email : req.user.email}, {_id:1});
+    if (!establishment) {
+      return res.status(401).json({
+        success: false,
+        message: "this is for Establishment stay away",
+      });
+    }
+    next();
+  } catch (e) {
+    res.status(401).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+}
+
+
 module.exports = {
   auth,
   isSupervisor,
   isSuperadmin,
-  isAdmin
+  isAdmin,
+  isUser,
+  isEstablishment
 };

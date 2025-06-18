@@ -42,7 +42,13 @@ const supervisorSchema = new mongoose.Schema({
     offerLetters : [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OfferLetter'
-    }]
+    }],
+  leaveRequests: [
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Leave"
+    }
+  ]
 });
 
 module.exports = mongoose.model("Supervisor", supervisorSchema);

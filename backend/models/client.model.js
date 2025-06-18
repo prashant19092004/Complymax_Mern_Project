@@ -37,7 +37,13 @@ const clientSchema = new mongoose.Schema({
     status : {
         type : Boolean,
         default : true
-    }
+    },
+    leaveRequests: [
+      {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Leave"
+      }
+    ]
 });
 
 module.exports = mongoose.model("Client", clientSchema);

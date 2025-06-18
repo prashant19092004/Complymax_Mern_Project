@@ -41,6 +41,7 @@ import EstablishmentAccountForm from './pages/Establishment/AccountForm/AccountF
 import AlotWages from './pages/Establishment/AlotWages/AlotWages';
 import EstablishmentPfEsic from './pages/Establishment/PF ESIC/PendingPfEsic';
 import ActiveUsers from './pages/Establishment/ActiveUsers/ActiveUsers';
+import LeaveManagement from './pages/Establishment/Leave Management/LeaveManagement';
 
 // Supervisor Dashboard
 import SupervisorDashboard from './component1/Supervisor_dashboard/SupervisorDashboard';
@@ -54,6 +55,7 @@ import OfferLetter from './pages/Supervisor/OfferLetter/OfferLetter';
 import SendOfferLetter from './pages/Supervisor/OfferLetter/SendOfferLetter';
 import SupervisorProfile from './pages/Supervisor/Profile/Profile';
 import Users from './pages/Supervisor/Users/Users';
+import LeaveManagementSupervisor from './pages/Supervisor/Leave Management/LeaveManagement';
 
 // User Dashboard
 import UserDashboard from './component1/UserDashboard/UserDashboard';
@@ -65,7 +67,7 @@ import AccountForm from './component1/UserDashboard/AccountForm';
 import UanEsicForm from './component1/UserDashboard/UanEsicForm';
 import UserOfferLetter from './pages/User/OfferLetter/OfferLetter';
 import ShowOfferLetter from './pages/User/OfferLetter/ShowOfferLetter';
-
+import UserLeaveManagement from './pages/User/Leave Management/LeaveManagement';
 function App() {
   const router = createBrowserRouter([
     { path: "/", element: <Home />, errorElement: <ErrorPage /> },
@@ -102,6 +104,7 @@ function App() {
         { path: "register-candidate", element: <RegisterCandidate /> },
         { path: "add_pan", element: <EstablishmentPanForm /> },
         { path: "add_account", element: <EstablishmentAccountForm /> },
+        { path: "leave-management", element: <LeaveManagement /> },
       ]
     },
 
@@ -130,6 +133,7 @@ function App() {
         { path: "send-offer-letter", element: <SendOfferLetter /> },
         { path: "employee-detail", element: <EmployeeDetail /> },
         { path: "users", element: <Users /> },
+        { path: "leave-management", element: <LeaveManagementSupervisor /> }
       ]
     },
 
@@ -146,6 +150,7 @@ function App() {
         { path: "add_uan_esic", element: <UanEsicForm /> },
         { path: "offer-letters", element: <UserOfferLetter /> },
         { path: "offer-letter/:id", element: <ShowOfferLetter /> },
+        { path: "leave-management", element: <UserLeaveManagement /> },
       ]
     }
   ]);

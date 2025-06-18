@@ -4,6 +4,8 @@ const { auth } = require('../middleware/auth');
 const userModel = require('../models/user');
 const clientModel = require('../models/client.model');
 const supervisorModel = require('../models/supervisor.model');
+const supervisorController = require('../controllers/supervisorController');
+const { isSupervisor } = require('../middleware/auth');
 
 // Test route to verify router is working
 router.get('/test', (req, res) => {
@@ -76,6 +78,7 @@ router.get('/users', auth, async (req, res) => {
     }
 });
 
-
+router.post('/leave-page/leave-response/:id', auth, isSupervisor, supervisorController.updateLeaveStatus);
+router.get('/leave-page/leave-requests', auth, isSupervisor, supervisorController.getLeaveRequests);
 
 module.exports = router;

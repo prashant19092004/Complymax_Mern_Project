@@ -9,6 +9,7 @@ const { uploadImage } = require('../middleware/multer.js');
 const establishmentController = require('../controllers/establishmentController');
 const path = require('path');
 const fs = require('fs');
+const { isEstablishment } = require('../middleware/auth');
 
 
 // Test route to verify router is working
@@ -226,6 +227,10 @@ router.delete('/delete-signature', auth, async (req, res) => {
     }
 });
 
+
+router.get('/leave-page/leave-requests', auth, isEstablishment, establishmentController.getLeaveRequests);
+router.post('/leave-page/allot-leave', auth, isEstablishment, establishmentController.allotLeave);
+router.post('/leave-page/leave-response/:id', auth, isEstablishment, establishmentController.updateLeaveStatus);
 
 
 module.exports = router;

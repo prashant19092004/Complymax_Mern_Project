@@ -6,6 +6,7 @@ import { Rnd } from "react-rnd";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./OfferLetter.css"; // Custom styling
 import EditableField from "./EditableField";
+import html2pdf from 'html2pdf.js';
 
 const calculateScale = () => {
     const A4_WIDTH_MM = 210;
@@ -497,6 +498,98 @@ We are confident you will be able to make a significant contribution to the succ
     }
 };
 
+  const handleDownloadPDF = async () => {
+    try {
+      const element = pageRef.current;
+      
+      // Create a clone of the element
+      const clone = element.cloneNode(true);
+      
+      // Fix text area content formatting
+      const textarea = clone.querySelector('textarea');
+      if (textarea) {
+        const content = textarea.value;
+        const formattedContent = content.split('\n').map(line => `<p>${line}</p>`).join('');
+        const contentDiv = document.createElement('div');
+        contentDiv.innerHTML = formattedContent;
+        contentDiv.style.whiteSpace = 'pre-wrap';
+        contentDiv.style.wordWrap = 'break-word';
+        textarea.parentNode.replaceChild(contentDiv, textarea);
+      }
+      
+      // Create a container for the PDF content
+      const container = document.createElement('div');
+      container.style.width = '210mm';
+      container.style.height = '297mm';
+      container.style.padding = '20mm';
+      container.style.backgroundColor = 'white';
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      
+      // Reset the clone's styles
+      clone.style.transform = 'none';
+      clone.style.width = '100%';
+      clone.style.height = '100%';
+      clone.style.margin = '0';
+      clone.style.padding = '0';
+      clone.style.backgroundColor = 'white';
+      
+      // Append the clone to the container
+      container.appendChild(clone);
+      document.body.appendChild(container);
+      
+      const opt = {
+        margin: 0,
+        filename: `offer-letter-${userData?.full_Name || 'employee'}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          logging: true,
+          backgroundColor: '#ffffff',
+          width: 794, // A4 width in pixels
+          height: 1123, // A4 height in pixels
+          onclone: (clonedDoc) => {
+            const clonedElement = clonedDoc.querySelector('.offer-letter');
+            if (clonedElement) {
+              clonedElement.style.transform = 'none';
+              clonedElement.style.width = '100%';
+              clonedElement.style.height = 'auto';
+              clonedElement.style.margin = '0';
+              clonedElement.style.padding = '0';
+              
+              // Ensure proper text formatting in the cloned element
+              const paragraphs = clonedElement.getElementsByTagName('p');
+              Array.from(paragraphs).forEach(p => {
+                p.style.margin = '0';
+                p.style.padding = '0';
+                p.style.lineHeight = '1.5';
+                p.style.whiteSpace = 'pre-wrap';
+                p.style.wordWrap = 'break-word';
+              });
+            }
+          }
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait'
+        }
+      };
+
+      await html2pdf().set(opt).from(container).save();
+      
+      // Clean up
+      document.body.removeChild(container);
+      
+      toast.success("Offer letter downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast.error("Failed to download offer letter");
+    }
+  };
+
   if (loading) return <div className="text-center mt-5">Loading...</div>;
 
   const styles = `
@@ -540,21 +633,35 @@ We are confident you will be able to make a significant contribution to the succ
           display: "flex",
           justifyContent: "center",
           gap: "10px",
+          flexWrap: "wrap"
         }}
       >
-        {!isAccepted && (
+        <div className="d-flex gap-2">
+          {!isAccepted && (
+            <button 
+              className="btn btn-primary"
+              onClick={handleSendOfferLetter}
+              style={{
+                padding: "10px 20px",
+                fontSize: "16px",
+                fontWeight: "500",
+              }}
+            >
+              Send Offer Letter
+            </button>
+          )}
           <button 
-            className="btn btn-primary"
-            onClick={handleSendOfferLetter}
+            className="btn btn-secondary"
+            onClick={handleDownloadPDF}
             style={{
               padding: "10px 20px",
               fontSize: "16px",
               fontWeight: "500",
             }}
           >
-            Send Offer Letter
+            Download PDF
           </button>
-        )}
+        </div>
         {isAccepted && (
           <div className="alert alert-success" role="alert">
             This offer letter has been accepted by the employee

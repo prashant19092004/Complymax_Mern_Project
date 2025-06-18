@@ -1,0 +1,191 @@
+/* LeaveManagement.css */
+.title-shadow {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .apply-btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .apply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 128, 0, 0.3);
+  }
+  
+  .summary-card {
+    transition: transform 0.3s ease;
+  }
+  
+  .summary-card:hover {
+    transform: scale(1.03);
+  }
+  
+  .history-item {
+    transition: background 0.3s ease;
+  }
+  
+  .history-item:hover {
+    background: #f8f9fa;
+  }
+  
+  .modal-header-custom {
+    background-color: #f0f8ff;
+  }
+  
+  .modal-body-custom {
+    background-color: #ffffff;
+  }
+  
+  .submit-btn {
+    background-color: #007bff;
+    border: none;
+  }
+  
+  .submit-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .custom-input {
+    border-radius: 12px;
+    border: 1px solid #ced4da;
+    padding: 10px 15px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .custom-input:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .custom-dropdown {
+    border-radius: 12px;
+    padding: 10px 15px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .custom-dropdown:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  margin-inline: auto;
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 28px 22px 28px;
+  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.13), 0 1.5px 4px rgba(0,0,0,0.04);
+  width: 100%;
+  max-width: 370px;
+  min-width: 300px;
+  animation: fadeIn 0.25s;
+  border: 1px solid #e3e8ee;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.22rem;
+  color: #1976d2;
+  text-align: center;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-content label {
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.modal-content input[type="number"] {
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 4px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 7px;
+  font-size: 1rem;
+  background: #f7fafd;
+  transition: border 0.18s;
+}
+
+.modal-content input[type="number"]:focus {
+  border: 1.5px solid #1976d2;
+  outline: none;
+  background: #fff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e0e0e0;
+  color: #333;
+  transition: background 0.18s;
+}
+
+.modal-actions .allot-btn {
+  background: linear-gradient(90deg, #4caf50 60%, #43a047 100%);
+  color: #fff;
+}
+
+.modal-actions .allot-btn:hover {
+  background: linear-gradient(90deg, #43a047 60%, #388e3c 100%);
+}
+
+.modal-actions button:hover:not(.allot-btn) {
+  background: #bdbdbd;
+}
+
+/* Responsive styles */
+@media (max-width: 480px) {
+  .modal-content {
+    min-width: 0;
+    max-width: 96vw;
+    padding: 18px 6vw 18px 6vw;
+  }
+  .modal-content h3 {
+    font-size: 1.05rem;
+  }
+  .modal-actions button, .modal-actions .allot-btn {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 1rem;
+  }
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+  }
+}
+

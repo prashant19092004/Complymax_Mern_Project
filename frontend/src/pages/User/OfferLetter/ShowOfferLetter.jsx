@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import "./style.css";
 import { toast } from "react-toastify";
+import html2pdf from 'html2pdf.js';
 
 const calculateScale = () => {
   const A4_WIDTH_MM = 210;
@@ -247,6 +248,25 @@ const ShowOfferLetter = () => {
     </div>
   );
 
+  const handleDownloadPDF = async () => {
+    try {
+      const element = pageRef.current;
+      const opt = {
+        margin: 1,
+        filename: `offer-letter-${id}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+      toast.success("Offer letter downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast.error("Failed to download offer letter");
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -320,6 +340,11 @@ const ShowOfferLetter = () => {
                 Reject
               </button>
             </>
+          )}
+          {status === "accepted" && (
+            <button className="btn btn-primary" onClick={handleDownloadPDF}>
+              Download PDF
+            </button>
           )}
           <button
             className="btn btn-outline-secondary"

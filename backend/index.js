@@ -5,8 +5,6 @@ const cors = require("cors");
 const multer = require('multer');
 const path = require('path');
 const mongoose = require('mongoose');
-const supervisorRoutes = require('./routes/supervisorRoute');
-const establishmentRoutes = require('./routes/establishmentRoute');
 const bodyParser = require('body-parser');
 
 // CORS configuration
@@ -29,6 +27,8 @@ const userRoutes = require("./routes/userRoutes");
 const establismentResetPasswordRoutes = require("./routes/establismentResetPasswordRoute");
 const clientRoutes = require('./routes/clientRoutes');
 const offerLetterRoutes = require('./routes/offerLetterRoutes');
+const supervisorRoutes = require('./routes/supervisorRoute');
+const establishmentRoutes = require('./routes/establishmentRoute');
 
 const port = process.env.PORT || 8000;
 

@@ -16,14 +16,14 @@ const { uploadPDF } = require('../middleware/multer.js');
 const { uploadImageAndPdf } = require('../middleware/multer.js');
 const path = require('path');
 const fs = require('fs');
-const { uploadSignature, deleteSignature } = require('../controllers/userController');
+const { uploadSignature, deleteSignature, applyLeave, leavePageData, leaveApplication } = require('../controllers/userController');
 
 // Increase EventEmitter max listeners
 require('events').EventEmitter.defaultMaxListeners = 15;
 
 const { userlogin, usersignup, adminsignup, adminlogin, clientregister, clientlogin, supervisorlogin, supervisorregister, superadminlogin, superadminsignup } = require("../controller/auth")
 
-const { auth, isStudent, isAdmin, isSuperadmin, isSupervisor } = require("../middleware/auth");
+const { auth, isUser, isAdmin, isSuperadmin, isSupervisor } = require("../middleware/auth");
 
 // router.post("/login", login)
 router.post("/usersignup", usersignup)
@@ -714,7 +714,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
     router.post("/supervisor/hire", auth, async(req, res) => {
         const { user_id, hiring_id } = req.body;
         try{
-            const currentUser = await userModel.findOne({_id : user_id},{_id : 1, hired : 1, job : 1});
+            const currentUser = await userModel.findOne({_id : user_id},{_id : 1, hired : 1, job : 1, establisment : 1, employeeId : 1});
 
             if(currentUser.job){
                 return res.status(400).json({ success : false, message : "user has already has a job"})
@@ -746,6 +746,8 @@ router.get("/establisment/profile",auth, async (req, res) => {
             currentUser.job = true;
             currentUser.hired=newHired._id;
             currentUser.employeeId=newEmployeeId;
+            currentUser.establisment = currentSupervisor.establisment;
+            currentUser.supervisor = currentSupervisor._id;
             await currentUser.save();
 
 
@@ -757,8 +759,7 @@ router.get("/establisment/profile",auth, async (req, res) => {
             currentSupervisor.hired.push(newHired._id);
             await currentSupervisor.save();
 
-            const users = await userModel.find({}, {aadhar_number:1, full_Name : 1, contact : 1},);
-            
+            const users = await userModel.find({}, {aadhar_number:1, full_Name : 1, contact : 1});
             
             const currentEstablisment = await adminModel.findOne({ _id : currentSupervisor.establisment},{ hirings : 1})
             .populate('hirings')
@@ -1909,5 +1910,9 @@ router.get("/establisment/profile",auth, async (req, res) => {
     // Signature routes
     router.post('/upload/signature', auth, uploadImage.single('image'), uploadSignature);
     router.post('/delete/signature', auth, deleteSignature);
+
+    router.post('/apply-leave', auth, isUser, applyLeave);
+    router.get('/leave-page/user-data', auth, isUser, leavePageData);
+    router.post('/leave-page/leave-application', auth, isUser, leaveApplication);
 
 module.exports = router
