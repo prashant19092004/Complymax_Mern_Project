@@ -4,19 +4,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./style.css";
 import { toast } from "react-toastify";
 import html2pdf from 'html2pdf.js';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
+
+/* ---------- helper for responsive preview ---------- */
+const MM_TO_PX = 3.78;           // 1 mm ≈ 3.78 px @ 96 DPI
+const A4_WIDTH_MM  = 210;
+const A4_HEIGHT_MM = 297;
 const calculateScale = () => {
-  const A4_WIDTH_MM = 210;
-  const A4_HEIGHT_MM = 297;
-  const MM_TO_PX = 3.78; // 1mm = 3.78px at 96 DPI
-
-  const availableWidth = window.innerWidth - 40; // Account for padding
-  const availableHeight = window.innerHeight - 40; // Account for padding
-
-  const widthScale = availableWidth / (A4_WIDTH_MM * MM_TO_PX);
+  const availableWidth  = window.innerWidth  - 40;
+  const availableHeight = window.innerHeight - 40;
+  const widthScale  = availableWidth  / (A4_WIDTH_MM  * MM_TO_PX);
   const heightScale = availableHeight / (A4_HEIGHT_MM * MM_TO_PX);
-
-  // Use the smaller scale to maintain aspect ratio
   return Math.min(widthScale, heightScale, 1);
 };
 
@@ -30,6 +30,7 @@ const ShowOfferLetter = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [scale, setScale] = useState(calculateScale());
   const pageRef = useRef(null);
+  const offerRef = useRef();
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -248,24 +249,74 @@ const ShowOfferLetter = () => {
     </div>
   );
 
-  const handleDownloadPDF = async () => {
-    try {
-      const element = pageRef.current;
-      const opt = {
-        margin: 1,
-        filename: `offer-letter-${id}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  /* ---------- PDF download WITHOUT whitespace ------------- */
+  const handleDownloadPDF = () => {
+  const element = offerRef.current;
+
+  if (!element) {
+    toast.error("Offer letter content not found.");
+    return;
+  }
+
+  // Temporarily remove scaling
+  const prevTransform = element.style.transform;
+  const prevTransformOrigin = element.style.transformOrigin;
+  element.style.transform = "scale(1)";
+  element.style.transformOrigin = "top left";
+
+  const images = element.querySelectorAll("img");
+  const imagePromises = Array.from(images).map(
+    (img) =>
+      new Promise((resolve) => {
+        if (img.complete) resolve();
+        else img.onload = img.onerror = resolve;
+      })
+  );
+
+  Promise.all(imagePromises).then(() => {
+    html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: null,
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const imgProps = {
+        width: canvas.width,
+        height: canvas.height,
       };
 
-      await html2pdf().set(opt).from(element).save();
-      toast.success("Offer letter downloaded successfully!");
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-      toast.error("Failed to download offer letter");
-    }
-  };
+      const ratio = imgProps.width / imgProps.height;
+      const pageWidth = pdfWidth;
+      const pageHeight = pageWidth / ratio;
+
+      pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, pageHeight);
+      pdf.save("OfferLetter.pdf");
+
+      // Restore transform
+      element.style.transform = prevTransform;
+      element.style.transformOrigin = prevTransformOrigin;
+    });
+  });
+};
+
+  /* -------------------------------------------------------- */
+
+  /* ---------- responsive preview scaling on resize -------- */
+  useEffect(() => {
+    const handleResize = () => setScale(calculateScale());
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  /* -------------------------------------------------------- */
+
+
 
   if (loading) {
     return (
@@ -357,7 +408,7 @@ const ShowOfferLetter = () => {
       <div className="container py-4">
         <div className="page-wrapper">
           <div
-            ref={pageRef}
+            ref={offerRef}
             className="a4-page"
             style={{
               transform: `scale(${scale})`,
@@ -384,6 +435,7 @@ const ShowOfferLetter = () => {
                   }}
                 >
                   <img
+                    crossOrigin="anonymous"
                     src={`${process.env.REACT_APP_BACKEND_URL}${assets.logo}`}
                     alt="Company Logo"
                     className="logo"
@@ -452,6 +504,7 @@ const ShowOfferLetter = () => {
                       }}
                     >
                       <img
+                        crossOrigin="anonymous"
                         src={`${process.env.REACT_APP_BACKEND_URL}/uploads/${assets.signature}`}
                         alt="Authorized Signature"
                         style={{
@@ -485,6 +538,7 @@ const ShowOfferLetter = () => {
                   >
                     {userSignature && (
                       <img
+                        crossOrigin="anonymous"
                         src={`${process.env.REACT_APP_BACKEND_URL}${userSignature}`}
                         alt="Your Signature"
                         style={{

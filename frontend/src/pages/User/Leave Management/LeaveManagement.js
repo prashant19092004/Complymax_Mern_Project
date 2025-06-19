@@ -124,7 +124,7 @@ const LeaveManagement = () => {
     setError("");
     setSuccess("");
     const data = {
-        establishment_id: userData.establisment,
+        establishment_id: userData.hired.establishment_id,
         supervisor_id: userData.hired.supervisor_id._id,
         client_id: userData.hired.hiring_id.client_id,
         reportingManager: userData.hired.supervisor_id.name,

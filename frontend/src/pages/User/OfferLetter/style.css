@@ -1027,3 +1027,14 @@ html, body {
         padding: 0.375rem 0.75rem;
     }
 } 
+
+/* Normal page view */
+.a4-page {
+  transform: scale(var(--scale, 1));
+  transform-origin: center;
+}
+
+/* PDF export override */
+.pdf-export.a4-page {
+  transform: scale(var(--scale, 0.5)) !important;
+}

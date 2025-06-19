@@ -17,7 +17,7 @@
     "html2pdf.js": "^0.10.3",
     "jquery": "^3.7.1",
     "json2csv": "^6.0.0-alpha.2",
-    "jspdf": "^2.5.1",
+    "jspdf": "^2.5.2",
     "lottie-react": "^2.4.0",
     "lottie-react-native": "^7.0.0",
     "papaparse": "^5.4.1",

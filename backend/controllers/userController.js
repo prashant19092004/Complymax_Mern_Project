@@ -156,7 +156,7 @@ exports.leavePageData = async (req, res) => {
       .populate([
         {
           path: "hired",
-          select: "hiring_id supervisor_id",
+          select: "hiring_id supervisor_id establishment_id",
           populate: [
             {
             path: "hiring_id",
