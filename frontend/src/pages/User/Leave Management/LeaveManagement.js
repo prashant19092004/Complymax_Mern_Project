@@ -124,7 +124,7 @@ const LeaveManagement = () => {
     setError("");
     setSuccess("");
     const data = {
-        establishment_id: userData.hired.establishment_id,
+        establishment_id: userData.hired.establishment_id._id,
         supervisor_id: userData.hired.supervisor_id._id,
         client_id: userData.hired.hiring_id.client_id,
         reportingManager: userData.hired.supervisor_id.name,
@@ -174,7 +174,7 @@ const LeaveManagement = () => {
         });
         setUserData(response.data.userData);
         setLeaveHistory1(response.data.leaveRequests);
-        console.log(response.data);
+        // console.log(response.data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching offer letters:', error);
@@ -210,7 +210,7 @@ const LeaveManagement = () => {
           <div key="1" className="col-12 col-md-4 mb-3">
             <div className={`card text-white bg-danger h-100 shadow border-0 rounded-4 summary-card`}>
               <div className="card-body text-center">
-                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.casualLeave} / {userData && userData.establisment?.casualLeave}</h5>
+                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.casualLeave} / {userData && userData.hired?.establishment_id?.casualLeave}</h5>
                 <p className="card-text text-white fs-5">Casual Leave</p>
               </div>
             </div>
@@ -218,7 +218,7 @@ const LeaveManagement = () => {
           <div key="2" className="col-12 col-md-4 mb-3">
             <div className={`card text-white bg-primary h-100 shadow border-0 rounded-4 summary-card`}>
               <div className="card-body text-center">
-                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.medicalLeave} / {userData && userData.establisment?.medicalLeave}</h5>
+                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.medicalLeave} / {userData && userData.hired?.establishment_id?.medicalLeave}</h5>
                 <p className="card-text text-white fs-5">Medical Leave</p>
               </div>
             </div>
@@ -226,7 +226,7 @@ const LeaveManagement = () => {
           <div key="3" className="col-12 col-md-4 mb-3">
             <div className={`card text-white bg-info h-100 shadow border-0 rounded-4 summary-card`}>
               <div className="card-body text-center">
-                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.annualLeave} / {userData && userData?.establisment?.annualLeave}</h5>
+                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.annualLeave} / {userData && userData.hired?.establishment_id?.annualLeave}</h5>
                 <p className="card-text text-white fs-5">Annual Leave</p>
               </div>
             </div>

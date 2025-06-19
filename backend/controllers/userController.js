@@ -153,7 +153,7 @@ exports.leavePageData = async (req, res) => {
 
     const userData = await User.findById(userId)
       .select("full_Name email establisment hired leaveTaken casualLeave annualLeave medicalLeave")
-      .populate([
+      .populate(
         {
           path: "hired",
           select: "hiring_id supervisor_id establishment_id",
@@ -165,14 +165,14 @@ exports.leavePageData = async (req, res) => {
             {
               path: "supervisor_id",
               select: "name _id"
+            },
+            {
+              path: "establishment_id",
+              select: "_id casualLeave medicalLeave annualLeave"
             }
           ]
-        },
-        {
-          path: "establisment",
-          select: "casualLeave medicalLeave annualLeave"
         }
-    ])
+    )
 
     const leaveRequests = await Leave.find({ user_id : userId });
 
