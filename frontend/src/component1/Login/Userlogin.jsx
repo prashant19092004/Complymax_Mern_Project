@@ -164,9 +164,9 @@ let loginSubmitHandle = (e) => {
                             class="form__input">
                             <option value="">Select</option>
                             <option value="User">User</option>
-                            <option value="Supervisor">Supervisor</option>
+                            <option value="Supervisor">RM login</option>
                             <option value="Client">Client</option>
-                            <option value="Establisment">Establisment</option>
+                            <option value="Establisment">Establishment</option>
                             </select>
                         </div>
                     </div>

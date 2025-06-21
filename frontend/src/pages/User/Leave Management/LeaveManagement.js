@@ -11,6 +11,7 @@ const LeaveManagement = () => {
 
   // Add state for form fields
   const [leaveType, setLeaveType] = useState("Casual");
+  const [leaveSubType, setLeaveSubType] = useState("Full Day");
   const [reason, setReason] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -227,7 +228,7 @@ const LeaveManagement = () => {
             <div className={`card text-white bg-info h-100 shadow border-0 rounded-4 summary-card`}>
               <div className="card-body text-center">
                 <h5 className="card-title text-white display-6 fw-bold">{userData && userData.annualLeave} / {userData && userData.hired?.establishment_id?.annualLeave}</h5>
-                <p className="card-text text-white fs-5">Annual Leave</p>
+                <p className="card-text text-white fs-5">Earned Leave</p>
               </div>
             </div>
           </div>
@@ -274,8 +275,22 @@ const LeaveManagement = () => {
                   required
                 >
                   <option value="Casual">Casual</option>
-                  <option value="Annual">Annual</option>
+                  <option value="Annual">Earned</option>
                   <option value="Medical">Medical</option>
+                </Form.Select>
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold">Leave Subtype</Form.Label>
+                <Form.Select
+                  className="form-select custom-dropdown shadow-sm"
+                  value={leaveSubType}
+                  onChange={e => setLeaveSubType(e.target.value)}
+                  required
+                >
+                  <option value="Casual">Full Day</option>
+                  <option value="Annual">First Half</option>
+                  <option value="Medical">Second Half</option>
                 </Form.Select>
               </Form.Group>
 

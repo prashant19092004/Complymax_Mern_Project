@@ -211,7 +211,7 @@ const LeaveManagement = () => {
         <div className="leave-header-pills">
           <span className="leave-pill casual">Casual Leave : {establishment && establishment.casualLeave}</span>
           <span className="leave-pill medical">Medical Leave : {establishment && establishment.medicalLeave}</span>
-          <span className="leave-pill annual">Annual Leave : {establishment && establishment.annualLeave}</span>
+          <span className="leave-pill annual">Earned Leave : {establishment && establishment.annualLeave}</span>
         </div>
         {/* <button className="allot-leave-btn" onClick={() => setShowAllotModal(true)}>Allot Leave</button> */}
       </div>
@@ -233,7 +233,7 @@ const LeaveManagement = () => {
                 />
               </label>
               <label>
-                Annual Leave:
+                Earned Leave:
                 <input
                   type="number"
                   name="annual"
@@ -356,7 +356,7 @@ const LeaveManagement = () => {
                           Casual: {establishment.casualLeave - req.user_id.casualLeave}
                         </span>
                         <span className="leave-pill annual">
-                          Annual: {establishment.annualLeave - req.user_id.annualLeave}
+                          Earned: {establishment.annualLeave - req.user_id.annualLeave}
                         </span>
                         <span className="leave-pill medical">
                           Medical: {establishment.medicalLeave - req.user_id.medicalLeave}

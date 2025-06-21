@@ -103,7 +103,7 @@ const SupervisorForm = () => {
                 {/* <img src={login_pic} alt="" class="form__img" /> */}
 
                 <form action="" class="form__content d-flex flex-column">
-                    <h1 class="form__title">Supervisor Registration</h1>
+                    <h1 class="form__title">RM Registration</h1>
                     <div className='client_forms_box d-flex flex-wrap'>
                         <div class="form__div form__div-one">
                             <div class="form__icon">
