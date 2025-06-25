@@ -1,0 +1,435 @@
+.emp-attendance-container {
+  padding: 1rem;
+  background-color: #f5f7ff;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Section */
+.emp-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emp-avatar-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.emp-initials {
+  width: 60px;
+  height: 60px;
+  background-color: #4f46e5;
+  color: white;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.emp-text-info h3 {
+  margin: 0;
+}
+
+.emp-details-row span {
+  margin-right: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.emp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.emp-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.emp-btn.primary {
+  background-color: #4f46e5;
+  color: white;
+}
+
+/* Summary Cards */
+.summary-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-container .card {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.summary-container .card h4 {
+  margin: 0;
+  color: #333;
+}
+
+.summary-container .card .main-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.summary-container .card .change {
+  font-size: 0.9rem;
+}
+
+.summary-container .card.success {
+  border-left: 5px solid #22c55e;
+}
+.summary-container .card.error {
+  border-left: 5px solid #ef4444;
+}
+.summary-container .card.info {
+  border-left: 5px solid #3b82f6;
+}
+.summary-container .card.purple {
+  border-left: 5px solid #8b5cf6;
+}
+
+/* Chart + Calendar Layout */
+.emp-visual-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.emp-chart-box,
+.calendar-card {
+  flex: 1 1 400px;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.emp-chart-box h4,
+.calendar-card h4 {
+  margin-bottom: 1rem;
+}
+
+/* Daily Attendance Table */
+.emp-table-box {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  overflow-x: auto;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.emp-daily-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.emp-daily-table th,
+.emp-daily-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.emp-daily-table th {
+  background-color: #f0f4ff;
+  color: #333;
+}
+
+.status.present {
+  color: green;
+  font-weight: 500;
+}
+.status.late {
+  color: orange;
+  font-weight: 500;
+}
+.status.absent {
+  color: red;
+  font-weight: 500;
+}
+.status.leave {
+  color: #6b21a8;
+  font-weight: 500;
+}
+
+/* Calendar Cell Status Color */
+.calendar-present {
+  background-color: #d1fae5 !important;
+}
+.calendar-late {
+  background-color: #fef3c7 !important;
+}
+.calendar-absent {
+  background-color: #fee2e2 !important;
+}
+.calendar-leave {
+  background-color: #ede9fe !important;
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .emp-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .emp-actions {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+
+  .emp-visual-row {
+    flex-direction: column;
+  }
+}
+
+/* Calendar attendance color indicators */
+.react-calendar__tile.calendar-present {
+  background-color: #d1fae5 !important; /* light green */
+  color: #065f46;
+  font-weight: bold;
+}
+
+.react-calendar__tile.calendar-absent {
+  background-color: #fee2e2 !important; /* light red */
+  color: #991b1b;
+  font-weight: bold;
+}
+
+.react-calendar__tile.calendar-leave {
+  background-color: #e0e7ff !important; /* light blue */
+  color: #3730a3;
+  font-weight: bold;
+}
+
+.react-calendar__tile.calendar-late {
+  background-color: #fef9c3 !important; /* light yellow */
+  color: #92400e;
+  font-weight: bold;
+}
+
+.emp-visual-section {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.emp-chart-box,
+.calendar-card {
+  flex: 1;
+  min-width: 300px;
+  height: 420px; /* 👈 fixed height to match */
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+
+/* Remove outer border */
+.react-calendar {
+  border: none !important;
+  width: 100%;
+  background: transparent;
+  font-family: "Inter", sans-serif;
+}
+
+/* Remove cell borders */
+.react-calendar__tile {
+  border: none;
+  padding: 0.75rem 0;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+/* Better hover effect */
+.react-calendar__tile:hover {
+  background: #e8eaf6;
+  color: #000;
+}
+
+/* Attendance status colors */
+.calendar-present {
+  background-color: #a5d6a7 !important; /* light green */
+  color: #000;
+}
+.calendar-late {
+  background-color: #ffe082 !important; /* amber */
+  color: #000;
+}
+.calendar-absent {
+  background-color: #ef9a9a !important; /* light red */
+  color: #000;
+}
+.calendar-leave {
+  background-color: #b39ddb !important; /* lavender */
+  color: #000;
+}
+
+/* Today’s date (optional): */
+.react-calendar__tile--now {
+  background: #4f46e5 !important;
+  color: #fff !important;
+  font-weight: bold;
+}
+
+
+.emp-chart-box h4,
+.calendar-card h4 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #1e1e2f;
+}
+
+
+@media (max-width: 768px) {
+  .emp-visual-section {
+    flex-direction: column;
+  }
+
+  .emp-chart-box,
+  .calendar-card {
+    height: auto;
+  }
+}
+
+
+.emp-visual-section {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.emp-chart-box,
+.calendar-card {
+  flex: 1;
+  min-width: 280px;
+  height: 340px; /* ⬅️ smaller uniform height */
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Headings */
+.emp-chart-box h4,
+.calendar-card h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: #1e1e2f;
+}
+
+
+.react-calendar {
+  border: none !important;
+  width: 100%;
+  background: transparent;
+  font-family: "Inter", sans-serif;
+}
+
+.react-calendar__tile {
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+
+/* Optional: reduce font sizes inside calendar */
+.react-calendar__month-view__weekdays {
+  font-size: 0.75rem;
+}
+
+
+@media (max-width: 768px) {
+  .emp-chart-box,
+  .calendar-card {
+    height: auto;
+  }
+}
+
+
+.calendar-card {
+  flex: 1;
+  min-width: 280px;
+  height: 340px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* Shrink calendar content */
+.react-calendar {
+  width: 100% !important;
+  max-width: 100%;
+  font-size: 0.75rem;
+}
+
+.react-calendar__tile {
+  padding: 0.35rem 0 !important;
+  font-size: 0.75rem;
+}
+
+.react-calendar__month-view__weekdays {
+  font-size: 0.7rem;
+}
+
+/* Remove unwanted border */
+.react-calendar {
+  border: none !important;
+  background: transparent;
+}
+
+.emp-extra-charts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.emp-extra-charts .emp-chart-box {
+  flex: 1 1 450px;
+  background: #fff;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 320px;
+}

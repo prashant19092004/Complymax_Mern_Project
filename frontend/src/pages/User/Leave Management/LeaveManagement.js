@@ -24,7 +24,7 @@ const LeaveManagement = () => {
   const [leaveHistory1, setLeaveHistory1] = useState();
 
   const leaveSummary = [
-    { type: "Annual Leaves", used: 3, total: 12, color: "info" },
+    { type: "Earned Leaves", used: 3, total: 12, color: "info" },
     { type: "Medical Leaves", used: 2, total: 5, color: "primary" },
     { type: "Casual Leaves", used: 1, total: 5, color: "danger" },
   ];
@@ -130,6 +130,7 @@ const LeaveManagement = () => {
         client_id: userData.hired.hiring_id.client_id,
         reportingManager: userData.hired.supervisor_id.name,
         leaveType,
+        leaveSubType,
         reason,
         from: fromDate,
         to: toDate,
@@ -153,6 +154,7 @@ const LeaveManagement = () => {
         setToDate("");
         setReason("");
         setLeaveType("Casual");
+        setLeaveSubType("Full Day");
         setDateError("");
         console.log(response.data);
         setLeaveHistory1(response.data.leaveRequests);
@@ -227,7 +229,7 @@ const LeaveManagement = () => {
           <div key="3" className="col-12 col-md-4 mb-3">
             <div className={`card text-white bg-info h-100 shadow border-0 rounded-4 summary-card`}>
               <div className="card-body text-center">
-                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.annualLeave} / {userData && userData.hired?.establishment_id?.annualLeave}</h5>
+                <h5 className="card-title text-white display-6 fw-bold">{userData && userData.earnedLeave} / {userData && userData.hired?.establishment_id?.earnedLeave}</h5>
                 <p className="card-text text-white fs-5">Earned Leave</p>
               </div>
             </div>
@@ -275,7 +277,7 @@ const LeaveManagement = () => {
                   required
                 >
                   <option value="Casual">Casual</option>
-                  <option value="Annual">Earned</option>
+                  <option value="Earned">Earned</option>
                   <option value="Medical">Medical</option>
                 </Form.Select>
               </Form.Group>
@@ -288,9 +290,9 @@ const LeaveManagement = () => {
                   onChange={e => setLeaveSubType(e.target.value)}
                   required
                 >
-                  <option value="Casual">Full Day</option>
-                  <option value="Annual">First Half</option>
-                  <option value="Medical">Second Half</option>
+                  <option value="Full Day">Full Day</option>
+                  <option value="First Half">First Half</option>
+                  <option value="Second Half">Second Half</option>
                 </Form.Select>
               </Form.Group>
 

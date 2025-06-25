@@ -1,13 +1,28 @@
-import React from 'react'
+import React from 'react';
 import './../UserSignup.css';
 
-const ShowNext = (props) => {
+const ShowNext = ({ generateOtp, loading }) => {
   return (
-    // <div className='generate-btn text-center flex justify-center items-center'>
-    //     <div onClick={() => props.generateOtp()} className='text-gray-50 bg-blue-400 rounded hover:bg-blue-300 w-full py-2'>Generate Otp</div>
-    // </div>
-    <input type="submit" class="form__button" value="Generate Otp" onClick={(e) => props.generateOtp(e)} />
-  )
-}
+    <button
+      type="submit"
+      className="form__button"
+      onClick={generateOtp}
+      disabled={loading}
+      style={{
+        opacity: loading ? 0.6 : 1,
+        cursor: loading ? 'not-allowed' : 'pointer',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '8px'
+      }}
+    >
+      {loading && (
+        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      )}
+      {loading ? 'Sending OTP...' : 'Generate OTP'}
+    </button>
+  );
+};
 
-export default ShowNext
+export default ShowNext;

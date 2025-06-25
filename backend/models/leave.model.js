@@ -35,7 +35,12 @@ const leaveSchema = new mongoose.Schema({
     },
     leaveType: {
         type: String,
-        enum: ['Annual', 'Casual', 'Medical'],
+        enum: ['Earned', 'Casual', 'Medical'],
+        required: true
+    },
+    leaveSubType: {
+        type: String,
+        enum: ['Full Day', 'First Half', 'Second Half'],
         required: true
     },
     reason: {

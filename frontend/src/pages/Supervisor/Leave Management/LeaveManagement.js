@@ -79,7 +79,7 @@ const LeaveManagement = () => {
   const [showAllotModal, setShowAllotModal] = useState(false);
   const [allotValues, setAllotValues] = useState({
     casual: "",
-    annual: "",
+    earned: "",
     medical: "",
   });
 
@@ -95,7 +95,7 @@ const LeaveManagement = () => {
       `${process.env.REACT_APP_BACKEND_URL}/establishment/leave-page/allot-leave`,
       {
         casual: allotValues.casual,
-        annual: allotValues.annual,
+        earned: allotValues.earned,
         medical: allotValues.medical,
       },
       {
@@ -110,7 +110,7 @@ const LeaveManagement = () => {
     }
       
     setShowAllotModal(false);
-    setAllotValues({ casual: "", annual: "", medical: "" });
+    setAllotValues({ casual: "", earned: "", medical: "" });
   };
 
   // const handleAction = (id, newStatus) => {
@@ -211,7 +211,7 @@ const LeaveManagement = () => {
         <div className="leave-header-pills">
           <span className="leave-pill casual">Casual Leave : {establishment && establishment.casualLeave}</span>
           <span className="leave-pill medical">Medical Leave : {establishment && establishment.medicalLeave}</span>
-          <span className="leave-pill annual">Earned Leave : {establishment && establishment.annualLeave}</span>
+          <span className="leave-pill earned">Earned Leave : {establishment && establishment.earnedLeave}</span>
         </div>
         {/* <button className="allot-leave-btn" onClick={() => setShowAllotModal(true)}>Allot Leave</button> */}
       </div>
@@ -236,8 +236,8 @@ const LeaveManagement = () => {
                 Earned Leave:
                 <input
                   type="number"
-                  name="annual"
-                  value={allotValues.annual}
+                  name="earned"
+                  value={allotValues.earned}
                   onChange={handleAllotChange}
                   min="0"
                   required
@@ -355,13 +355,17 @@ const LeaveManagement = () => {
                         <span className="leave-pill casual">
                           Casual: {establishment.casualLeave - req.user_id.casualLeave}
                         </span>
-                        <span className="leave-pill annual">
-                          Earned: {establishment.annualLeave - req.user_id.annualLeave}
+                        <span className="leave-pill earned">
+                          Earned: {establishment.earnedLeave - req.user_id.earnedLeave}
                         </span>
                         <span className="leave-pill medical">
                           Medical: {establishment.medicalLeave - req.user_id.medicalLeave}
                         </span>
                       </div>
+                    </div>
+                    <div>
+                      <div className="label">Leave Sub Type</div>
+                      <div className="value">{req.leaveSubType}</div>
                     </div>
                   </div>
                   {req.status === "Pending" && (

@@ -11,6 +11,7 @@ import map from '../../../assets/map.svg';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { Navbar, Nav, Container, Dropdown, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import hero_img from '../../../assets/hero_img.webp';
 
 
 const ComplymaxNavbar = () => {
@@ -176,7 +177,7 @@ const side_bar=document.querySelector("#side_bar");
                             <p>ComplyMax Management Pvt. Ltd. is a leading provider of Payroll & compliance management , Manpower solutions catering to a diverse range of industries</p>
                             <button><Link to="/client-signup" className='text-light'>Get Started <i class="fa-solid fa-arrow-right"></i></Link> </button>
                           </div>
-                          <img src="https://media-hosting.imagekit.io//17aec97659894c7f/hero_img.webp?Expires=1834599658&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=r5uK1Bexw2Nsx3--o-5hPiKOo2xs4-aaGv0QR9qxsZOtuwwh0R392c2RDHKBG8qDJGrsvdbQ-HuJAPB1BpqIr6Kl~h0tKow92yBCzSM-COpXjpbENFWxdXnxE~JS03fE56ttQzfI0ZBZAbxoy~yciVi~GPEvYQLblMFPojxXwY~yo~qr-atcN458TitPaP-GIlxTIRv2Wl1PNo-BQXJcaJe967CWu5epOCUTFy0oZy8H7OJAE28oe6-tbgl1fVEMNMNn-zkdjngyiu1qYQPzLjHt41o7BxW-gP45RBtbVmCtc5tiN1lsazNUIAkL2Ud990i7WHnbtF-6609-lJo0PA__" alt="" />
+                          <img src={hero_img} alt="" />
                       </div>
                   </div>
               </section>

@@ -15,7 +15,7 @@ const updateLeaveStatus = async (req, res) => {
 
     const leaveRequest = await LeaveRequestModel.findById(leaveRequestId)
       .select('status respondedBySupervisor _id respondedAt user_id leaveType')
-      .populate('user_id', 'full_Name _id leaveTaken leaveYear leaveHistory medicalLeaveHistory casualLeaveHistory annualLeaveHistory casualLeave annualLeave medicalLeave');
+      .populate('user_id', 'full_Name _id leaveTaken leaveYear leaveHistory medicalLeaveHistory casualLeaveHistory earnedLeaveHistory casualLeave earnedLeave medicalLeave');
 
     if (leaveRequest) {
       leaveRequest.respondedBySupervisor = req.user.id;
@@ -31,11 +31,11 @@ const updateLeaveStatus = async (req, res) => {
             totalLeaves: leaveRequest.user_id.casualLeave
           });
           leaveRequest.user_id.casualLeave = 0; // Reset casual leave for the new
-          leaveRequest.user_id.annualLeaveHistory.push({
+          leaveRequest.user_id.earnedLeaveHistory.push({
             year: leaveRequest.user_id.leaveYear,
-            totalLeaves: leaveRequest.user_id.annualLeave
+            totalLeaves: leaveRequest.user_id.earnedLeave
           });
-          leaveRequest.user_id.annualLeave = 0; // Reset annual leave for the new year
+          leaveRequest.user_id.earnedLeave = 0; // Reset earned leave for the new year
           leaveRequest.user_id.medicalLeaveHistory.push({
             year: leaveRequest.user_id.leaveYear,
             totalLeaves: leaveRequest.user_id.medicalLeave
@@ -56,8 +56,8 @@ const updateLeaveStatus = async (req, res) => {
         if (leaveRequest.leaveType === 'Casual') {
           leaveRequest.user_id.casualLeave += 1;
           leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
-        } else if (leaveRequest.leaveType === 'Annual') {
-          leaveRequest.user_id.annualLeave += 1;
+        } else if (leaveRequest.leaveType === 'Earned') {
+          leaveRequest.user_id.earnedLeave += 1;
           leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
         } else if (leaveRequest.leaveType === 'Medical') {
           leaveRequest.user_id.medicalLeave += 1;
@@ -81,7 +81,7 @@ const updateLeaveStatus = async (req, res) => {
       .populate([
         {
           path: 'user_id',
-          select: 'full_Name _id casualLeave annualLeave medicalLeave'
+          select: 'full_Name _id casualLeave earnedLeave medicalLeave'
         },
         {
           path: 'supervisor_id',
@@ -112,7 +112,7 @@ const getLeaveRequests = async (req, res) => {
       .populate([
         {
         path: 'user_id',
-        select: 'full_Name _id casualLeave annualLeave medicalLeave'
+        select: 'full_Name _id casualLeave earnedLeave medicalLeave'
       },
       {
         path: 'supervisor_id',
@@ -123,7 +123,7 @@ const getLeaveRequests = async (req, res) => {
 
     const supervisor = await supervisorModel.findById(req.user.id)
     .select('_id establisment')
-    .populate('establisment', 'casualLeave annualLeave medicalLeave');
+    .populate('establisment', 'casualLeave earnedLeave medicalLeave');
     const establishment = supervisor.establisment;
     
     res.status(200).json({

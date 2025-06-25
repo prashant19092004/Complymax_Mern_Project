@@ -281,3 +281,13 @@ html, body {
     background: #f5f5f5;
 }
   
+.offer-letter-body p {
+  margin: 0 0 10px 0;
+}
+
+/* This only applies during PDF download */
+.clean-pdf-style .offer-letter-body {
+  background-color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+}

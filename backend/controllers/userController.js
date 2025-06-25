@@ -5,6 +5,19 @@ const Leave = require('../models/leave.model');
 const establishmentModel = require('../models/admin');
 const supervisorModel = require('../models/supervisor.model');
 const clientModel = require('../models/client.model');
+const userModel = require('../models/user');
+
+//profile data fetching
+exports.profileData = async (req, res) => {
+
+    // const requestHistory = await requestModel.find(req.user._id.equals(user));
+   
+    const currentUser = await userModel.findOne({ _id : req.user.id })
+    .populate('qualifications')
+    .populate('experiences')
+    
+    res.send(currentUser);
+}
 
 // Upload signature
 exports.uploadSignature = async (req, res) => {
@@ -115,44 +128,14 @@ exports.deleteSignature = async (req, res) => {
   }
 };
 
-exports.applyLeave = async (req, res) => {
-  try {
-    const { leaveType, reason, from, to } = req.body;
-    const userId = req.user.id; // Assuming user ID is available in req.user
 
-    const leave = new Leave({
-      user_id: userId,
-      leaveType,
-      reason,
-      from,
-      to,
-      status: 'Pending',
-      // Add other fields as needed
-    });
-
-    await leave.save();
-
-    res.status(201).json({
-      success: true,
-      message: 'Leave request submitted successfully',
-      leave
-    });
-  } catch (error) {
-    console.error('Error applying leave:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error submitting leave request',
-      error: error.message
-    });
-  }
-};
 
 exports.leavePageData = async (req, res) => {
   try{
     const userId = req.user.id;
 
     const userData = await User.findById(userId)
-      .select("full_Name email establisment hired leaveTaken casualLeave annualLeave medicalLeave")
+      .select("full_Name email establisment hired leaveTaken casualLeave earnedLeave medicalLeave")
       .populate(
         {
           path: "hired",
@@ -168,7 +151,7 @@ exports.leavePageData = async (req, res) => {
             },
             {
               path: "establishment_id",
-              select: "_id casualLeave medicalLeave annualLeave"
+              select: "_id casualLeave medicalLeave earnedLeave"
             }
           ]
         }
@@ -194,7 +177,7 @@ exports.leavePageData = async (req, res) => {
 
 exports.leaveApplication = async (req, res) => {
   try {
-    const { establishment_id, supervisor_id, client_id, reportingManager, leaveType, reason, from, to } = req.body;
+    const { establishment_id, supervisor_id, client_id, reportingManager, leaveType, leaveSubType, reason, from, to } = req.body;
     const userId = req.user.id; // Assuming user ID is available in req.user
 
     const leave = new Leave({
@@ -204,6 +187,7 @@ exports.leaveApplication = async (req, res) => {
       user_id: userId,
       reportingManager,
       leaveType,
+      leaveSubType,
       reason,
       from,
       to,

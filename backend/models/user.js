@@ -251,7 +251,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  annualLeave: {
+  earnedLeave: {
     type: Number,
     default: 0,
   },
@@ -275,7 +275,7 @@ const userSchema = new mongoose.Schema({
       totalLeaves: Number,
     },
   ],
-  annualLeaveHistory: [
+  earnedLeaveHistory: [
     {
       year: Number,
       totalLeaves: Number,

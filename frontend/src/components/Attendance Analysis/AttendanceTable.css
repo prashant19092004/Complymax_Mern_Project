@@ -1,0 +1,141 @@
+.table-container {
+  background: white;
+  padding: 1rem;
+  margin: 0 1rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 1200px;
+  overflow-x: auto;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.table-filters {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.table-filters input {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #333;
+}
+
+.table-filters select {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #333;
+}
+
+.table-filters input:focus,
+.table-filters select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.table-header h3 {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.status-filter {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #333;
+}
+
+.status-filter:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.attendance-table th,
+.attendance-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.attendance-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #555;
+}
+
+.status {
+  font-weight: 600;
+}
+
+.status.present {
+  color: #10b981;
+}
+.status.absent {
+  color: #ef4444;
+}
+.status.leave {
+  color: #f59e0b;
+}
+.status.late {
+  color: #3b82f6;
+}
+.status.early {
+  color: #8b5cf6;
+}
+
+.no-records {
+  text-align: center;
+  padding: 1rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Responsive tweaks */
+@media screen and (max-width: 600px) {
+  .attendance-table {
+    font-size: 0.85rem;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    padding: 0.5rem;
+  }
+
+  .status-filter {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+  }
+}
+
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.clickable-row:hover {
+  background: #f1f5f9;
+}

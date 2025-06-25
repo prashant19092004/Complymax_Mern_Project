@@ -6,7 +6,8 @@ import { Rnd } from "react-rnd";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./OfferLetter.css"; // Custom styling
 import EditableField from "./EditableField";
-import html2pdf from 'html2pdf.js';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const calculateScale = () => {
     const A4_WIDTH_MM = 210;
@@ -57,7 +58,7 @@ const OfferLetter = () => {
   const [signaturePosition, setSignaturePosition] = useState({ x: 0, y: 0 });
   const [signatureError, setSignatureError] = useState(false);
 
-  const pageRef = useRef(null);
+  const offerRef = useRef(null);
 
   const [scale, setScale] = useState(calculateScale());
 
@@ -498,97 +499,75 @@ We are confident you will be able to make a significant contribution to the succ
     }
 };
 
-  const handleDownloadPDF = async () => {
-    try {
-      const element = pageRef.current;
-      
-      // Create a clone of the element
-      const clone = element.cloneNode(true);
-      
-      // Fix text area content formatting
-      const textarea = clone.querySelector('textarea');
-      if (textarea) {
-        const content = textarea.value;
-        const formattedContent = content.split('\n').map(line => `<p>${line}</p>`).join('');
-        const contentDiv = document.createElement('div');
-        contentDiv.innerHTML = formattedContent;
-        contentDiv.style.whiteSpace = 'pre-wrap';
-        contentDiv.style.wordWrap = 'break-word';
-        textarea.parentNode.replaceChild(contentDiv, textarea);
-      }
-      
-      // Create a container for the PDF content
-      const container = document.createElement('div');
-      container.style.width = '210mm';
-      container.style.height = '297mm';
-      container.style.padding = '20mm';
-      container.style.backgroundColor = 'white';
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '0';
-      
-      // Reset the clone's styles
-      clone.style.transform = 'none';
-      clone.style.width = '100%';
-      clone.style.height = '100%';
-      clone.style.margin = '0';
-      clone.style.padding = '0';
-      clone.style.backgroundColor = 'white';
-      
-      // Append the clone to the container
-      container.appendChild(clone);
-      document.body.appendChild(container);
-      
-      const opt = {
-        margin: 0,
-        filename: `offer-letter-${userData?.full_Name || 'employee'}.pdf`,
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          logging: true,
-          backgroundColor: '#ffffff',
-          width: 794, // A4 width in pixels
-          height: 1123, // A4 height in pixels
-          onclone: (clonedDoc) => {
-            const clonedElement = clonedDoc.querySelector('.offer-letter');
-            if (clonedElement) {
-              clonedElement.style.transform = 'none';
-              clonedElement.style.width = '100%';
-              clonedElement.style.height = 'auto';
-              clonedElement.style.margin = '0';
-              clonedElement.style.padding = '0';
-              
-              // Ensure proper text formatting in the cloned element
-              const paragraphs = clonedElement.getElementsByTagName('p');
-              Array.from(paragraphs).forEach(p => {
-                p.style.margin = '0';
-                p.style.padding = '0';
-                p.style.lineHeight = '1.5';
-                p.style.whiteSpace = 'pre-wrap';
-                p.style.wordWrap = 'break-word';
-              });
-            }
-          }
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait'
-        }
+/* ---------- PDF download WITHOUT whitespace ------------- */
+  const handleDownloadPDF = () => {
+  const element = offerRef.current;
+
+  if (!element) {
+    toast.error("Offer letter content not found.");
+    return;
+  }
+
+  // Temporarily remove scaling
+  const prevTransform = element.style.transform;
+  const prevTransformOrigin = element.style.transformOrigin;
+  element.style.transform = "scale(1)";
+  element.style.transformOrigin = "top left";
+
+  element.classList.add("clean-pdf-style");
+
+  const images = element.querySelectorAll("img");
+  const imagePromises = Array.from(images).map(
+    (img) =>
+      new Promise((resolve) => {
+        if (img.complete) resolve();
+        else img.onload = img.onerror = resolve;
+      })
+  );
+
+  Promise.all(imagePromises).then(() => {
+    html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: null,
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const imgProps = {
+        width: canvas.width,
+        height: canvas.height,
       };
 
-      await html2pdf().set(opt).from(container).save();
-      
-      // Clean up
-      document.body.removeChild(container);
-      
-      toast.success("Offer letter downloaded successfully!");
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-      toast.error("Failed to download offer letter");
-    }
-  };
+      const ratio = imgProps.width / imgProps.height;
+      const pageWidth = pdfWidth;
+      const pageHeight = pageWidth / ratio;
+
+      pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, pageHeight);
+      pdf.save("OfferLetter.pdf");
+
+      // Restore transform
+      element.classList.remove("clean-pdf-style");
+      element.style.transform = prevTransform;
+      element.style.transformOrigin = prevTransformOrigin;
+    });
+  });
+};
+
+  /* -------------------------------------------------------- */
+
+  /* ---------- responsive preview scaling on resize -------- */
+  useEffect(() => {
+    const handleResize = () => setScale(calculateScale());
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  /* -------------------------------------------------------- */
 
   if (loading) return <div className="text-center mt-5">Loading...</div>;
 
@@ -671,7 +650,7 @@ We are confident you will be able to make a significant contribution to the succ
 
       <div className="page-wrapper">
         <div 
-          ref={pageRef} 
+          ref={offerRef} 
           className="offer-letter"
           style={{
             transform: `scale(${scale})`,
@@ -798,33 +777,31 @@ We are confident you will be able to make a significant contribution to the succ
           </div>
 
           <div className="offer-content mb-4">
-            <textarea
-              className="form-control"
-              value={editableContent.fullContent}
-              onChange={(e) => {
-                if (!isAccepted) {
-                  const newValue = e.target.value;
-                  handleContentChange("fullContent", newValue);
-                  autoResize(e);
-                }
-              }}
-              onInput={autoResize}
-              style={{
-                minHeight: "500px",
-                width: "100%",
-                padding: "15px",
-                marginBottom: "1rem",
-                fontSize: "14px",
-                lineHeight: "1.5",
-                whiteSpace: "pre-wrap",
-                resize: "none",
-                overflow: "hidden",
-                fontFamily: "inherit",
-                backgroundColor: isAccepted ? "#f8f9fa" : "white",
-                cursor: isAccepted ? "not-allowed" : "text",
-              }}
-              readOnly={isAccepted}
-            />
+            <div
+  className="offer-letter-body"
+  contentEditable={!isAccepted}
+  suppressContentEditableWarning={true}
+  onInput={(e) =>
+    !isAccepted && handleContentChange("fullContent", e.currentTarget.innerHTML)
+  }
+  dangerouslySetInnerHTML={{ __html: editableContent.fullContent }}
+  style={{
+    minHeight: "500px",
+    width: "100%",
+    padding: "15px",
+    marginBottom: "1rem",
+    fontSize: "14px",
+    lineHeight: "1.5",
+    whiteSpace: "pre-wrap",
+    wordWrap: "break-word",
+    overflow: "hidden",
+    fontFamily: "inherit",
+    backgroundColor: isAccepted ? "#f8f9fa" : "white",
+    cursor: isAccepted ? "not-allowed" : "text",
+    border: "1px solid #ddd",
+    borderRadius: "6px",
+  }}
+/>
           </div>
 
           <h6>

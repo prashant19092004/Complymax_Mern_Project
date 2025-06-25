@@ -551,7 +551,7 @@ body {
 .leave-pill.casual {
   background: linear-gradient(90deg, #42a5f5 60%, #1976d2 100%);
 }
-.leave-pill.annual {
+.leave-pill.earned {
   background: linear-gradient(90deg, #66bb6a 60%, #388e3c 100%);
 }
 .leave-pill.medical {
@@ -585,7 +585,7 @@ body {
 .leave-pill.casual {
   background: linear-gradient(90deg, #42a5f5 60%, #1976d2 100%);
 }
-.leave-pill.annual {
+.leave-pill.earned {
   background: linear-gradient(90deg, #66bb6a 60%, #388e3c 100%);
 }
 .leave-pill.medical {

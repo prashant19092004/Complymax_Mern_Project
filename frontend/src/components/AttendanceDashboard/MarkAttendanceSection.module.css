@@ -1,0 +1,92 @@
+.container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  margin: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.heading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #111827;
+}
+
+.faceBox {
+  width: 200px;
+  height: 150px;
+  margin: 0 auto 24px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faceCircle {
+  width: 40px;
+  height: 40px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+/* 👇 Animation keyframes */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.checkIn,
+.checkOut {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 14px;
+  display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.checkIn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.checkOut {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.checkIn:hover {
+  background-color: #2563eb;
+}
+
+.checkOut:hover {
+  background-color: #d1d5db;
+}

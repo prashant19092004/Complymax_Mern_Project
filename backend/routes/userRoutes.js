@@ -16,7 +16,8 @@ const { uploadPDF } = require('../middleware/multer.js');
 const { uploadImageAndPdf } = require('../middleware/multer.js');
 const path = require('path');
 const fs = require('fs');
-const { uploadSignature, deleteSignature, applyLeave, leavePageData, leaveApplication } = require('../controllers/userController');
+const { uploadSignature, deleteSignature, leavePageData, leaveApplication } = require('../controllers/userController');
+const userController = require('../controllers/userController');
 
 // Increase EventEmitter max listeners
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -75,16 +76,7 @@ router.post("/check", auth, (req, res) => {
 
 
 
-router.get("/user/profile",auth, async (req, res) => {
-
-    // const requestHistory = await requestModel.find(req.user._id.equals(user));
-   
-    const currentUser = await userModel.findOne({ _id : req.user.id })
-    .populate('qualifications')
-    .populate('experiences')
-    
-    res.send(currentUser);
-});
+router.get("/user/profile",auth, isUser, userController.profileData);
 
 router.get("/establisment/profile",auth, async (req, res) => {
 
@@ -1911,7 +1903,6 @@ router.get("/establisment/profile",auth, async (req, res) => {
     router.post('/upload/signature', auth, uploadImage.single('image'), uploadSignature);
     router.post('/delete/signature', auth, deleteSignature);
 
-    router.post('/apply-leave', auth, isUser, applyLeave);
     router.get('/leave-page/user-data', auth, isUser, leavePageData);
     router.post('/leave-page/leave-application', auth, isUser, leaveApplication);
 
