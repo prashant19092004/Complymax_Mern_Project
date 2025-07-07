@@ -94,7 +94,7 @@ const PostHiringForm = () => {
     async function fetchingProfile(){
         setLoading(true);
         try{
-          await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/profile`, {
+          await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/dashboard`, {
             headers: {
               Authorization : `Bearer ${token}`
             }
@@ -113,7 +113,7 @@ const PostHiringForm = () => {
         e.preventDefault();
         console.log(hiringData);
         try{
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/hiring_post`, 
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/hiring_post`, 
                 hiringData,
                 {
                     headers: {

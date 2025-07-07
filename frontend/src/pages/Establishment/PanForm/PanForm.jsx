@@ -45,7 +45,7 @@ const PanForm = () => {
           }
           try{
             await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/establishment/profile/add_Pan`,
+              `${process.env.REACT_APP_BACKEND_URL}/api/establishment/user_profile/add_Pan`,
               data,
               {
                 headers: {

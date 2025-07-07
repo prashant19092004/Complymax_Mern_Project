@@ -40,6 +40,10 @@ const adminSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Hiring",
   },
+  hireds: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Hired",
+  },
   resetPasswordToken: {
     type: String,
   },
@@ -78,22 +82,28 @@ const adminSchema = new mongoose.Schema({
   ],
   leaveRequests: [
     {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Leave"
-    }
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Leave",
+    },
   ],
   casualLeave: {
     type: Number,
-    default: 0
+    default: 0,
   },
   earnedLeave: {
     type: Number,
-    default: 0
+    default: 0,
   },
   medicalLeave: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
+  attendance: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Attendance",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Admin", adminSchema);

@@ -87,44 +87,12 @@ const LeaveManagement = () => {
     setAllotValues({ ...allotValues, [e.target.name]: e.target.value });
   };
 
-  const handleAllotSubmit = async (e) => {
-    e.preventDefault();
-    // TODO: Add your API call or logic here
-
-    const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/establishment/leave-page/allot-leave`,
-      {
-        casual: allotValues.casual,
-        earned: allotValues.earned,
-        medical: allotValues.medical,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.data.success) {
-      toast.success("Leave allotted successfully!");
-      setEstablishment(response.data.establishment);
-    }
-      
-    setShowAllotModal(false);
-    setAllotValues({ casual: "", earned: "", medical: "" });
-  };
-
-  // const handleAction = (id, newStatus) => {
-  //   const updated = requests.map((req) =>
-  //     req.id === id ? { ...req, status: newStatus } : req
-  //   );
-  //   setRequests(updated);
-  // };
 
   const handleAction = async (id, newStatus) => {
     try {
       console.log(`Updating request ${id} to status ${newStatus}`);
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/supervisor/leave-page/leave-response/${id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/leave-page/leave-response/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -183,7 +151,7 @@ const LeaveManagement = () => {
     const fetchLeaveRequests = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/supervisor/leave-page/leave-requests`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/leave-page/leave-requests`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -213,59 +181,7 @@ const LeaveManagement = () => {
           <span className="leave-pill medical">Medical Leave : {establishment && establishment.medicalLeave}</span>
           <span className="leave-pill earned">Earned Leave : {establishment && establishment.earnedLeave}</span>
         </div>
-        {/* <button className="allot-leave-btn" onClick={() => setShowAllotModal(true)}>Allot Leave</button> */}
       </div>
-
-      {showAllotModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Allot Leave</h3>
-            <form onSubmit={handleAllotSubmit}>
-              <label>
-                Casual Leave:
-                <input
-                  type="number"
-                  name="casual"
-                  value={allotValues.casual}
-                  onChange={handleAllotChange}
-                  min="0"
-                  required
-                />
-              </label>
-              <label>
-                Earned Leave:
-                <input
-                  type="number"
-                  name="earned"
-                  value={allotValues.earned}
-                  onChange={handleAllotChange}
-                  min="0"
-                  required
-                />
-              </label>
-              <label>
-                Medical Leave:
-                <input
-                  type="number"
-                  name="medical"
-                  value={allotValues.medical}
-                  onChange={handleAllotChange}
-                  min="0"
-                  required
-                />
-              </label>
-              <div className="modal-actions">
-                <button type="button" onClick={() => setShowAllotModal(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="allot-btn">
-                  Allot
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       <div className="filters">
         <div className="search-container">

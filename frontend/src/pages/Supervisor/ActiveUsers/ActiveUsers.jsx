@@ -80,7 +80,7 @@ const ActiveUsers = () => {
     const fetchingHired = async() => {
         try{
             setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor/active-users`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/supervisor/active-users`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,

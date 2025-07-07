@@ -32,7 +32,7 @@ const PendingWages = () => {
     const fetchingHired = async() => {
         try{
             setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establishment/pending-wages`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/pending-wages`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ const PendingWages = () => {
     let saveWages = async() => {
         console.log(saveData);
         try{
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establishment/save-wages`, saveData, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/save-wages`, saveData, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,

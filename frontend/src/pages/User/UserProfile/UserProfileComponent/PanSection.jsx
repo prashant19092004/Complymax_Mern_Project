@@ -19,7 +19,7 @@ const PanSection = ({
   const handleDeletePanImage = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/pan-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/pan-image`,
         {},
         {
           headers: {

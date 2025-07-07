@@ -3,11 +3,17 @@ const router = express.Router();
 const { auth } = require('../middleware/auth');
 const userModel = require('../models/user');
 const clientModel = require('../models/client.model');
+const clientController = require('../controllers/clientController');
+const { isClient } = require('../middleware/auth');
 
 // Test route to verify router is working
 router.get('/test', (req, res) => {
     res.json({ message: 'Client routes working' });
 });
+
+router.get("/dashboard",auth, isClient, clientController.dashboardData);
+
+router.get("/profile", auth, isClient, clientController.getClientProfile);
 
 // Get all employees for offer letters
 router.get('/offer-letters', auth, async (req, res) => {

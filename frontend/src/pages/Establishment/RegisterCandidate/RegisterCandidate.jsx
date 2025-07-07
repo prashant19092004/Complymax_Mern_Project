@@ -12,7 +12,6 @@ const RegisterCandidate = () => {
     const [filteredList, setFilteredList] = useState([]);
     const [loading, setLoading] = useState(true);
     const jwtToken = localStorage.getItem('token');
-    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxODE4NDg1NSwianRpIjoiNDRmNzUyZDAtYzNiYy00MTQ1LThjOGItNWRjNjg3NzU2N2ZkIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmNvbXBseW1heEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxODE4NDg1NSwiZXhwIjoyMDMzNTQ0ODU1LCJlbWFpbCI6ImNvbXBseW1heEBzdXJlcGFzcy5pbyIsInRlbmFudF9pZCI6Im1haW4iLCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.HZRqEIPUAx9VCS_FPoNaoMnWGcJkux8xLMjstMtNfZc";
     const navigate = useNavigate();
     const enquiryref = useRef();
     const [panNumber, setPanNumber] = useState('');
@@ -43,7 +42,7 @@ const RegisterCandidate = () => {
     const fetchingHired = async() => {
         try{
             setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establishment/users`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/users`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${jwtToken}`,
@@ -80,7 +79,7 @@ const RegisterCandidate = () => {
                 }, 
                 {
                     headers: { 
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${process.env.REACT_APP_SURPASS_TOKEN}`,
                         'Content-Type' : 'application/json' 
                     }
                 }
@@ -111,7 +110,7 @@ const RegisterCandidate = () => {
     let registerUser = async() => {
         console.log(registerData);
         try{
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establishment/register-user`,
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/register-user`,
                 {
                     registerData,
                     panData

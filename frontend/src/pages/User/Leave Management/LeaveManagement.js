@@ -137,7 +137,7 @@ const LeaveManagement = () => {
     }
     try {
       // Replace with your actual API endpoint
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/leave-page/leave-application`, 
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/user/leave-page/leave-application`, 
         data,
         {
           headers: {
@@ -170,7 +170,7 @@ const LeaveManagement = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/leave-page/user-data`, {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/leave-page/user-data`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

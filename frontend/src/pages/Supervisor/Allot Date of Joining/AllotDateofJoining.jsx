@@ -26,7 +26,7 @@ const AllotDateofJoining = () => {
     const fetchingHired = async() => {
         try{
             setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor/hired`,{
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/supervisor/hired`,{
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -58,7 +58,7 @@ const AllotDateofJoining = () => {
                 dateOfJoining,
                 chooseUser
             }
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/supervisor/assign-date-of-joining`, data, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/supervisor/assign-date-of-joining`, data, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,

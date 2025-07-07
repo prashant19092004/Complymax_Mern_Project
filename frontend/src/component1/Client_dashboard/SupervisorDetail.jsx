@@ -11,7 +11,7 @@ const SupervisorDetail = () => {
   let fetchingClientData = async() => {
     try{
       setLoading(true);
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/supervisor_data`, 
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/supervisor_data`, 
       {
         state
       }

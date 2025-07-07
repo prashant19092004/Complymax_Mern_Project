@@ -16,7 +16,7 @@ const ClientHiring = () => {
 
   async function fetchingHiring(){
     try{
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/hirings`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/hirings`, {
         headers: {
           Authorization : `Bearer ${token}`
         }

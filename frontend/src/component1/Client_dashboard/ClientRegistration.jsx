@@ -24,7 +24,7 @@ const ClientRegistration = () => {
 
   async function fetchingProfile(){
     try{
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/clientlist`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/clientlist`, {
         headers: {
           Authorization : `Bearer ${token}`
         }
@@ -105,7 +105,7 @@ const ClientRegistration = () => {
 
     let saveEdit = async() => {
       try{
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/client_edit`,
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/client_edit`,
           clientData,
           {
             headers: {

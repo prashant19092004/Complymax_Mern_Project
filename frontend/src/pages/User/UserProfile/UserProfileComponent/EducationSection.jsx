@@ -89,7 +89,7 @@ const EducationSection = ({
       formData.append("type", "education");
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/certificate`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/certificate`,
         formData,
         {
           headers: {
@@ -120,7 +120,7 @@ const EducationSection = ({
   const handleDeleteCertificate = async (id) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/certificate`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/certificate`,
         { 
           id,
           type: "education"
@@ -145,7 +145,7 @@ const EducationSection = ({
   const addEducation = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/user/add_education`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/add_education`,
         educationData,
         {
           headers: {
@@ -202,7 +202,7 @@ const EducationSection = ({
     const uid = educationData.editId;
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/user/delete_education`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete_education`,
         { uid },
         {
           headers: {

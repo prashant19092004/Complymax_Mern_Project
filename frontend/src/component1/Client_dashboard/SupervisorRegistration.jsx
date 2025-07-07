@@ -24,7 +24,7 @@ const SupervisorRegistration = () => {
 
   async function fetchingProfile(){
     try{
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/supervisorlist`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/supervisorlist`, {
         headers: {
           Authorization : `Bearer ${token}`
         }
@@ -108,7 +108,7 @@ const SupervisorRegistration = () => {
 
   let saveEdit = async() => {
     try{
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/supervisor_edit`,
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/supervisor_edit`,
         supervisorData,
         {
           headers: {

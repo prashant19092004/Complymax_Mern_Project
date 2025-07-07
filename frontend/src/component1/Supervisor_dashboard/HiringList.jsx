@@ -36,7 +36,7 @@ const HiringList = () => {
 
   async function fetchingHiring(){
     try{
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor/hirings`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/supervisor/hirings`, {
         headers: {
           Authorization : `Bearer ${token}`
         }
@@ -105,7 +105,7 @@ const HiringList = () => {
 
     let hireUser = async() => {
       try{
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/supervisor/hire`,
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/supervisor/hire`,
           assignData,
           {
             headers: {

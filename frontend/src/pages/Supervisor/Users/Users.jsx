@@ -25,7 +25,7 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/supervisor/users`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/users`,
         {
           headers: {
             "Content-Type": "application/json",

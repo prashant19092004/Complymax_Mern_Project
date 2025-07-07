@@ -6,6 +6,7 @@ const clientModel = require('../models/client.model');
 const establishmentModel = require('../models/admin.js');
 const supervisorModel = require('../models/supervisor.model');
 const { uploadImage } = require('../middleware/multer.js');
+const { uploadPDF } = require("../middleware/multer.js");
 const establishmentController = require('../controllers/establishmentController');
 const path = require('path');
 const fs = require('fs');
@@ -17,45 +18,67 @@ router.get('/test', (req, res) => {
     res.json({ message: 'Establishment routes working' });
 });
 
-// @desc    Get establishment profile for offer letter
-// @route   GET /api/establishment/profile
-// @access  Private
-router.get('/profile', auth, async (req, res) => {
-    try {
-        const currentSupervisor = await supervisorModel.findById(req.user.id);
-        const establishment = await establishmentModel.findById(currentSupervisor.establisment)
-            .select('_id name email phone address logo signature');
+router.get("/dashboard",auth, isEstablishment, establishmentController.dashboardData);
 
-        if (!establishment) {
-            return res.status(404).json({
-                success: false,
-                message: 'Establishment not found'
-            });
-        }
+router.get("/profile",auth, isEstablishment, establishmentController.getEstablishmentProfile);
 
-        // Make sure all required fields are included in the response
-        res.status(200).json({
-            success: true,
-            data: {
-                _id: establishment._id,
-                name: establishment.name,
-                email: establishment.email,
-                phone: establishment.phone,
-                address: establishment.address,
-                logo: establishment.logo,
-                signature: establishment.signature,
-                // Add any other fields you need
-            }
-        });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching establishment profile',
-            error: error.message
-        });
-    }
-});
+
+router.post("/client_data", establishmentController.getClientData);
+
+router.post("/delete_location", auth, isEstablishment, establishmentController.deleteLocation);
+
+router.post("/add_location", auth, isEstablishment, establishmentController.addLocation);
+
+router.get("/hirings", auth, isEstablishment, establishmentController.getHirings);
+
+router.get("/clientlist",auth, isEstablishment, establishmentController.getClientList);
+
+router.post("/client_edit", auth, isEstablishment, establishmentController.editClient);
+
+router.post("/hiring_post", auth, isEstablishment, establishmentController.postHiring);
+
+router.post("/supervisor_data", establishmentController.getSupervisorData);
+
+router.get("/supervisorlist",auth, isEstablishment, establishmentController.getSupervisorList);
+
+router.post("/supervisor_edit", auth, isEstablishment, establishmentController.editSupervisor);
+
+router.post("/user_profile/add_Account",auth, isEstablishment, establishmentController.addUserAccount);
+
+router.get('/active-users', auth, isEstablishment, establishmentController.getActiveUsers);
+
+router.get('/pending-wages', auth, isEstablishment, establishmentController.getPendingWages);
+
+router.post('/save-wages', auth, isEstablishment, establishmentController.saveWages);
+
+router.post('/employee-detail', auth, isEstablishment, establishmentController.getEmployeeDetail);
+
+router.post("/user_profile/add_Pan",auth, isEstablishment, establishmentController.addUserPan);
+
+router.get('/pending-pf-esic', auth, isEstablishment, establishmentController.getPendingPfEsic);
+
+router.post('/save-pf-esic', auth, isEstablishment, establishmentController.savePfEsic);
+
+router.post('/upload/file1', uploadPDF.single('file1'), auth, isEstablishment, establishmentController.uploadFile1);
+
+router.post('/upload/file2', uploadPDF.single('file2'), auth, isEstablishment, establishmentController.uploadFile2);
+
+router.post('/upload-profile-pic', uploadImage.single('image'), auth, isEstablishment, establishmentController.uploadProfilePic);
+
+// Add this route for establishment profile update
+    router.post('/update-profile', auth, isEstablishment, establishmentController.updateProfile);
+
+    // Add logo upload route
+        router.post('/upload-logo', uploadImage.single('logo'), auth, isEstablishment, establishmentController.uploadLogo);
+
+router.post('/delete-logo', auth, isEstablishment, establishmentController.deleteLogo);
+
+router.post('/register-user', auth, isEstablishment, establishmentController.registerUser);
+
+router.get('/users', auth, isEstablishment, establishmentController.getUsers);
+
+
+
 
 // @desc    Get employee details for offer letter
 // @route   GET /api/establishment/employee/:employeeId
@@ -195,42 +218,16 @@ router.put('/offer-letter/:id', auth, async (req, res) => {
 });
 
 router.post('/upload-signature', auth, uploadImage.single('signature'), establishmentController.uploadSignature);
-router.delete('/delete-signature', auth, async (req, res) => {
-    try {
-        const establishment = await establishmentModel.findById(req.user.id);
-        if (!establishment) {
-            return res.status(404).json({
-                success: false,
-                message: 'Establishment not found'
-            });
-        }
+router.delete('/delete-signature', auth, isEstablishment, establishmentController.deleteSignature);
 
-        if (establishment.signature) {
-            const signaturePath = path.join(__dirname, '..', 'uploads', establishment.signature);
-            if (fs.existsSync(signaturePath)) {
-                fs.unlinkSync(signaturePath);
-            }
-            establishment.signature = null;
-            await establishment.save();
-        }
-
-        res.json({
-            success: true,
-            message: 'Signature deleted successfully'
-        });
-    } catch (error) {
-        console.error('Error deleting signature:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to delete signature'
-        });
-    }
-});
 
 
 router.get('/leave-page/leave-requests', auth, isEstablishment, establishmentController.getLeaveRequests);
 router.post('/leave-page/allot-leave', auth, isEstablishment, establishmentController.allotLeave);
 router.post('/leave-page/leave-response/:id', auth, isEstablishment, establishmentController.updateLeaveStatus);
+
+
+router.get('/attendance/records', auth, isEstablishment, establishmentController.getAttendanceRecords);
 
 
 module.exports = router;

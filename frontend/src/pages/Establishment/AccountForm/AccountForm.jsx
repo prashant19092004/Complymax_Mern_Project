@@ -50,7 +50,7 @@ const AccountForm = () => {
           }
           try{
             await axios.post(
-              `${process.env.REACT_APP_BACKEND_URL}/establishment/profile/add_Account`,
+              `${process.env.REACT_APP_BACKEND_URL}/api/establishment/user_profile/add_Account`,
               addAccountData,
               {
                 headers: {

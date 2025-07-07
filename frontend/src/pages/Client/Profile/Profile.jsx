@@ -13,7 +13,7 @@ const Profile = () => {
   let fetchingClientData = async() => {
     try{
       setLoading(true);
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/client/profile`, 
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/client/profile`, 
       {
         headers: {
           Authorization : `Bearer ${token}`

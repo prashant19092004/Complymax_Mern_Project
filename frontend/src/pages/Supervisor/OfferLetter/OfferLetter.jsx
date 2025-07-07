@@ -15,7 +15,7 @@ const OfferLetter = () => {
     const fetchingEmployees = async() => {
         try {
             setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor/offer-letters`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/supervisor/offer-letters`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,

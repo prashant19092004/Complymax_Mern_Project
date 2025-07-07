@@ -85,7 +85,7 @@ const ExperienceSection = ({
       formData.append("type", "experience");
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/certificate`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/certificate`,
         formData,
         {
           headers: {
@@ -116,7 +116,7 @@ const ExperienceSection = ({
   const handleDeleteCertificate = async (id) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/certificate`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/certificate`,
         { 
           id,
           type: "experience"
@@ -163,7 +163,7 @@ const ExperienceSection = ({
       }
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/user/add_experience`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/add_experience`,
         experienceData,
         {
           headers: {
@@ -222,7 +222,7 @@ const ExperienceSection = ({
     const uid = educationData.editId;
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/user/delete_experience`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete_experience`,
         { uid },
         {
           headers: {

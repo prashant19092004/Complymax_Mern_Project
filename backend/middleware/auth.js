@@ -36,6 +36,24 @@ const isSupervisor = async (req, res, next) => {
   }
 }
 
+const isClient = async (req, res, next) => {
+  try {
+    const client = await clientModel.findOne({email : req.user.email}, {_id:1});
+    if (!client) {
+      return res.status(401).json({
+        success: false,
+        message: "this is for Client stay away",
+      });
+    }
+    next();
+  } catch (e) {
+    res.status(401).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+}
+
 const isSuperadmin = async (req, res, next) => {
   try {
     const superadmin = await superadminModel.findOne({email : req.user.email}, {_id:1});
@@ -113,6 +131,7 @@ module.exports = {
   auth,
   isSupervisor,
   isSuperadmin,
+  isClient,
   isAdmin,
   isUser,
   isEstablishment

@@ -25,7 +25,7 @@ const AadharSection = ({
       formData.append("image", file);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-front-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-front-image`,
         formData,
         {
           headers: {
@@ -59,7 +59,7 @@ const AadharSection = ({
       formData.append("image", file);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-back-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-back-image`,
         formData,
         {
           headers: {
@@ -90,8 +90,8 @@ const AadharSection = ({
       formData.append("image", file);
 
       const endpoint = isFront 
-        ? `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-front-image`
-        : `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-back-image`;
+        ? `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-front-image`
+        : `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-back-image`;
 
       const response = await axios({
         method: 'post',
@@ -135,7 +135,7 @@ const AadharSection = ({
     try {
       console.log("Attempting to delete Aadhar front image...");
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/aadhar-front-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/aadhar-front-image`,
         {},
         {
           headers: {
@@ -169,7 +169,7 @@ const AadharSection = ({
     try {
       console.log("Attempting to delete Aadhar back image...");
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/aadhar-back-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/aadhar-back-image`,
         {},
         {
           headers: {

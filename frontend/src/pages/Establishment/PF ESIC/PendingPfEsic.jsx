@@ -33,7 +33,7 @@ const PendingPfEsic = () => {
     const fetchingHired = async() => {
         try{
             setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establishment/pending-pf-esic`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/pending-pf-esic`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ const PendingPfEsic = () => {
     let savePfEsic = async() => {
         console.log(saveData);
         try{
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establishment/save-pf-esic`, saveData, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/save-pf-esic`, saveData, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@ const PendingPfEsic = () => {
         formData.append('userId', userId);
       
         try {
-          const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/upload/file1`, formData, {
+          const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/upload/file1`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               Authorization: `Bearer ${token}`,
@@ -129,7 +129,7 @@ const PendingPfEsic = () => {
         formData.append('userId', userId);
       
         try {
-          const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/upload/file2`, formData, {
+          const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/upload/file2`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${token}`,

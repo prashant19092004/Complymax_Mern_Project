@@ -22,7 +22,7 @@ const SupervisorDashboard = () => {
     async function fetchingProfile() {
         try {
             setLoading(true);
-            const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/supervisor-dashboard`, {
+            const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/supervisor/dashboard`, {
         headers: {
                     Authorization: `Bearer ${token}`
                 }

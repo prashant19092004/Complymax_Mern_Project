@@ -31,7 +31,7 @@ const Profile = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/establisment/profile`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -70,7 +70,7 @@ const Profile = () => {
 
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/establishment/upload-profile-pic`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/upload-profile-pic`,
         formData,
         {
           headers: {
@@ -103,7 +103,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/establishment/update-profile`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/update-profile`,
         editData,
         {
           headers: {
@@ -140,7 +140,7 @@ const Profile = () => {
 
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/establishment/upload-logo`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/upload-logo`,
         formData,
         {
           headers: {
@@ -196,7 +196,7 @@ const Profile = () => {
         console.log('Uploading signature:', file);
 
         const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/establishment/upload-signature`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/establishment/upload-signature`,
           formData,
           {
             headers: {
@@ -233,7 +233,7 @@ const Profile = () => {
   const handleDeleteSignature = async () => {
     try {
       const res = await axios.delete(
-        `${process.env.REACT_APP_BACKEND_URL}/establishment/delete-signature`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/delete-signature`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -397,7 +397,7 @@ const Profile = () => {
                   onClick={async () => {
                     try {
                       const res = await axios.post(
-                        `${process.env.REACT_APP_BACKEND_URL}/establishment/delete-logo`,
+                        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/delete-logo`,
                         {},
                         {
                           headers: {

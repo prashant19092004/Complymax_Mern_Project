@@ -1,57 +1,46 @@
 import React, { useState } from "react";
 import "./AttendanceTable.css";
 import { useNavigate } from "react-router-dom";
+import moment from "moment-timezone";
 
-const fullData = [
-  {
-    id: 1,
-    name: "Aarav Sharma",
-    department: "Sales",
-    status: "Present",
-    checkIn: "09:05 AM",
-    checkOut: "06:01 PM",
-  },
-  {
-    id: 2,
-    name: "Isha Mehta",
-    department: "HR",
-    status: "Leave",
-    checkIn: "-",
-    checkOut: "-",
-  },
-  {
-    id: 3,
-    name: "Raj Patel",
-    department: "Tech",
-    status: "Late",
-    checkIn: "10:14 AM",
-    checkOut: "06:02 PM",
-  },
-  {
-    id: 4,
-    name: "Simran Kaur",
-    department: "Finance",
-    status: "Absent",
-    checkIn: "-",
-    checkOut: "-",
-  },
-  {
-    id: 5,
-    name: "Karan Desai",
-    department: "Operations",
-    status: "Present",
-    checkIn: "08:55 AM",
-    checkOut: "05:59 PM",
-  },
-];
+const AttendanceTable = ({ users = [] }) => {
 
-const AttendanceTable = () => {
-
+  console.log(users);
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("All");
   const [searchText, setSearchText] = useState("");
 
-  const filteredData = fullData.filter((emp) => {
+  // Helper to format time to IST (e.g. 09:15 AM)
+  const formatTime = (timeStr) => {
+    if (!timeStr) return "-";
+    return moment(timeStr).tz("Asia/Kolkata").format("hh:mm A");
+  };
+
+  const getStatus = (attendance) => {
+    if (!attendance) return "Absent";
+    if (attendance.lateByMinutes > 0) return "Late";
+    return attendance.status || "Present";
+  };
+
+  // Get today's date in YYYY-MM-DD format (for filtering)
+  const todayDateStr = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
+
+  const processedUsers = users?.map((user) => {
+    const todayAttendance = (user.attendance || []).find((a) =>
+      moment(a.date).tz("Asia/Kolkata").format("YYYY-MM-DD") === todayDateStr
+    );
+
+    return {
+      id: user._id,
+      name: user.full_Name,
+      department: user.hired?.hiring_id?.job_category || "-",
+      status: getStatus(todayAttendance),
+      checkIn: formatTime(todayAttendance?.checkInTime),
+      checkOut: formatTime(todayAttendance?.checkOutTime),
+    };
+  });
+
+  const filteredData = processedUsers?.filter((emp) => {
     const matchStatus =
       statusFilter === "All" ||
       emp.status.toLowerCase() === statusFilter.toLowerCase();
@@ -97,7 +86,7 @@ const AttendanceTable = () => {
           </thead>
           <tbody>
             {filteredData.map((emp, index) => (
-              <tr 
+              <tr
                 key={index}
                 className="clickable-row"
                 onClick={() => navigate(`employee/${emp.id}`)}

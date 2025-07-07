@@ -24,7 +24,7 @@ const EmployeeDetail = () => {
             setLoading(true);
             setError(null);
             const response = await axios.post(
-                `${process.env.REACT_APP_BACKEND_URL}/establishmant/employee-detail`,
+                `${process.env.REACT_APP_BACKEND_URL}/api/establishment/employee-detail`,
                 { userId },
                 {
                     headers: {

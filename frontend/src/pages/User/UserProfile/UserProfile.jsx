@@ -81,7 +81,7 @@ const UserProfile = () => {
       formData.append("image", file);
 
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/profile-pic`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/profile-pic`,
         formData,
         {
       headers: {
@@ -115,7 +115,7 @@ const UserProfile = () => {
       formData.append("image", file);
 
     const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/upload/pan-image`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/pan-image`,
       formData,
       {
         headers: {
@@ -150,7 +150,7 @@ const handleAadharFrontCroppedImage = async (blob) => {
       formData.append("image", file);
 
     const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-front-image`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-front-image`,
       formData,
       {
         headers: {
@@ -184,7 +184,7 @@ const handleAadharBackCroppedImage = async (blob) => {
       formData.append("image", file);
 
     const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-back-image`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-back-image`,
       formData,
       {
         headers: {
@@ -215,8 +215,8 @@ const handleAadharPdfUpload = async (file, isFront) => {
     formData.append("image", file);
 
     const endpoint = isFront 
-      ? `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-front-image`
-      : `${process.env.REACT_APP_BACKEND_URL}/upload/aadhar-back-image`;
+      ? `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-front-image`
+      : `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-back-image`;
 
     const response = await axios({
       method: 'post',
@@ -264,7 +264,7 @@ const handleAccountCroppedImage = async (blob) => {
       formData.append("image", file);
 
     const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/upload/account-image`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/account-image`,
       formData,
       {
         headers: {
@@ -309,7 +309,7 @@ const handleCertificateCroppedImage = async (blob) => {
       formData.append("type", isExperience ? "experience" : "education");
 
     const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/upload/certificate`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/certificate`,
       formData,
       {
         headers: {
@@ -340,7 +340,7 @@ const handlePanPdfUpload = async (file) => {
 
     const response = await axios({
       method: 'post',
-      url: `${process.env.REACT_APP_BACKEND_URL}/upload/pan-image`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/pan-image`,
       data: formData,
         headers: {
         'Content-Type': 'multipart/form-data',
@@ -385,7 +385,7 @@ const handleEducationPdfUpload = async (file, educationId) => {
 
     const response = await axios({
       method: 'post',
-      url: `${process.env.REACT_APP_BACKEND_URL}/upload/certificate`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/certificate`,
       data: formData,
             headers: {
         'Content-Type': 'multipart/form-data',
@@ -426,7 +426,7 @@ const handleExperiencePdfUpload = async (file, experienceId) => {
 
     const response = await axios({
       method: 'post',
-      url: `${process.env.REACT_APP_BACKEND_URL}/upload/certificate`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/certificate`,
       data: formData,
         headers: {
         'Content-Type': 'multipart/form-data',
@@ -463,7 +463,7 @@ const handleExperiencePdfUpload = async (file, experienceId) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/user/profile`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/user/profile`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

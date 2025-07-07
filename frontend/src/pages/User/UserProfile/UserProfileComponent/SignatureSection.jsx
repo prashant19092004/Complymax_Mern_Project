@@ -29,7 +29,7 @@ const SignatureSection = ({
       formData.append("image", file);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/signature`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/signature`,
         formData,
         {
           headers: {
@@ -87,7 +87,7 @@ const SignatureSection = ({
   const handleDeleteSignature = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/signature`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/signature`,
         {},  // Send an empty object instead of nothing
         {
           headers: {

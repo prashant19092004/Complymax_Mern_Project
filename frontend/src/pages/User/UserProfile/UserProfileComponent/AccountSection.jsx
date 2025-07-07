@@ -24,7 +24,7 @@ const AccountSection = ({
       formData.append("image", file);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/account-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/account-image`,
         formData,
         {
           headers: {
@@ -62,7 +62,7 @@ const AccountSection = ({
 
       const response = await axios({
         method: 'post',
-        url: `${process.env.REACT_APP_BACKEND_URL}/upload/account-image`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/account-image`,
         data: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -98,7 +98,7 @@ const AccountSection = ({
   const handleDeleteAccountImage = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/delete/account-image`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/account-image`,
         {},
         {
           headers: {

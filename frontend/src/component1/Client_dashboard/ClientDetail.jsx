@@ -61,7 +61,7 @@ const ClientDetail = () => {
   let fetchingClientData = async() => {
     try{
       setLoading(true);
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/establisment/client_data`, 
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/client_data`, 
       {
         state
       }
@@ -121,7 +121,7 @@ const ClientDetail = () => {
     try{
       console.log(uid);
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/user/delete_location`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/delete_location`,
         data,
         {
           headers: {
@@ -143,7 +143,7 @@ const ClientDetail = () => {
   let addLocation = async() => {
     try{
       const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/user/add_location`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/establishment/add_location`,
           locationData,
           {
               headers: {

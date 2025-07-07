@@ -92,7 +92,7 @@ const LeaveManagement = () => {
     // TODO: Add your API call or logic here
 
     const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/establishment/leave-page/allot-leave`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/establishment/leave-page/allot-leave`,
       {
         casual: allotValues.casual,
         earned: allotValues.earned,
@@ -125,7 +125,7 @@ const LeaveManagement = () => {
     try {
       console.log(`Updating request ${id} to status ${newStatus}`);
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/establishment/leave-page/leave-response/${id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/establishment/leave-page/leave-response/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -184,7 +184,7 @@ const LeaveManagement = () => {
     const fetchLeaveRequests = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/establishment/leave-page/leave-requests`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/establishment/leave-page/leave-requests`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

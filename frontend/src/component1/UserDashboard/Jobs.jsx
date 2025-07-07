@@ -19,7 +19,7 @@ const Jobs = () => {
     setLoading(true);
     // console.log("Hii");
     try{
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/jobdashboard`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/jobdashboard`, {
         headers: {
           Authorization : `Bearer ${token}`
         }

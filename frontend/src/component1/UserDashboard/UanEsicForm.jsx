@@ -30,7 +30,7 @@ const UanEsicForm = () => {
     try {
       await axios
         .post(
-          `${process.env.REACT_APP_BACKEND_URL}/user/profile/add_uan_esic`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/user/profile/add_uan_esic`,
           uanData,
           {
             headers: {

@@ -287,6 +287,20 @@ const userSchema = new mongoose.Schema({
       totalLeaves: Number,
     },
   ],
+  attendance: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Attendance",
+    },
+  ],
+  face: {
+    type: String,
+    default: "",
+  },
+  faceAdded: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

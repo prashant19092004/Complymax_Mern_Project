@@ -14,7 +14,7 @@ const SuperAdminDashboard = () => {
 
   async function fetchingProfile(){
     try{
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/superadmin-dashboard`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/super-admin/dashboard`, {
         headers: {
           Authorization : `Bearer ${token}`
         }

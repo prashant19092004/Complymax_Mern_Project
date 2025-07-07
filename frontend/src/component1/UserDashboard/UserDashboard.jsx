@@ -25,13 +25,14 @@ const UserDashboard = () => {
   async function fetchingProfile(){
     setLoading(true);
     try{
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/userdashboard`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/user-dashboard`, {
         headers: {
                     Authorization: `Bearer ${token}`
         }
       })
       .then((res) => {
-        setUser(res.data);
+        console.log(res.data);
+        setUser(res.data.currentUser);
         setLoading(false);
       })
         } catch(err) {

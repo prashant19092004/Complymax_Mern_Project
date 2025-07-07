@@ -6,79 +6,56 @@ const clientModel = require('../models/client.model');
 const supervisorModel = require('../models/supervisor.model');
 const supervisorController = require('../controllers/supervisorController');
 const { isSupervisor } = require('../middleware/auth');
+const { uploadPDF } = require("../middleware/multer.js");
 
 // Test route to verify router is working
 router.get('/test', (req, res) => {
     res.json({ message: 'Supervisor routes working' });
 });
 
+router.get("/hirings", auth, isSupervisor, supervisorController.getHirings);
+
+router.post("/hire", auth, isSupervisor, supervisorController.hireUser);
+
+router.get("/dashboard",auth, isSupervisor, supervisorController.getSupervisorDashboard);
+
+router.get("/active-users", auth, isSupervisor, supervisorController.getActiveUsers);
+
+router.post('/assign-date-of-joining', auth, isSupervisor, supervisorController.assignDateOfJoining);
+
+router.get('/hired', auth, isSupervisor, supervisorController.getHiredUsers);
+
+router.get('/pending-wages', auth, isSupervisor, supervisorController.getPendingWages);
+
+router.post('/save-wages', auth, isSupervisor, supervisorController.saveWages);
+
+
 // Get all employees for offer letters
-router.get('/offer-letters', auth, async (req, res) => {
-    try {
-        const currentSupervisor = await supervisorModel.findOne({ email: req.user.email });
-        if (!currentSupervisor) {
-            return res.status(404).json({
-                success: false,
-                message: 'Supervisor not found'
-            });
-        }
-
-        const users = await userModel.find({
-            active_user_status: true
-        }).populate('hired');
-
-        const activeUsers = users.filter(user => 
-            user.hired && user.hired.establishment_id && 
-            user.hired.establishment_id.equals(currentSupervisor.establisment)
-        );
-
-        res.status(200).json({
-            success: true,
-            employees: activeUsers,
-            message: 'Employees list fetched successfully'
-        });
-
-    } catch (error) {
-        console.error('Error fetching employees:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching employees'
-        });
-    }
-});
+router.get('/offer-letters', auth, isSupervisor, supervisorController.getOfferLetters);
 
 // Add this route to get employee details
-router.get('/employee/:id', auth, async (req, res) => {
-    try {
-        const employee = await userModel.findById(req.params.id);
-        if (!employee) {
-            return res.status(404).json({
-                success: false,
-                message: 'Employee not found'
-            });
-        }
-        res.json({
-            success: true,
-            employee
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching employee details'
-        });
-    }
-});
+router.get('/employee/:id', auth, isSupervisor, supervisorController.getEmployeeDetails);
 
-router.get('/users', auth, async (req, res) => {
-    try {
-        const users = await userModel.find();
-        res.status(200).json({ users });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error fetching users' });
-    }
-});
+router.get('/establishment/profile', auth, isSupervisor, supervisorController.getEstablishmentProfile);
+
+router.get('/pending-pf-esic', auth, isSupervisor, supervisorController.getPendingPfEsic);
+
+router.post('/save-pf-esic', auth, isSupervisor, supervisorController.savePfEsic);
+
+router.post('/upload/file1', uploadPDF.single('file1'), auth, isSupervisor, supervisorController.uploadFile1);
+
+router.post('/upload/file2', uploadPDF.single('file2'), auth, isSupervisor, supervisorController.uploadFile2);
+
+router.get('/profile', auth, isSupervisor, supervisorController.getSupervisorProfile);
+
+
+router.get('/users', auth, isSupervisor, supervisorController.getUsers);
 
 router.post('/leave-page/leave-response/:id', auth, isSupervisor, supervisorController.updateLeaveStatus);
 router.get('/leave-page/leave-requests', auth, isSupervisor, supervisorController.getLeaveRequests);
+
+router.post('/add-reporting-location', auth, isSupervisor, supervisorController.addReportingLocation); 
+
+router.post('/save-checkin-checkout', auth, isSupervisor, supervisorController.saveCheckInCheckOut);
 
 module.exports = router;

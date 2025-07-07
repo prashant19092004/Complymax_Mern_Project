@@ -1,15 +1,15 @@
 import React from "react";
 import "./StatusOverview.css";
 
-const data = [
-  { label: "Present Today", value: 120, color: "#10b981" },
-  { label: "Absent Today", value: 8, color: "#ef4444" },
-  { label: "On Leave", value: 5, color: "#f59e0b" },
-  { label: "Late Arrivals", value: 6, color: "#3b82f6" },
-  { label: "Early Departures", value: 3, color: "#8b5cf6" },
-];
+const StatusOverview = ({ todaySummery }) => {
+  const data = [
+    { label: "Present Today", value: todaySummery?.present || 0, color: "#10b981" },
+    { label: "Absent Today", value: todaySummery?.absent || 0, color: "#ef4444" },
+    { label: "On Leave", value: todaySummery?.onLeave || 0, color: "#f59e0b" },
+    { label: "Late Arrivals", value: todaySummery?.late || 0, color: "#3b82f6" },
+    { label: "Early Departures", value: todaySummery?.early || 0, color: "#8b5cf6" },
+  ];
 
-const StatusOverview = () => {
   return (
     <div className="status-overview-container">
       <h3>Employee Status Overview</h3>

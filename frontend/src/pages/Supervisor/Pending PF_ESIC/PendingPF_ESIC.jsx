@@ -35,7 +35,7 @@ const PendingPF_ESIC = () => {
             setLoading(true);
       const response = await axios
         .get(
-          `${process.env.REACT_APP_BACKEND_URL}/supervisor/pending-pf-esic`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/pending-pf-esic`,
           {
                 headers: {
               "Content-Type": "application/json",
@@ -99,7 +99,7 @@ const PendingPF_ESIC = () => {
     try {
       const response = await axios
         .post(
-          `${process.env.REACT_APP_BACKEND_URL}/supervisor/save-pf-esic`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/save-pf-esic`,
           saveData,
           {
                 headers: {
@@ -128,7 +128,7 @@ const PendingPF_ESIC = () => {
       
         try {
           const res = await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/upload/file1`,
+            `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/upload/file1`,
             formData,
             {
             headers: {
@@ -154,7 +154,7 @@ const PendingPF_ESIC = () => {
       
         try {
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/upload/file2`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/upload/file2`,
         formData,
         {
             headers: {

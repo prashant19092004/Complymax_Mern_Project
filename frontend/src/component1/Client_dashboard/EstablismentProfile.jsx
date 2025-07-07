@@ -13,7 +13,7 @@ const EstablismentProfile = () => {
   async function fetchingProfile(){
     try{
         setLoading(true);
-      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/profile`, {
+      await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/dashboard`, {
         headers: {
           Authorization : `Bearer ${token}`
         }

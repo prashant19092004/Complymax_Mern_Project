@@ -211,13 +211,13 @@ We are confident you will be able to make a significant contribution to the succ
       try {
         const [userResponse, establishmentResponse] = await Promise.all([
           axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/client/employee/${employeeId}`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/employee/${employeeId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
           ),
           axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/establishment/profile`,
+            `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/establishment/profile`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }

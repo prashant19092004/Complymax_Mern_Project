@@ -24,7 +24,7 @@ const Client_dashboard = () => {
   async function fetchingProfile(){
     try{
         setLoading(true);
-            const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/establisment/profile`, {
+            const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/establishment/dashboard`, {
         headers: {
                     Authorization: `Bearer ${token}`
         }

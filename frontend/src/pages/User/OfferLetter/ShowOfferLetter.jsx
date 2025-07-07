@@ -3,7 +3,6 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import "./style.css";
 import { toast } from "react-toastify";
-import html2pdf from 'html2pdf.js';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -41,7 +40,7 @@ const ShowOfferLetter = () => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/user/profile`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/user/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
