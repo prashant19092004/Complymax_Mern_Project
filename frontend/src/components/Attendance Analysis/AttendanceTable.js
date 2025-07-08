@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment-timezone";
 
 const AttendanceTable = ({ users = [] }) => {
-
-  console.log(users);
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("All");
   const [searchText, setSearchText] = useState("");
@@ -25,18 +23,28 @@ const AttendanceTable = ({ users = [] }) => {
   // Get today's date in YYYY-MM-DD format (for filtering)
   const todayDateStr = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
+  const getInitials = (name) => {
+    if (!name) return "";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
   const processedUsers = users?.map((user) => {
-    const todayAttendance = (user.attendance || []).find((a) =>
-      moment(a.date).tz("Asia/Kolkata").format("YYYY-MM-DD") === todayDateStr
+    const todayAttendance = (user.attendance || []).find(
+      (a) =>
+        moment(a.date).tz("Asia/Kolkata").format("YYYY-MM-DD") === todayDateStr
     );
 
     return {
       id: user._id,
       name: user.full_Name,
+      initials: getInitials(user.full_Name),
       department: user.hired?.hiring_id?.job_category || "-",
       status: getStatus(todayAttendance),
       checkIn: formatTime(todayAttendance?.checkInTime),
       checkOut: formatTime(todayAttendance?.checkOutTime),
+      email:user.email
     };
   });
 
@@ -44,8 +52,9 @@ const AttendanceTable = ({ users = [] }) => {
     const matchStatus =
       statusFilter === "All" ||
       emp.status.toLowerCase() === statusFilter.toLowerCase();
-    const matchSearch =
-      emp.name.toLowerCase().includes(searchText.trim().toLowerCase());
+    const matchSearch = emp.name
+      .toLowerCase()
+      .includes(searchText.trim().toLowerCase());
     return matchStatus && matchSearch;
   });
 
@@ -89,7 +98,13 @@ const AttendanceTable = ({ users = [] }) => {
               <tr
                 key={index}
                 className="clickable-row"
-                onClick={() => navigate(`employee/${emp.id}`)}
+                onClick={() =>
+                  navigate(`employee/${emp.id}`, {
+                    state: {
+                      employeeData: emp,
+                    },
+                  })
+                }
               >
                 <td>{emp.name}</td>
                 <td>{emp.department}</td>

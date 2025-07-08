@@ -13,7 +13,11 @@ const TopStatusSection = ({ checkedIn, presentDays, balanceLeave}) => {
         <p className={styles.cardValue}>{presentDays} {presentDays > 1 ? 'Days' : 'Day'} Present</p>
       </div>
       <div className={`${styles.card} ${styles.yellow}`}>
-        <p className={styles.cardTitle}>Leave Balance</p>
+        <p className={styles.cardTitle}>Leave Balance</p>    
+        <p className={styles.cardValue}>{balanceLeave} {balanceLeave > 1 ? 'Days' : 'Day'}</p>
+      </div>
+      <div className={`${styles.card} ${styles.yellow}`}>
+        <p className={styles.cardTitle}>Absent</p>
         <p className={styles.cardValue}>{balanceLeave} {balanceLeave > 1 ? 'Days' : 'Day'}</p>
       </div>
     </div>

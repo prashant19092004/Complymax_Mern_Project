@@ -228,6 +228,7 @@ router.post('/leave-page/leave-response/:id', auth, isEstablishment, establishme
 
 
 router.get('/attendance/records', auth, isEstablishment, establishmentController.getAttendanceRecords);
+router.get('/attendance/employee-record/:id', auth, isEstablishment, establishmentController.getEmployeeAttendanceRecord);
 
 
 module.exports = router;

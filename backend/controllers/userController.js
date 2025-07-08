@@ -14,6 +14,8 @@ const hiredModel = require("../models/hired.model.js");
 const Attendance = require("../models/attendance.model.js");
 const moment = require("moment-timezone");
 
+
+
 const rekognition = new AWS.Rekognition({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
