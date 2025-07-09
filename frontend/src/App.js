@@ -45,6 +45,9 @@ import LeaveManagement from "./pages/Establishment/Leave Management/LeaveManagem
 import AttendanceAnalysis from "./pages/Establishment/Attendance Analysis/AttandanceAnalysis";
 import EmployeeAttendance from "./pages/Establishment/Attendance Analysis/EmployeeAttendance";
 import AttendanceDashboard from "./components/Attendance Analysis/AttendenceDashboard";
+import HolidayManagement from "./pages/Establishment/Holiday Management/HolidayManagement";
+import Holiday from "./pages/Establishment/Holiday Management/Holiday";
+import HolidayCalender from "./pages/Establishment/Holiday Management/HolidayCalender";
 
 // Supervisor Dashboard
 import SupervisorDashboard from "./component1/Supervisor_dashboard/SupervisorDashboard";
@@ -102,10 +105,7 @@ function App() {
         { path: "client_registration", element: <ClientRegistration /> },
         { path: "client_registration_form", element: <ClientForm /> },
         { path: "sub_admin", element: <Subadmin /> },
-        {
-          path: "supervisor_registration",
-          element: <SupervisorRegistration />,
-        },
+        { path: "supervisor_registration", element: <SupervisorRegistration />, },
         { path: "supervisor_registration_form", element: <SupervisorForm /> },
         { path: "establisment_profile", element: <EstablishmentProfile /> },
         { path: "client_detail", element: <ClientDetail /> },
@@ -125,6 +125,14 @@ function App() {
             { path: "employee/:id", element: <EmployeeAttendance /> },
           ],
         },
+        {
+          path: "holiday-management",
+          element: <HolidayManagement />,
+          children: [
+            { path: "", element: <Holiday /> },
+            { path: "calender", element: <HolidayCalender /> },
+          ]
+        }
       ],
     },
 

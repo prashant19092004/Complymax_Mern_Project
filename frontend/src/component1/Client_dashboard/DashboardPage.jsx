@@ -21,6 +21,7 @@ const cards = [
   { title: "CLRA Licence", icon: <TbLicense /> },
   { title: "Leave Management", icon: <BsPeople />, link: "/establisment_dashboard/leave-management" },
   { title: "Attendance Management", icon: <BsPeople />, link: "/establisment_dashboard/attendance-analysis" },
+  { title: "Holiday Management", icon: <BsPeople />, link: "/establisment_dashboard/holiday-management" },
 ];
 
 const DashboardPage = () => {

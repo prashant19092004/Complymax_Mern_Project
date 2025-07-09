@@ -1089,7 +1089,7 @@ exports.updateLeaveStatus = async (req, res) => {
 
     const leaveRequest = await LeaveRequestModel.findById(leaveRequestId)
       .select(
-        "status respondedByEstablishment _id respondedAt user_id leaveType"
+        "status respondedByEstablishment _id respondedAt user_id leaveType from to"
       )
       .populate(
         "user_id",
@@ -1129,17 +1129,21 @@ exports.updateLeaveStatus = async (req, res) => {
       }
 
       if (status === "Approved") {
-        // Increment the appropriate leave type based on the leaveType field
+        // Calculate number of leave days (inclusive)
+        const fromDate = new Date(leaveRequest.from);
+        const toDate = new Date(leaveRequest.to);
+        const timeDiff = toDate.getTime() - fromDate.getTime();
+        const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1; // inclusive of both days
+
         if (leaveRequest.leaveType === "Casual") {
-          leaveRequest.user_id.casualLeave += 1;
-          leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
+          leaveRequest.user_id.casualLeave += dayDiff;
         } else if (leaveRequest.leaveType === "Earned") {
-          leaveRequest.user_id.earnedLeave += 1;
-          leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
+          leaveRequest.user_id.earnedLeave += dayDiff;
         } else if (leaveRequest.leaveType === "Medical") {
-          leaveRequest.user_id.medicalLeave += 1;
-          leaveRequest.user_id.leaveTaken += 1; // Increment total leaves taken
+          leaveRequest.user_id.medicalLeave += dayDiff;
         }
+
+        leaveRequest.user_id.leaveTaken += dayDiff;
       }
     }
     // Save the user leave data

@@ -90,7 +90,6 @@ const LeaveManagement = () => {
 
   const handleAction = async (id, newStatus) => {
     try {
-      console.log(`Updating request ${id} to status ${newStatus}`);
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/supervisor/leave-page/leave-response/${id}`,
         { status: newStatus },
@@ -160,7 +159,6 @@ const LeaveManagement = () => {
         );
         setLeaveRequests(response.data.leaveRequests);
         setEstablishment(response.data.establishment);
-        console.log(response.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching leave requests:", error);

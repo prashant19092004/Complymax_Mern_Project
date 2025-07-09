@@ -29,6 +29,8 @@ cron.schedule("59 23 * * *", async () => {
 
     if (onLeave) {
       console.log(`${user.name} is on approved leave today`);
+
+      
       continue;
     }
 

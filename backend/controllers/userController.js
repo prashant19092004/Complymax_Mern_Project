@@ -828,7 +828,17 @@ exports.leavePageData = async (req, res) => {
         ],
       });
 
-    const leaveRequests = await Leave.find({ user_id: userId });
+    const leaveRequests = await Leave.find({ user_id: userId })
+    .populate([
+      {
+        path: 'respondedBySupervisor',
+        select: '_id name'
+      },
+      {
+        path: 'respondedByEstablishment',
+        select: '_id name'
+      }
+    ])
 
     res.status(200).json({
       success: true,
