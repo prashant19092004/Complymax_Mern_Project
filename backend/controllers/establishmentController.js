@@ -5,6 +5,8 @@ const LeaveRequestModel = require("../models/leave.model");
 const adminModel = require("../models/admin");
 const clientModel = require("../models/client.model");
 const userModel = require("../models/user.js");
+const holidayModel = require("../models/holiday.model.js");
+const axios = require("axios");
 
 exports.dashboardData = async (req, res) => {
   // const requestHistory = await requestModel.find(req.user._id.equals(user));
@@ -333,13 +335,11 @@ exports.editSupervisor = async (req, res) => {
       })
       .populate("supervisors");
 
-    res
-      .status(200)
-      .json({
-        message: "Supervisor Edited",
-        success: true,
-        currentEstablisment,
-      });
+    res.status(200).json({
+      message: "Supervisor Edited",
+      success: true,
+      currentEstablisment,
+    });
   } catch (e) {
     res.status(500).json({ message: "Internal Server Error", success: false });
   }
@@ -380,13 +380,11 @@ exports.getActiveUsers = async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Active Users List fetched",
-        success: true,
-        activeUsers,
-      });
+    res.status(200).json({
+      message: "Active Users List fetched",
+      success: true,
+      activeUsers,
+    });
   } catch (e) {
     res.status(500).json({ message: "Internal server error", success: false });
   }
@@ -410,13 +408,11 @@ exports.getPendingWages = async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .json({
-        message: "pending Wages List fetched",
-        success: true,
-        pendingWages,
-      });
+    res.status(200).json({
+      message: "pending Wages List fetched",
+      success: true,
+      pendingWages,
+    });
   } catch (e) {
     res.status(500).json({ message: "Internal server error", success: false });
   }
@@ -535,13 +531,11 @@ exports.getPendingPfEsic = async (req, res) => {
         pendingPfEsic.push(pfEsic[i]);
       }
     }
-    res
-      .status(200)
-      .json({
-        message: "pending PF/ESIC List fetched",
-        success: true,
-        pendingPfEsic,
-      });
+    res.status(200).json({
+      message: "pending PF/ESIC List fetched",
+      success: true,
+      pendingPfEsic,
+    });
   } catch (e) {
     res.status(500).json({ message: "Internal server error", success: false });
   }
@@ -1268,6 +1262,89 @@ exports.getEmployeeAttendanceRecord = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching user data",
+      error: error.message,
+    });
+  }
+};
+
+exports.getHolidayData = async (req, res) => {
+  try {
+    const establishmentId = req.user.id;
+
+    const establishmentData = await adminModel
+      .findById(establishmentId)
+      .select("_id name holiday_added holidays")
+      .populate({
+        path: "holidays",
+        options: { sort: { date: -1 } },
+      });
+
+    // If holidays not yet added
+    if (!establishmentData.holiday_added) {
+      const currentYear = new Date().getFullYear();
+      const response = await axios.get(
+        "https://calendarific.com/api/v2/holidays",
+        {
+          params: {
+            api_key: process.env.CALENDARIFIC_API_KEY,
+            country: "IN",
+            year: new Date().getFullYear(),
+            type: "national",
+          },
+        }
+      );
+
+      const holidays = response.data.response.holidays;
+      console.log(response.data.response.holidays);
+
+      const savedHolidayIds = [];
+
+      for (const holiday of holidays) {
+        if (!holiday.date || !holiday.date.iso) {
+          console.warn("Skipping invalid holiday:", holiday);
+          continue;
+        }
+
+        const holidayDate = new Date(holiday.date.iso); // ✅ Safe now
+
+        if (!isNaN(holidayDate)) {
+          const existing = await holidayModel.findOne({
+            date: holidayDate,
+            establishment: establishmentId, // include this if index is compound
+          });
+
+          if (!existing) {
+            const saved = await holidayModel.create({
+              name: holiday.name,
+              description: holiday.description,
+              date: holidayDate,
+              type: "official",
+              country: holiday.country.name,
+              location: holiday.locations,
+              establishment: establishmentId,
+            });
+            savedHolidayIds.push(saved._id);
+          } else {
+            savedHolidayIds.push(existing._id);
+          }
+        }
+      }
+
+      establishmentData.holidays.push(...savedHolidayIds);
+      establishmentData.holiday_added = true;
+      await establishmentData.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Holiday data has been fetched",
+      establishmentData,
+    });
+  } catch (error) {
+    console.error("Error fetching Holiday data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching Holiday data",
       error: error.message,
     });
   }

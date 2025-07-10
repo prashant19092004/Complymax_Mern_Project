@@ -1,0 +1,51 @@
+const mongoose = require('mongoose');
+
+const holidaySchema = new mongoose.Schema({
+  date: {
+    type: Date,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    enum: [
+      "official",
+      "weekend",
+      "custom"
+    ],
+    default: "Gazetted Holiday",
+  },
+  state: {
+    type: String,
+    default: null,
+  },
+  description: {
+    type: String,
+    default: "",
+  },
+  country: {
+    type: String,
+    default: "India",
+  },
+  location: {
+    type: String,
+    default: "All",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  establishment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Admin",
+    required: true,
+  },
+});
+
+// ✅ Ensure uniqueness per establishment per date
+holidaySchema.index({ date: 1, establishment: 1 }, { unique: true });
+
+module.exports = mongoose.model("Holiday", holidaySchema);

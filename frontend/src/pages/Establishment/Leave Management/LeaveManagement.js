@@ -204,6 +204,10 @@ const LeaveManagement = () => {
     fetchLeaveRequests();
   }, [token]);
 
+  if(loading){
+    return (<div>Loading...</div>)
+  }
+
   return (
     <div className="dashboard">
       <h2 className="title">Leave Management</h2>

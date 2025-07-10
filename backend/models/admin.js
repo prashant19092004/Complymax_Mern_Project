@@ -44,6 +44,14 @@ const adminSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Hired",
   },
+  holidays: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Holiday",
+  },
+  holiday_added: {
+    type: Boolean,
+    default: false
+  },
   resetPasswordToken: {
     type: String,
   },
