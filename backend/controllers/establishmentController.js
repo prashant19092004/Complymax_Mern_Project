@@ -1295,7 +1295,6 @@ exports.getHolidayData = async (req, res) => {
       );
 
       const holidays = response.data.response.holidays;
-      console.log(response.data.response.holidays);
 
       const savedHolidayIds = [];
 
@@ -1349,3 +1348,45 @@ exports.getHolidayData = async (req, res) => {
     });
   }
 };
+
+exports.deleteHoliday = async (req, res) => {
+  try {
+    const result = await holidayModel.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ success: false, message: "Holiday not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Holiday deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting holiday:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+exports.addHoliday = async (req, res) => {
+  const { name, type, date, description } = req.body;
+  const establishment = req.user.id;
+
+  if (!name || !type || !date) {
+    return res.status(400).json({ success: false, message: "Missing fields." });
+  }
+
+  try {
+    const newHoliday = await holidayModel.create({
+      name,
+      type,
+      date: new Date(date),
+      description,
+      establishment,
+    });
+
+    await Admin.findByIdAndUpdate(establishment, {
+      $push: { holidays: newHoliday._id },
+    });
+
+    res.status(201).json({ success: true, holiday: newHoliday });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+}

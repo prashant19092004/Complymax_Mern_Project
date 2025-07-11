@@ -10,14 +10,6 @@ const HolidayHeaderSection = () => {
           <h1>Public Holiday Management</h1>
           <p>Assign and manage your organization's public holidays with ease</p>
         </div>
-        <div class="phm-header-right">
-          <input
-            type="text"
-            placeholder="Search holiday..."
-            class="phm-search-input"
-          />
-          <button class="phm-signin-btn">Sign In</button>
-        </div>
       </div>
     </>
   );

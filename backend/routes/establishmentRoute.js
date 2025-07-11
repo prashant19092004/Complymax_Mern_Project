@@ -231,6 +231,9 @@ router.get('/attendance/records', auth, isEstablishment, establishmentController
 router.get('/attendance/employee-record/:id', auth, isEstablishment, establishmentController.getEmployeeAttendanceRecord);
 
 router.get('/holiday-management/get-data', auth, isEstablishment, establishmentController.getHolidayData);
+router.delete('/holiday-management/delete/:id', auth, isEstablishment, establishmentController.deleteHoliday);
+router.post('/holiday-management/add', auth, isEstablishment, establishmentController.addHoliday);
+
 
 
 module.exports = router;

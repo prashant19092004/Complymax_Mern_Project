@@ -16,7 +16,7 @@ const holidaySchema = new mongoose.Schema({
       "weekend",
       "custom"
     ],
-    default: "Gazetted Holiday",
+    default: "official",
   },
   state: {
     type: String,
@@ -45,7 +45,5 @@ const holidaySchema = new mongoose.Schema({
   },
 });
 
-// ✅ Ensure uniqueness per establishment per date
-holidaySchema.index({ date: 1, establishment: 1 }, { unique: true });
 
 module.exports = mongoose.model("Holiday", holidaySchema);

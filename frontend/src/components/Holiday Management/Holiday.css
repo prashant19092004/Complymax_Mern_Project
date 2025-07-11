@@ -419,11 +419,6 @@
     gap: 4px;
   }
 
-  .phm-options {
-    position: absolute;
-    right: 10px;
-    top: 14px;
-  }
 }
 /* ... CSS continues with multiple duplicate and repeated selectors ... */
 
