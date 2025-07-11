@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   format,
   addMonths,
@@ -7,22 +7,23 @@ import {
   endOfMonth,
   getDay,
   addDays,
-  isSameDay
+  isSameDay,
 } from "date-fns";
 import "./HolidayCalendar.css";
-
-const dummyHolidays = [
-  { date: "2025-07-04", name: "Emergency Drill", type: "emergency" },
-  { date: "2025-07-10", name: "Eid al-Adha", type: "religious" },
-  { date: "2025-07-15", name: "Optional Leave", type: "optional" },
-  { date: "2025-07-27", name: "Independence Day", type: "national" },
-];
+import { useLocation, useNavigate } from "react-router-dom";
+import ScrollToTop from "../../../ScrollToTop";
 
 const HolidayCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const location = useLocation();
+  const holidays = location.state || []; // fallback if no holidays passed
+  const [selectedHoliday, setSelectedHoliday] = useState(null);
+  const isMobile = window.innerWidth <= 768;
+  const navigate = useNavigate();
 
-  const holidaysMap = dummyHolidays.reduce((map, h) => {
-    map[h.date] = h;
+  const holidaysMap = holidays.reduce((map, h) => {
+    const formattedDate = format(new Date(h.date), "yyyy-MM-dd");
+    map[formattedDate] = h;
     return map;
   }, {});
 
@@ -43,9 +44,13 @@ const HolidayCalendar = () => {
     <div className="phm-calendar-header">
       <h3>{format(currentMonth, "MMMM yyyy")}</h3>
       <div className="phm-header-controls">
-        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>←</button>
+        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+          ←
+        </button>
         <button onClick={() => setCurrentMonth(new Date())}>Today</button>
-        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>→</button>
+        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+          →
+        </button>
       </div>
     </div>
   );
@@ -87,16 +92,37 @@ const HolidayCalendar = () => {
                   const isToday = day && isSameDay(day, new Date());
 
                   return (
-                    <div className="phm-cell" key={index}>
+                    <div
+                      className={`phm-cell ${
+                        holiday ? "phm-holiday-cell" : ""
+                      }`}
+                      key={index}
+                    >
                       {day && (
                         <>
-                          <div className={`phm-date-number ${isToday ? "today" : ""}`}>
+                          <div
+                            className={`phm-date-number ${
+                              isToday ? "today" : ""
+                            }`}
+                          >
                             {format(day, "d")}
                           </div>
                           {holiday && (
-                            <div className={`phm-holiday-label ${holiday.type}`}>
-                              {holiday.name}
-                            </div>
+                            <>
+                              {!isMobile && (
+                                <div
+                                  className={`phm-holiday-label ${holiday.type}`}
+                                >
+                                  {holiday.name}
+                                </div>
+                              )}
+                              {isMobile && (
+                                <div
+                                  className={`phm-holiday-dot ${holiday.type}`}
+                                  onClick={() => setSelectedHoliday(holiday)}
+                                />
+                              )}
+                            </>
                           )}
                         </>
                       )}
@@ -110,11 +136,17 @@ const HolidayCalendar = () => {
   };
 
   return (
-    <div className="phm-calendar-container">
+    <>
+      <ScrollToTop />
+      <div className="phm-calendar-container" style={{ margin : '15px'}}>
+      <div className="phm-top-bar">
+        <button className="phm-back-btn" onClick={() => navigate("/establisment_dashboard/holiday-management")}>
+          ← Back to Dashboard
+        </button>
+      </div>
       <div className="phm-calendar-toolbar">
         <h2>Holiday Calendar</h2>
         <div className="phm-actions">
-          <button className="phm-toggle-btn">📅 Show Calendar</button>
           <button className="phm-add-btn">+ Add Holiday</button>
         </div>
       </div>
@@ -122,7 +154,19 @@ const HolidayCalendar = () => {
       {renderLegend()}
       {renderWeekdays()}
       {renderDates()}
+
+      {/* Mobile Modal Popup */}
+      {isMobile && selectedHoliday && (
+        <div className="phm-holiday-popup">
+          <div className="phm-holiday-popup-content">
+            <h4>{selectedHoliday.name}</h4>
+            <p>{format(new Date(selectedHoliday.date), "MMM d, yyyy")}</p>
+            <button onClick={() => setSelectedHoliday(null)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
+    </>
   );
 };
 

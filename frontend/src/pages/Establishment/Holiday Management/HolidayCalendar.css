@@ -1,32 +1,32 @@
+/* Container */
 .phm-calendar-container {
   background: white;
   padding: 24px;
   border-radius: 16px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   max-width: 1000px;
-  margin: 20px;
+  margin: 20px auto;
+  font-family: 'Segoe UI', sans-serif;
 }
 
+/* Toolbar */
 .phm-calendar-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .phm-actions button {
   margin-left: 10px;
-}
-
-.phm-toggle-btn,
-.phm-add-btn {
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   border: none;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.3s ease;
 }
 
 .phm-toggle-btn {
@@ -43,6 +43,7 @@
   background-color: #2563eb;
 }
 
+/* Header */
 .phm-calendar-header {
   display: flex;
   justify-content: space-between;
@@ -59,6 +60,7 @@
   cursor: pointer;
 }
 
+/* Legend */
 .phm-legend {
   display: flex;
   flex-wrap: wrap;
@@ -72,35 +74,22 @@
   border-radius: 20px;
   font-weight: 500;
   background: #e5e7eb;
+  color: white;
 }
 
-.national {
-  background-color: #fee2e2;
-  color: #b91c1c;
-}
+.phm-dot.national { background-color: #007bff; }
+.phm-dot.religious { background-color: #28a745; }
+.phm-dot.emergency { background-color: #dc3545; }
+.phm-dot.optional { background-color: #ffc107; }
 
-.religious {
-  background-color: #ede9fe;
-  color: #6b21a8;
-}
-
-.emergency {
-  background-color: #dbeafe;
-  color: #1e40af;
-}
-
-.optional {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
+/* Grid */
 .phm-days-row,
 .phm-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
 }
 
 .phm-day-name {
-  flex: 1;
   text-align: center;
   font-weight: 600;
   padding: 10px 0;
@@ -109,11 +98,11 @@
 }
 
 .phm-cell {
-  flex: 1;
-  min-height: 80px;
-  border: 1px solid #f3f4f6;
   padding: 8px;
+  text-align: center;
+  min-height: 70px;
   position: relative;
+  border: 1px solid #f3f4f6;
   background-color: #fff;
   font-size: 13px;
   display: flex;
@@ -141,40 +130,114 @@
   white-space: nowrap;
 }
 
-.phm-holiday-label.national {
-  background: #fee2e2;
-  color: #b91c1c;
+.phm-holiday-label.national { background: #fee2e2; color: #b91c1c; }
+.phm-holiday-label.religious { background: #ede9fe; color: #6d28d9; }
+.phm-holiday-label.emergency { background: #dbeafe; color: #2563eb; }
+.phm-holiday-label.optional { background: #fef3c7; color: #92400e; }
+
+/* Holiday highlight */
+.phm-holiday-cell {
+  background-color: #fff0f0;
+  border-radius: 10px;
 }
 
-.phm-holiday-label.religious {
-  background: #ede9fe;
-  color: #6d28d9;
+/* Dot indicator */
+.phm-holiday-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 6px auto 0;
+  cursor: pointer;
 }
 
-.phm-holiday-label.emergency {
-  background: #dbeafe;
-  color: #2563eb;
+.phm-holiday-dot.national { background-color: #007bff; }
+.phm-holiday-dot.religious { background-color: #28a745; }
+.phm-holiday-dot.emergency { background-color: #dc3545; }
+.phm-holiday-dot.optional { background-color: #ffc107; }
+
+/* Mobile popup */
+.phm-holiday-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.phm-holiday-label.optional {
-  background: #fef3c7;
-  color: #92400e;
+.phm-holiday-popup-content {
+  background: #ffffff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  animation: slideIn 0.3s ease-out;
+  text-align: center;
+}
+.phm-holiday-popup-content h4 {
+  margin-bottom: 8px;
+  color: #333;
+}
+.phm-holiday-popup-content p {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #666;
+}
+.phm-holiday-popup-content button {
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.phm-holiday-popup-content button:hover {
+  background-color: #0056b3;
 }
 
+/* Animations */
+@keyframes slideIn {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { background-color: rgba(0,0,0,0); }
+  to { background-color: rgba(0,0,0,0.4); }
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .phm-calendar-toolbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
+  .phm-calendar-toolbar,
   .phm-calendar-header {
     flex-direction: column;
-    gap: 8px;
     align-items: flex-start;
+    gap: 10px;
   }
+  .phm-holiday-label { display: none; }
+}
 
-  .phm-row {
-    flex-wrap: wrap;
-  }
+.phm-top-bar {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.phm-back-btn {
+  background-color: #e5e7eb;
+  color: #111827;
+  border: none;
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.phm-back-btn:hover {
+  background-color: #d1d5db;
 }

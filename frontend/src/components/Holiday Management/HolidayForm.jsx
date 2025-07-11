@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SlCalender } from "react-icons/sl";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -7,13 +8,18 @@ import { FaRegCalendarAlt } from "react-icons/fa"; // universal calendar icon
 import axios from 'axios';
 import { toast } from "react-toastify";
 
-const HolidayForm = ({ upcomingHolidays, handleDelete, fetchLeaveRequests }) => {
+const HolidayForm = ({ upcomingHolidays, handleDelete, fetchLeaveRequests, holidays }) => {
   const [formData, setFormData] = useState({
     name: "",
     type: "",
     date: "",
     description: "",
   });
+  const navigate = useNavigate();
+
+  const showCalender = () => {
+    navigate("/establisment_dashboard/holiday-management/calender", { state: holidays});
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,12 +166,12 @@ const HolidayForm = ({ upcomingHolidays, handleDelete, fetchLeaveRequests }) => 
         </ul>
       </div>
 
-      <Link to="/establisment_dashboard/holiday-management/calender">
-        <button class="phm-show-calendar-btn">
+      
+        <button class="phm-show-calendar-btn" onClick={showCalender}>
           <SlCalender />
           <span>Show Calendar</span>
         </button>
-      </Link>
+      
     </div>
   );
 };

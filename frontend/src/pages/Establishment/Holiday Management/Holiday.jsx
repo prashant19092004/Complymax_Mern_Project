@@ -9,7 +9,6 @@ const moment = require("moment");
 const Holiday = () => {
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(true);
-  const [holidays, setHolidays] = useState();
   const [establishment, setEstablishment] = useState();
   const [statsData, setStatsData] = useState();
 
