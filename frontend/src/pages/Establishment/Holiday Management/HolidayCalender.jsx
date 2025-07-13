@@ -147,7 +147,7 @@ const HolidayCalendar = () => {
       <div className="phm-calendar-toolbar">
         <h2>Holiday Calendar</h2>
         <div className="phm-actions">
-          <button className="phm-add-btn">+ Add Holiday</button>
+          <button className="phm-add-btn" onClick={() => navigate("/establisment_dashboard/holiday-management")}>+ Add Holiday</button>
         </div>
       </div>
       {renderHeader()}
