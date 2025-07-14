@@ -101,7 +101,7 @@ const Holiday = () => {
     }
   };
 
-  const fetchLeaveRequests = async () => {
+  const fetchHolidayData = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/api/establishment/holiday-management/get-data`,
@@ -121,7 +121,7 @@ const Holiday = () => {
   };
 
   useEffect(() => {
-    fetchLeaveRequests();
+    fetchHolidayData();
   }, [token]);
 
   if (loading) {

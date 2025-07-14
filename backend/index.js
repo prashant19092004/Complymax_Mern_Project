@@ -58,14 +58,17 @@ app.use((err, req, res, next) => {
 //   console.log(`Server is running on port ${port}`);
 // });
 
+connectDB();
+require("./cron/markAbsentees.js");
+require("./cron/fetchHolidayForNewYear.js");
+
 app.listen(port, '0.0.0.0', () => {
   console.log("Server running on http://<your-ip>:5000");
 });
 
-connectDB();
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log('MongoDB is connected'))
-.catch((err) => console.log(err));
+// mongoose.connect(process.env.MONGO_URI)
+// .then(() => console.log('MongoDB is connected'))
+// .catch((err) => console.log(err));
 
 

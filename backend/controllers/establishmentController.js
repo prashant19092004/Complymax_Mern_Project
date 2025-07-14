@@ -1279,37 +1279,34 @@ exports.getHolidayData = async (req, res) => {
         options: { sort: { date: -1 } },
       });
 
-    // If holidays not yet added
     if (!establishmentData.holiday_added) {
       const currentYear = new Date().getFullYear();
-      const response = await axios.get(
-        "https://calendarific.com/api/v2/holidays",
-        {
-          params: {
-            api_key: process.env.CALENDARIFIC_API_KEY,
-            country: "IN",
-            year: new Date().getFullYear(),
-            type: "national",
-          },
-        }
-      );
+
+      // 🔹 Fetch national holidays
+      const response = await axios.get("https://calendarific.com/api/v2/holidays", {
+        params: {
+          api_key: process.env.CALENDARIFIC_API_KEY,
+          country: "IN",
+          year: currentYear,
+          type: "national",
+        },
+      });
 
       const holidays = response.data.response.holidays;
-
       const savedHolidayIds = [];
 
+      // 🔹 Save national holidays
       for (const holiday of holidays) {
         if (!holiday.date || !holiday.date.iso) {
           console.warn("Skipping invalid holiday:", holiday);
           continue;
         }
 
-        const holidayDate = new Date(holiday.date.iso); // ✅ Safe now
-
+        const holidayDate = new Date(holiday.date.iso);
         if (!isNaN(holidayDate)) {
           const existing = await holidayModel.findOne({
             date: holidayDate,
-            establishment: establishmentId, // include this if index is compound
+            establishment: establishmentId,
           });
 
           if (!existing) {
@@ -1329,6 +1326,34 @@ exports.getHolidayData = async (req, res) => {
         }
       }
 
+      // 🔹 Add all Sundays
+      let date = new Date(`${currentYear}-01-01`);
+      while (date.getFullYear() === currentYear) {
+        if (date.getDay() === 0) {
+          const existingSunday = await holidayModel.findOne({
+            date,
+            establishment: establishmentId,
+          });
+
+          if (!existingSunday) {
+            const savedSunday = await holidayModel.create({
+              name: "Sunday",
+              description: "Weekly Off",
+              date,
+              type: "weekend",
+              country: "India",
+              location: "All",
+              establishment: establishmentId,
+            });
+            savedHolidayIds.push(savedSunday._id);
+          } else {
+            savedHolidayIds.push(existingSunday._id);
+          }
+        }
+        date.setDate(date.getDate() + 1);
+      }
+
+      // 🔹 Link holidays to the establishment
       establishmentData.holidays.push(...savedHolidayIds);
       establishmentData.holiday_added = true;
       await establishmentData.save();
@@ -1348,6 +1373,7 @@ exports.getHolidayData = async (req, res) => {
     });
   }
 };
+
 
 exports.deleteHoliday = async (req, res) => {
   try {
@@ -1390,3 +1416,32 @@ exports.addHoliday = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error." });
   }
 }
+
+exports.getHolidays = async (req, res) => {
+  try {
+    const establishmentId = req.user.id;
+
+    const establishment = await adminModel
+      .findById(establishmentId)
+      .select("_id name holidays")
+      .populate({
+        path: "holidays",
+        select: "_id name date type establishment createdAt",
+        options: { sort: { date: -1 } },
+      });
+
+    
+    res.status(200).json({
+      success: true,
+      message: "Holidays have been fetched",
+      holidays : establishment.holidays,
+    });
+  } catch (error) {
+    console.error("Error fetching Holiday data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching Holiday data",
+      error: error.message,
+    });
+  }
+};

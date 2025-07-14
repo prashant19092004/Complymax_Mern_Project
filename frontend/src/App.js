@@ -48,6 +48,7 @@ import AttendanceDashboard from "./components/Attendance Analysis/AttendenceDash
 import HolidayManagement from "./pages/Establishment/Holiday Management/HolidayManagement";
 import Holiday from "./pages/Establishment/Holiday Management/Holiday";
 import HolidayCalender from "./pages/Establishment/Holiday Management/HolidayCalender";
+import AllHolidays from "./pages/Establishment/Holiday Management/AllHolidays";
 
 // Supervisor Dashboard
 import SupervisorDashboard from "./component1/Supervisor_dashboard/SupervisorDashboard";
@@ -131,6 +132,7 @@ function App() {
           children: [
             { path: "", element: <Holiday /> },
             { path: "calender", element: <HolidayCalender /> },
+            { path: "all-holidays", element: <AllHolidays /> }
           ]
         }
       ],

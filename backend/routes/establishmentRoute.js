@@ -234,6 +234,8 @@ router.get('/holiday-management/get-data', auth, isEstablishment, establishmentC
 router.delete('/holiday-management/delete/:id', auth, isEstablishment, establishmentController.deleteHoliday);
 router.post('/holiday-management/add', auth, isEstablishment, establishmentController.addHoliday);
 
+router.get('/holiday-management/get-holidays', auth, isEstablishment, establishmentController.getHolidays);
+
 
 
 module.exports = router;

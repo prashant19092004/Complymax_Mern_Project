@@ -14,7 +14,7 @@ const holidaySchema = new mongoose.Schema({
     enum: [
       "official",
       "weekend",
-      "custom"
+      "custom",
     ],
     default: "official",
   },

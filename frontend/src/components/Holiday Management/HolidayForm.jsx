@@ -130,9 +130,9 @@ const HolidayForm = ({ upcomingHolidays, handleDelete, fetchLeaveRequests, holid
       <div className="phm-recent-wrapper-wide">
         <div className="phm-recent-header">
           <h3>Upcoming Holidays</h3>
-          <a href="#" className="phm-view-all">
+          <Link to="/establisment_dashboard/holiday-management/all-holidays" className="phm-view-all">
             View All
-          </a>
+          </Link>
         </div>
 
         <ul className="phm-holiday-cards">
