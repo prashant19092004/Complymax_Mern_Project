@@ -7,6 +7,9 @@ const clientModel = require("../models/client.model");
 const userModel = require("../models/user.js");
 const holidayModel = require("../models/holiday.model.js");
 const axios = require("axios");
+const supervisorModel = require("../models/supervisor.model.js");
+const bcrpt = require("bcrypt")
+const jwt = require("jsonwebtoken") 
 
 exports.dashboardData = async (req, res) => {
   // const requestHistory = await requestModel.find(req.user._id.equals(user));
@@ -898,7 +901,8 @@ exports.registerUser = async (req, res) => {
         Message: "Email already exists as establisment",
       });
     }
-
+    
+    
     const existingClient = await clientModel.findOne({
       email: registerData.email,
     });
@@ -908,17 +912,19 @@ exports.registerUser = async (req, res) => {
         Message: "Email already exists as client",
       });
     }
-
+    
     const existingSupervisor = await supervisorModel.findOne({
       email: registerData.email,
     });
+    console.log(existingSupervisor);
     if (existingSupervisor) {
       return res.status(400).json({
         success: false,
         Message: "Email already exists as supervisor",
       });
     }
-
+    
+    
     const existingPan = await userModel.findOne({
       pan_number: registerData.pan_number,
     });
@@ -928,20 +934,22 @@ exports.registerUser = async (req, res) => {
         Message: "Pan already exists",
       });
     }
-
+    
+    
     let pass1 = registerData.fullName.slice(0, 4).toUpperCase(); // First 4 letters of fullName
     let pass2 = registerData.aadhar_no.slice(-4); // Last 4 digits of aadhar_no
     let newPassword = `${pass1}${pass2}`; // Combine both
-
+    
     let hashedPassword;
     try {
-      hashedPassword = await bcrypt.hash(newPassword, 10); // Corrected bcrypt spelling
+      hashedPassword = await bcrpt.hash(newPassword, 10); // Corrected bcrypt spelling
     } catch (e) {
       return res.status(500).json({
         success: false,
         message: "nahi hua hash",
       });
     }
+
 
     const newUser = await userModel.create({
       full_Name: registerData.fullName,

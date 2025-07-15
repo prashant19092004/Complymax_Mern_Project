@@ -8,7 +8,7 @@ import { FaRegCalendarAlt } from "react-icons/fa"; // universal calendar icon
 import axios from 'axios';
 import { toast } from "react-toastify";
 
-const HolidayForm = ({ upcomingHolidays, handleDelete, fetchLeaveRequests, holidays }) => {
+const HolidayForm = ({ upcomingHolidays, handleDelete, fetchHolidayData, holidays }) => {
   const [formData, setFormData] = useState({
     name: "",
     type: "",
@@ -43,7 +43,7 @@ const HolidayForm = ({ upcomingHolidays, handleDelete, fetchLeaveRequests, holid
       if (res.data.success) {
         toast.success("Holiday added successfully!");
         setFormData({ name: "", type: "", date: "", description: "" }); // reset form
-        fetchLeaveRequests(); // refresh holiday list (passed from parent)
+        fetchHolidayData(); // refresh holiday list (passed from parent)
       } else {
         toast.error(res.data.message || "Failed to add holiday.");
       }

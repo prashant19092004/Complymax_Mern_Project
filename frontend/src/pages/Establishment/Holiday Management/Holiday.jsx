@@ -90,7 +90,7 @@ const Holiday = () => {
 
       if (res.data.success) {
         toast.success("Holiday deleted successfully!");
-        fetchLeaveRequests();
+        fetchHolidayData();
         // Optionally refresh the list of holidays
       } else {
         toast.error("Failed to delete holiday.");
@@ -135,7 +135,7 @@ const Holiday = () => {
       <HolidayForm
         upcomingHolidays={statsData?.upcomingHolidays}
         handleDelete={handleDelete}
-        fetchLeaveRequests={fetchLeaveRequests}
+        fetchHolidayData={fetchHolidayData}
         holidays={establishment?.holidays}
       />
     </>

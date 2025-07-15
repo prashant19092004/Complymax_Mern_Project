@@ -14,8 +14,6 @@ const hiredModel = require("../models/hired.model.js");
 const Attendance = require("../models/attendance.model.js");
 const moment = require("moment-timezone");
 
-
-
 const rekognition = new AWS.Rekognition({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -828,17 +826,16 @@ exports.leavePageData = async (req, res) => {
         ],
       });
 
-    const leaveRequests = await Leave.find({ user_id: userId })
-    .populate([
+    const leaveRequests = await Leave.find({ user_id: userId }).populate([
       {
-        path: 'respondedBySupervisor',
-        select: '_id name'
+        path: "respondedBySupervisor",
+        select: "_id name",
       },
       {
-        path: 'respondedByEstablishment',
-        select: '_id name'
-      }
-    ])
+        path: "respondedByEstablishment",
+        select: "_id name",
+      },
+    ]);
 
     res.status(200).json({
       success: true,
@@ -966,17 +963,28 @@ exports.attendanceUserData = async (req, res) => {
 
     const userData = await userModel
       .findById(userId)
-      .select("full_Name email face faceAdded attendance leaveTaken")
-      .populate({
-        path: "attendance",
-        options: { sort: { date: -1 } },
-        select:
-          "_id totalHours status checkInTime date establishment checkOutTime",
-        populate: {
-          path: "establishment",
-          select: "earnedLeave casualLeave medicalLeave",
+      .select("full_Name email face faceAdded attendance leaveTaken leaveRequests")
+      .populate([
+        {
+          path: "attendance",
+          options: { sort: { date: -1 } },
+          select:
+            "_id totalHours status checkInTime date establishment checkOutTime",
+          populate: {
+            path: "establishment",
+            select: "earnedLeave casualLeave medicalLeave holidays",
+            populate: {
+              path : "holidays",
+              select: "date"
+            }
+          },
         },
-      });
+        {
+          path: "leaveRequests",
+          select: "from to status"
+        }
+      ]
+    );
 
     // const leaveRequests = await Leave.find({ user_id : userId });
 
@@ -1216,7 +1224,7 @@ exports.checkOut = async (req, res) => {
         select: "supervisor_id",
         populate: {
           path: "supervisor_id",
-          select: "reportingLocation checkOutTime",
+          select: "reportingLocation checkOutTime checkInTime",
         },
       });
 
@@ -1300,24 +1308,29 @@ exports.checkOut = async (req, res) => {
     let earlyCheckOutByMinutes = 0;
     let overtimeMinutes = 0;
 
-    const expectedCheckOutStr = supervisor.checkOutTime; // "18:00"
-    if (expectedCheckOutStr) {
-      const [expectedHour, expectedMinute] = expectedCheckOutStr
-        .split(":")
-        .map(Number);
-      const expectedCheckOutIST = checkOutIST.clone().set({
-        hour: expectedHour,
-        minute: expectedMinute,
-        second: 0,
-        millisecond: 0,
-      });
+    const expectedCheckInStr = supervisor.checkInTime; // e.g., "09:00"
+    const expectedCheckOutStr = supervisor.checkOutTime; // e.g., "18:00"
 
-      const diffMinutes = checkOutIST.diff(expectedCheckOutIST, "minutes");
+    if (expectedCheckInStr && expectedCheckOutStr) {
+      const [inHour, inMinute] = expectedCheckInStr.split(":").map(Number);
+      const [outHour, outMinute] = expectedCheckOutStr.split(":").map(Number);
 
-      if (diffMinutes < 0) {
-        earlyCheckOutByMinutes = Math.abs(diffMinutes);
+      const expectedStart = checkInIST
+        .clone()
+        .set({ hour: inHour, minute: inMinute, second: 0, millisecond: 0 });
+      const expectedEnd = checkInIST
+        .clone()
+        .set({ hour: outHour, minute: outMinute, second: 0, millisecond: 0 });
+
+      const expectedWorkingMinutes = expectedEnd.diff(expectedStart, "minutes");
+      const actualWorkedMinutes = checkOutIST.diff(checkInIST, "minutes");
+
+      if (actualWorkedMinutes < expectedWorkingMinutes) {
+        earlyCheckOutByMinutes = expectedWorkingMinutes - actualWorkedMinutes;
+        overtimeMinutes = 0;
       } else {
-        overtimeMinutes = diffMinutes;
+        overtimeMinutes = actualWorkedMinutes - expectedWorkingMinutes;
+        earlyCheckOutByMinutes = 0;
       }
     }
 

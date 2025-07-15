@@ -19,222 +19,242 @@ const AttandanceAnalysis = () => {
   const [monthlyAttendanceRates, setMonthlyAttendanceRates] = useState();
 
   function calculateMonthlyAttendanceTrends(establishmentData) {
-  const users = establishmentData.users || [];
+    const users = establishmentData.users || [];
 
-  const todayIST = moment().tz("Asia/Kolkata");
-  const thisMonth = todayIST.month();
-  const thisYear = todayIST.year();
-  const lastMonthDateIST = todayIST.clone().subtract(1, "month");
-  const lastMonth = lastMonthDateIST.month();
-  const lastYear = lastMonthDateIST.year();
+    const todayIST = moment().tz("Asia/Kolkata");
+    const thisMonth = todayIST.month();
+    const thisYear = todayIST.year();
+    const lastMonthDateIST = todayIST.clone().subtract(1, "month");
+    const lastMonth = lastMonthDateIST.month();
+    const lastYear = lastMonthDateIST.year();
 
-  const thisMonthAllRecords = [];
-  const lastMonthAllRecords = [];
+    const thisMonthAllRecords = [];
+    const lastMonthAllRecords = [];
 
-  users.forEach((user) => {
-    const records = user.attendance || [];
-    for (let r of records) {
-      const recordDateIST = moment(r.date).tz("Asia/Kolkata");
-      const recordMonth = recordDateIST.month();
-      const recordYear = recordDateIST.year();
+    users.forEach((user) => {
+      const records = user.attendance || [];
+      for (let r of records) {
+        const recordDateIST = moment(r.date).tz("Asia/Kolkata");
+        const recordMonth = recordDateIST.month();
+        const recordYear = recordDateIST.year();
 
-      if (recordMonth === thisMonth && recordYear === thisYear) {
-        thisMonthAllRecords.push({ ...r, user: user._id });
-      } else if (recordMonth === lastMonth && recordYear === lastYear) {
-        lastMonthAllRecords.push({ ...r, user: user._id });
+        if (recordMonth === thisMonth && recordYear === thisYear) {
+          thisMonthAllRecords.push({ ...r, user: user._id });
+        } else if (recordMonth === lastMonth && recordYear === lastYear) {
+          lastMonthAllRecords.push({ ...r, user: user._id });
+        }
       }
+    });
+
+    function calculateStats(monthRecords) {
+      const presentDates = new Set();
+      let lateArrivals = 0;
+      let earlyDepartures = 0;
+      let absent = 0;
+
+      for (let record of monthRecords) {
+        const dateKey = `${record.user}_${moment(record.date)
+          .tz("Asia/Kolkata")
+          .format("YYYY-MM-DD")}`;
+
+        if (record.status === "Absent") {
+          absent++;
+        } else {
+          presentDates.add(dateKey);
+
+          if (record.lateByMinutes && record.lateByMinutes > 0) lateArrivals++;
+          if (
+            record.earlyCheckOutByMinutes &&
+            record.earlyCheckOutByMinutes > 0
+          )
+            earlyDepartures++;
+        }
+      }
+
+      const present = presentDates.size;
+
+      const totalMarked = present + absent;
+
+      const attendanceRate = totalMarked ? (present / totalMarked) * 100 : 0;
+      const absenceRate = totalMarked ? (absent / totalMarked) * 100 : 0;
+      const lateArrivalRate = present ? (lateArrivals / present) * 100 : 0;
+      const earlyDepartureRate = present
+        ? (earlyDepartures / present) * 100
+        : 0;
+
+      return {
+        present,
+        absent,
+        totalMarked,
+        attendanceRate: +attendanceRate.toFixed(2),
+        absenceRate: +absenceRate.toFixed(2),
+        lateArrivals,
+        lateArrivalRate: +lateArrivalRate.toFixed(2),
+        earlyDepartures,
+        earlyDepartureRate: +earlyDepartureRate.toFixed(2),
+      };
     }
-  });
 
-  function calculateStats(monthRecords, baseDateIST) {
-    const workingDays = getWorkingDaysOfMonthIST(baseDateIST);
-    const totalUsers = users.length;
-    const totalWorking = workingDays.length * totalUsers;
-
-    const presentDates = new Set();
-    let lateArrivals = 0;
-    let earlyDepartures = 0;
-
-    for (let record of monthRecords) {
-      const dateKey = `${record.user}_${moment(record.date)
-        .tz("Asia/Kolkata")
-        .format("YYYY-MM-DD")}`;
-      presentDates.add(dateKey);
-
-      if (record.lateByMinutes && record.lateByMinutes > 0) lateArrivals++;
-      if (record.earlyCheckOutByMinutes && record.earlyCheckOutByMinutes > 0)
-        earlyDepartures++;
+    function calculateChange(current, previous) {
+      if (previous === 0) return current === 0 ? 0 : 100;
+      return +(((current - previous) / previous) * 100).toFixed(2);
     }
 
-    const present = presentDates.size;
-    const absent = totalWorking - present;
-
-    const attendanceRate = totalWorking ? (present / totalWorking) * 100 : 0;
-    const absenceRate = totalWorking ? (absent / totalWorking) * 100 : 0;
-    const lateArrivalRate = present ? (lateArrivals / present) * 100 : 0;
-    const earlyDepartureRate = present ? (earlyDepartures / present) * 100 : 0;
+    const thisMonthStats = calculateStats(thisMonthAllRecords, todayIST);
+    const lastMonthStats = calculateStats(
+      lastMonthAllRecords,
+      lastMonthDateIST
+    );
 
     return {
-      present,
-      absent,
-      totalWorking,
-      attendanceRate: +attendanceRate.toFixed(2),
-      absenceRate: +absenceRate.toFixed(2),
-      lateArrivals,
-      lateArrivalRate: +lateArrivalRate.toFixed(2),
-      earlyDepartures,
-      earlyDepartureRate: +earlyDepartureRate.toFixed(2),
+      currentMonth: thisMonthStats,
+      lastMonth: lastMonthStats,
+      change: {
+        attendanceRateChange: calculateChange(
+          thisMonthStats.attendanceRate,
+          lastMonthStats.attendanceRate
+        ),
+        absenceRateChange: calculateChange(
+          thisMonthStats.absenceRate,
+          lastMonthStats.absenceRate
+        ),
+        lateArrivalRateChange: calculateChange(
+          thisMonthStats.lateArrivalRate,
+          lastMonthStats.lateArrivalRate
+        ),
+        earlyDepartureRateChange: calculateChange(
+          thisMonthStats.earlyDepartureRate,
+          lastMonthStats.earlyDepartureRate
+        ),
+      },
     };
   }
 
-  function calculateChange(current, previous) {
-    if (previous === 0) return current === 0 ? 0 : 100;
-    return +(((current - previous) / previous) * 100).toFixed(2);
-  }
-
-  const thisMonthStats = calculateStats(thisMonthAllRecords, todayIST);
-  const lastMonthStats = calculateStats(lastMonthAllRecords, lastMonthDateIST);
-
-  return {
-    currentMonth: thisMonthStats,
-    lastMonth: lastMonthStats,
-    change: {
-      attendanceRateChange: calculateChange(
-        thisMonthStats.attendanceRate,
-        lastMonthStats.attendanceRate
-      ),
-      absenceRateChange: calculateChange(
-        thisMonthStats.absenceRate,
-        lastMonthStats.absenceRate
-      ),
-      lateArrivalRateChange: calculateChange(
-        thisMonthStats.lateArrivalRate,
-        lastMonthStats.lateArrivalRate
-      ),
-      earlyDepartureRateChange: calculateChange(
-        thisMonthStats.earlyDepartureRate,
-        lastMonthStats.earlyDepartureRate
-      ),
-    },
-  };
-}
-
-
   function getWorkingDaysOfMonthIST(baseDateIST) {
-  const year = baseDateIST.year();
-  const month = baseDateIST.month();
-  const daysInMonth = baseDateIST.daysInMonth();
-  const workingDays = [];
+    const year = baseDateIST.year();
+    const month = baseDateIST.month();
+    const daysInMonth = baseDateIST.daysInMonth();
+    const workingDays = [];
 
-  for (let d = 1; d <= daysInMonth; d++) {
-    const day = moment.tz({ year, month, day: d }, "Asia/Kolkata").day();
-    if (day !== 0 && day !== 6) {
-      workingDays.push(moment.tz({ year, month, day: d }, "Asia/Kolkata").format("YYYY-MM-DD"));
-    }
-  }
-
-  return workingDays;
-}
-
-const getMonthlyAttendanceRates = (establishmentData) => {
-  const users = establishmentData.users || [];
-  const currentYear = moment().tz("Asia/Kolkata").year();
-
-  const months = Array.from({ length: 12 }, (_, i) => ({
-    month: moment().month(i).format("MMM"), // Jan, Feb, etc.
-    presentCount: 0,
-    totalWorking: 0,
-  }));
-
-  users.forEach((user) => {
-    user.attendance?.forEach((record) => {
-      const recordDateIST = moment(record.date).tz("Asia/Kolkata");
-      if (recordDateIST.year() === currentYear) {
-        const monthIndex = recordDateIST.month(); // 0–11
-        months[monthIndex].presentCount += 1;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const day = moment.tz({ year, month, day: d }, "Asia/Kolkata").day();
+      if (day !== 0 && day !== 6) {
+        workingDays.push(
+          moment
+            .tz({ year, month, day: d }, "Asia/Kolkata")
+            .format("YYYY-MM-DD")
+        );
       }
-    });
-  });
-
-  // Calculate working days for each month using IST
-  months.forEach((m, i) => {
-    const workingDays = getWorkingDaysOfMonthIST2(moment().year(currentYear).month(i).toDate());
-    m.totalWorking = workingDays.length * users.length;
-  });
-
-  const rates = months.map((m) => ({
-    month: m.month,
-    rate: m.totalWorking > 0 ? +((m.presentCount / m.totalWorking) * 100).toFixed(1) : 0,
-  }));
-
-  return rates;
-};
-
-function getWorkingDaysOfMonthIST2(baseDate = new Date()) {
-  const start = moment(baseDate).tz("Asia/Kolkata").startOf("month");
-  const end = moment(baseDate).tz("Asia/Kolkata").endOf("month");
-  const workingDays = [];
-
-  let current = start.clone();
-
-  while (current.isSameOrBefore(end, 'day')) {
-    const day = current.day();
-    if (day !== 0 && day !== 6) {
-      workingDays.push(current.format("YYYY-MM-DD"));
     }
-    current.add(1, "day");
+
+    return workingDays;
   }
 
-  return workingDays;
-}
+  const getMonthlyAttendanceRates = (establishmentData) => {
+    const users = establishmentData.users || [];
+    const currentYear = moment().tz("Asia/Kolkata").year();
 
+    const months = Array.from({ length: 12 }, (_, i) => ({
+      month: moment().month(i).format("MMM"), // Jan, Feb, etc.
+      presentCount: 0,
+      totalWorking: 0,
+    }));
 
+    users.forEach((user) => {
+      user.attendance?.forEach((record) => {
+        const recordDateIST = moment(record.date).tz("Asia/Kolkata");
+        if (recordDateIST.year() === currentYear) {
+          const monthIndex = recordDateIST.month(); // 0–11
+          months[monthIndex].presentCount += 1;
+        }
+      });
+    });
 
+    // Calculate working days for each month using IST
+    months.forEach((m, i) => {
+      const workingDays = getWorkingDaysOfMonthIST2(
+        moment().year(currentYear).month(i).toDate()
+      );
+      m.totalWorking = workingDays.length * users.length;
+    });
+
+    const rates = months.map((m) => ({
+      month: m.month,
+      rate:
+        m.totalWorking > 0
+          ? +((m.presentCount / m.totalWorking) * 100).toFixed(1)
+          : 0,
+    }));
+
+    return rates;
+  };
+
+  function getWorkingDaysOfMonthIST2(baseDate = new Date()) {
+    const start = moment(baseDate).tz("Asia/Kolkata").startOf("month");
+    const end = moment(baseDate).tz("Asia/Kolkata").endOf("month");
+    const workingDays = [];
+
+    let current = start.clone();
+
+    while (current.isSameOrBefore(end, "day")) {
+      const day = current.day();
+      if (day !== 0 && day !== 6) {
+        workingDays.push(current.format("YYYY-MM-DD"));
+      }
+      current.add(1, "day");
+    }
+
+    return workingDays;
+  }
 
   function getTodaySummary(userList = []) {
-  const istToday = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
+    const istToday = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
-  let present = 0;
-  let absent = 0;
-  let late = 0;
-  let early = 0;
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+    let early = 0;
 
-  userList.forEach((user) => {
-    const todayRecord = user.attendance.find((record) => {
-      const dateStr = moment(record.date).tz("Asia/Kolkata").format("YYYY-MM-DD");
-      return dateStr === istToday;
+    userList.forEach((user) => {
+      const todayRecord = user.attendance.find((record) => {
+        const dateStr = moment(record.date)
+          .tz("Asia/Kolkata")
+          .format("YYYY-MM-DD");
+        return dateStr === istToday;
+      });
+
+      if (todayRecord) {
+        present++;
+
+        if (todayRecord.lateByMinutes && todayRecord.lateByMinutes > 0) {
+          late++;
+        }
+
+        if (
+          todayRecord.earlyCheckOutByMinutes &&
+          todayRecord.earlyCheckOutByMinutes > 0
+        ) {
+          early++;
+        }
+      } else {
+        absent++;
+      }
     });
 
-    if (todayRecord) {
-      present++;
+    const total = userList.length;
 
-      if (todayRecord.lateByMinutes && todayRecord.lateByMinutes > 0) {
-        late++;
-      }
-
-      if (todayRecord.earlyCheckOutByMinutes && todayRecord.earlyCheckOutByMinutes > 0) {
-        early++;
-      }
-    } else {
-      absent++;
-    }
-  });
-
-  const total = userList.length;
-
-  return {
-    totalEmployees: total,
-    present,
-    absent,
-    late,
-    early,
-    latePercentage: total > 0 ? ((late / total) * 100).toFixed(1) : "0",
-    earlyPercentage: total > 0 ? ((early / total) * 100).toFixed(1) : "0",
-    attendanceRate: total > 0 ? ((present / total) * 100).toFixed(1) : "0",
-    absenceRate: total > 0 ? ((absent / total) * 100).toFixed(1) : "0",
-  };
-}
-
+    return {
+      totalEmployees: total,
+      present,
+      absent,
+      late,
+      early,
+      latePercentage: total > 0 ? ((late / total) * 100).toFixed(1) : "0",
+      earlyPercentage: total > 0 ? ((early / total) * 100).toFixed(1) : "0",
+      attendanceRate: total > 0 ? ((present / total) * 100).toFixed(1) : "0",
+      absenceRate: total > 0 ? ((absent / total) * 100).toFixed(1) : "0",
+    };
+  }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -257,7 +277,6 @@ function getWorkingDaysOfMonthIST2(baseDate = new Date()) {
         setCalculatedMonthlyData(
           calculateMonthlyAttendanceTrends(response.data?.establishmentData)
         );
-
 
         setTodaySummery(
           getTodaySummary(response.data?.establishmentData?.users)
@@ -298,7 +317,7 @@ function getWorkingDaysOfMonthIST2(baseDate = new Date()) {
       <SummaryCards calculatedMonthlyData={calculatedMonthlyData} />
       <AttendanceChart monthlyAttendanceRates={monthlyAttendanceRates} />
       <StatusOverview todaySummery={todaySummery} />
-      <AttendanceTable users={data?.users}/>
+      <AttendanceTable users={data?.users} />
       {/* <LocationMap /> */}
       <div style={{ height: "100px", width: "100%" }}></div>
     </div>

@@ -16,7 +16,9 @@ const Attendance = () => {
   const [captureMode, setCaptureMode] = useState('check-in'); // 'check-in' or 'check-out'
   const webcamRef = useRef(null);
   const [checkedIn, setCheckedIn] = useState(false);
+  const [todayStatus, setTodayStatus] = useState("Not Checked In");
   const [presentDays, setPresentDays] = useState(0);
+  const [absentDays, setAbsentDays] = useState(0);
   const [balanceLeave, setBalanceLeave] = useState(0);
 
   const isCheckedInToday = (attendanceArray) => {
@@ -31,6 +33,41 @@ const Attendance = () => {
   });
 }
 
+function getTodayStatus(userData) {
+  const today = new Date();
+
+  const isSameDate = (dateStr) => {
+    const d = new Date(dateStr);
+    return (
+      d.getDate() === today.getDate() &&
+      d.getMonth() === today.getMonth() &&
+      d.getFullYear() === today.getFullYear()
+    );
+  };
+
+  // 1. Check for Holiday
+  const isHoliday = userData.attendance?.establishment?.holidays?.some(holiday =>
+    isSameDate(holiday.date)
+  );
+  if (isHoliday) return "Holiday";
+
+  // 2. Check for Approved Leave
+  const isOnLeave = userData.leaveRequests?.some(leave => {
+    if (leave.status !== "Approved") return false;
+    const from = new Date(leave.from);
+    const to = new Date(leave.to);
+    return today >= from && today <= to;
+  });
+  if (isOnLeave) return "Leave";
+
+  // 3. Check if Checked In Today
+  const isCheckedIn = userData.attendance?.some(record =>
+    isSameDate(record.checkInTime)
+  );
+  return isCheckedIn ? "Checked In" : "Not Checked In";
+}
+
+
 function getMonthlyPresentCount(attendanceArray) {
   const now = new Date();
   return attendanceArray.filter((record) => {
@@ -42,6 +79,19 @@ function getMonthlyPresentCount(attendanceArray) {
     );
   }).length;
 }
+
+function getMonthlyAbsentCount(attendanceArray) {
+  const now = new Date();
+  return attendanceArray.filter((record) => {
+    const date = new Date(record.date);
+    return (
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear() &&
+      record.status === "Absent"
+    );
+  }).length;
+}
+
 
 const calculateBalanceLeave = (userData) => {
   const earnedLeave = userData?.attendance[0]?.establishment?.earnedLeave || 0;
@@ -148,7 +198,9 @@ const calculateBalanceLeave = (userData) => {
 
         setUserData(response.data.userData);
         setCheckedIn(isCheckedInToday(response?.data?.userData?.attendance));
+        setTodayStatus(getTodayStatus(response?.data?.userData));
         setPresentDays(getMonthlyPresentCount(response?.data?.userData?.attendance));
+        setAbsentDays(getMonthlyAbsentCount(response?.data?.userData?.attendance));
         setBalanceLeave(calculateBalanceLeave(response?.data?.userData));
         setLoading(false);
       } catch (error) {
@@ -164,6 +216,8 @@ const calculateBalanceLeave = (userData) => {
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  console.log(userData);
 
   return (
     <div>
@@ -209,8 +263,8 @@ const calculateBalanceLeave = (userData) => {
         </div>
       ) : (
         <>
-          <TopStatusSection checkedIn={checkedIn} presentDays={presentDays} balanceLeave={balanceLeave} />
-          <MarkAttendanceSection onCheckIn={handleCheckIn} onCheckOut={handleCheckOut} />
+          <TopStatusSection todayStatus={todayStatus} presentDays={presentDays} absentDays={absentDays} balanceLeave={balanceLeave} />
+          <MarkAttendanceSection onCheckIn={handleCheckIn} onCheckOut={handleCheckOut} todayStatus={todayStatus} />
           <AttendanceHistoryTable key={refreshKey} attendance={userData.attendance} />
         </>
       )}

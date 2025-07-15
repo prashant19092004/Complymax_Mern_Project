@@ -1,12 +1,18 @@
 .cardsContainer {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   background-color: #f4f7fa;
   padding: 20px;
   border-radius: 8px;
   margin: 16px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .cardsContainer {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .card {
@@ -37,20 +43,4 @@
 
 .yellow {
   border-left: 5px solid #facc15;
-}
-.cardsContainer {
-  display: grid;
-  gap: 16px;
-  background-color: #f4f7fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* default: responsive */
-}
-
-@media (min-width: 1024px) {
-  .cardsContainer {
-    grid-template-columns: repeat(4, 1fr); /* force 4 cards in a row on large screens */
-  }
 }
