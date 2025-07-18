@@ -173,9 +173,6 @@ router.get("/leave-action", async (req, res) => {
           responderId: leave.establishment_id._id,
         });
 
-        console.log(approveLink);
-        console.log(rejectLink);
-
         const remainingEarnedLeave =
           leave.establishment_id.earnedLeave - leave.user_id.earnedLeave;
         const remainingMedicalLeave =
