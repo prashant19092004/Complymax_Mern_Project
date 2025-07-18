@@ -960,8 +960,6 @@ exports.leaveApplication = async (req, res) => {
       responderId: supervisor._id
     });
 
-    console.log(approveLink);
-    console.log(rejectLink);
 
     const remainingEarnedLeave = establishment.earnedLeave - user.earnedLeave;
     const remainingMedicalLeave =

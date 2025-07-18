@@ -296,7 +296,6 @@ exports.supervisorlogin = async (req, res) => {
 
 exports.usersignup = async (req, res) => {
     try {
-        console.log(req.body);
         const { userDetail, aadharData} = req.body
         const existingUser = await User.findOne({ email : userDetail.email })
         if (existingUser) {
@@ -454,7 +453,6 @@ exports.superadminsignup = async (req, res) => {
     try {
         const { name, email, password } = req.body;
         
-        console.log(req.body);
         let hashedpassword;
         try {
             hashedpassword = await bcrpt.hash(password, 10)
@@ -487,7 +485,6 @@ exports.clientregister = async (req, res) => {
     try {
         const { name, email, password, contact, state, location } = req.body
         
-        console.log(req.body);
         if(!name || !email || !password || !contact || !state || !location){
             res.json({message : "Please Enter all the data", success : false});
         }

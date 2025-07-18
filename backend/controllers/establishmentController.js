@@ -918,7 +918,6 @@ exports.registerUser = async (req, res) => {
     const existingSupervisor = await supervisorModel.findOne({
       email: registerData.email,
     });
-    console.log(existingSupervisor);
     if (existingSupervisor) {
       return res.status(400).json({
         success: false,
