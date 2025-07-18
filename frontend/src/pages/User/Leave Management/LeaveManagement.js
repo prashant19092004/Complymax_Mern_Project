@@ -369,6 +369,16 @@ const LeaveManagement = () => {
                         {req.status}
                       </span>
                     </div>
+                    {req.status === "Rejected" && (
+                      <div>
+                        <div className="label">Rejected By</div>
+                        <div className="value">
+                          {req.respondedByEstablishment
+                            ? "Rejected by HOD"
+                            : "Rejected by RM"}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

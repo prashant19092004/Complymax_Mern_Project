@@ -1,15 +1,18 @@
 const Admin = require("../models/admin");
+const userModel = require("../models/user.js");
+const clientModel = require("../models/client.model");
+const adminModel = require("../models/admin");
+const supervisorModel = require("../models/supervisor.model.js");
+const LeaveRequestModel = require("../models/leave.model");
+const clientlocationModel = require("../models/clientlocation.model.js"); 
+const holidayModel = require("../models/holiday.model.js");
+const hiringModel = require("../models/hiring.model.js");
+const hiredModel = require("../models/hired.model.js");
 const fs = require("fs");
 const path = require("path");
-const LeaveRequestModel = require("../models/leave.model");
-const adminModel = require("../models/admin");
-const clientModel = require("../models/client.model");
-const userModel = require("../models/user.js");
-const holidayModel = require("../models/holiday.model.js");
 const axios = require("axios");
-const supervisorModel = require("../models/supervisor.model.js");
-const bcrpt = require("bcrypt")
-const jwt = require("jsonwebtoken") 
+const bcrpt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.dashboardData = async (req, res) => {
   // const requestHistory = await requestModel.find(req.user._id.equals(user));
@@ -102,11 +105,11 @@ exports.deleteLocation = async (req, res) => {
 exports.addLocation = async (req, res) => {
   try {
     const {
-      name,
-      contact,
+      // name,
+      // contact,
       location,
       state,
-      email,
+      // email,
       editId,
       client_id,
       supervisor,
@@ -114,7 +117,7 @@ exports.addLocation = async (req, res) => {
 
     const arr = supervisor.split(",");
 
-    if (!name || !contact || !location || !state || !email) {
+    if (!location || !state) {
       res.json({ message: "Please Enter all the data", success: false });
     }
 
@@ -133,9 +136,9 @@ exports.addLocation = async (req, res) => {
         await previousSupervisor.save();
       }
 
-      currentLocation.name = name;
-      currentLocation.email = email;
-      currentLocation.contact = contact;
+      // currentLocation.name = name;
+      // currentLocation.email = email;
+      // currentLocation.contact = contact;
       currentLocation.state = state;
       currentLocation.location = location;
       currentLocation.supervisor = arr[0];
@@ -161,11 +164,11 @@ exports.addLocation = async (req, res) => {
     });
 
     const newLocation = await clientlocationModel.create({
-      name,
-      contact,
+      // name,
+      // contact,
       state,
       location,
-      email,
+      // email,
       client: currentClient1._id,
       supervisor: arr[0],
     });
@@ -901,8 +904,7 @@ exports.registerUser = async (req, res) => {
         Message: "Email already exists as establisment",
       });
     }
-    
-    
+
     const existingClient = await clientModel.findOne({
       email: registerData.email,
     });
@@ -912,7 +914,7 @@ exports.registerUser = async (req, res) => {
         Message: "Email already exists as client",
       });
     }
-    
+
     const existingSupervisor = await supervisorModel.findOne({
       email: registerData.email,
     });
@@ -923,8 +925,7 @@ exports.registerUser = async (req, res) => {
         Message: "Email already exists as supervisor",
       });
     }
-    
-    
+
     const existingPan = await userModel.findOne({
       pan_number: registerData.pan_number,
     });
@@ -934,12 +935,11 @@ exports.registerUser = async (req, res) => {
         Message: "Pan already exists",
       });
     }
-    
-    
+
     let pass1 = registerData.fullName.slice(0, 4).toUpperCase(); // First 4 letters of fullName
     let pass2 = registerData.aadhar_no.slice(-4); // Last 4 digits of aadhar_no
     let newPassword = `${pass1}${pass2}`; // Combine both
-    
+
     let hashedPassword;
     try {
       hashedPassword = await bcrpt.hash(newPassword, 10); // Corrected bcrypt spelling
@@ -949,7 +949,6 @@ exports.registerUser = async (req, res) => {
         message: "nahi hua hash",
       });
     }
-
 
     const newUser = await userModel.create({
       full_Name: registerData.fullName,
@@ -999,6 +998,13 @@ exports.getLeaveRequests = async (req, res) => {
     // Fetch leave requests for the establishment
     const leaveRequests = await LeaveRequestModel.find({
       establishment_id: req.user.id,
+      $or: [
+        { status: { $in: ["Supervisor", "Approved"] } },
+        {
+          status: "Rejected",
+          respondedByEstablishment: { $exists: true, $ne: null },
+        },
+      ],
     })
       .populate([
         {
@@ -1009,8 +1015,8 @@ exports.getLeaveRequests = async (req, res) => {
           path: "supervisor_id",
           select: "name _id",
         },
-      ]) // Populate employee details
-      .sort({ createdAt: -1 }); // Sort by creation date, most recent first
+      ])
+      .sort({ createdAt: -1 });
 
     const establishment = await Admin.findById(req.user.id).select(
       "_id casualLeave earnedLeave medicalLeave"
@@ -1091,7 +1097,7 @@ exports.updateLeaveStatus = async (req, res) => {
 
     const leaveRequest = await LeaveRequestModel.findById(leaveRequestId)
       .select(
-        "status respondedByEstablishment _id respondedAt user_id leaveType from to"
+        "status respondedByEstablishment _id respondedAt updatedAt user_id leaveType from to"
       )
       .populate(
         "user_id",
@@ -1291,14 +1297,17 @@ exports.getHolidayData = async (req, res) => {
       const currentYear = new Date().getFullYear();
 
       // 🔹 Fetch national holidays
-      const response = await axios.get("https://calendarific.com/api/v2/holidays", {
-        params: {
-          api_key: process.env.CALENDARIFIC_API_KEY,
-          country: "IN",
-          year: currentYear,
-          type: "national",
-        },
-      });
+      const response = await axios.get(
+        "https://calendarific.com/api/v2/holidays",
+        {
+          params: {
+            api_key: process.env.CALENDARIFIC_API_KEY,
+            country: "IN",
+            year: currentYear,
+            type: "national",
+          },
+        }
+      );
 
       const holidays = response.data.response.holidays;
       const savedHolidayIds = [];
@@ -1382,20 +1391,23 @@ exports.getHolidayData = async (req, res) => {
   }
 };
 
-
 exports.deleteHoliday = async (req, res) => {
   try {
     const result = await holidayModel.findByIdAndDelete(req.params.id);
     if (!result) {
-      return res.status(404).json({ success: false, message: "Holiday not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Holiday not found" });
     }
 
-    res.status(200).json({ success: true, message: "Holiday deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Holiday deleted successfully" });
   } catch (error) {
     console.error("Error deleting holiday:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};
 
 exports.addHoliday = async (req, res) => {
   const { name, type, date, description } = req.body;
@@ -1423,7 +1435,7 @@ exports.addHoliday = async (req, res) => {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error." });
   }
-}
+};
 
 exports.getHolidays = async (req, res) => {
   try {
@@ -1438,11 +1450,10 @@ exports.getHolidays = async (req, res) => {
         options: { sort: { date: -1 } },
       });
 
-    
     res.status(200).json({
       success: true,
       message: "Holidays have been fetched",
-      holidays : establishment.holidays,
+      holidays: establishment.holidays,
     });
   } catch (error) {
     console.error("Error fetching Holiday data:", error);

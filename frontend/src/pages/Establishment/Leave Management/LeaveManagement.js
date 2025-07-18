@@ -121,7 +121,6 @@ const LeaveManagement = () => {
   // };
 
   const handleAction = async (id, newStatus) => {
-    console.log("Hii");
     try {
       console.log(`Updating request ${id} to status ${newStatus}`);
       const response = await axios.post(
@@ -373,7 +372,7 @@ const LeaveManagement = () => {
                       <div className="value">{req.leaveSubType}</div>
                     </div>
                   </div>
-                  {req.status === "Pending" && (
+                  {req.status === "Supervisor" && (
                     <div className="action-btns">
                       <button
                         className="accept-btn"

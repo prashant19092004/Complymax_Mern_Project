@@ -11,16 +11,16 @@ const clientlocationSchema = new mongoose.Schema({
   },
   contact: {
     type: String,
-    required: true,
+    // required: true,
   },
   email: {
     type: String,
-    required: true,
-    trim: true,
+    // required: true,
+    // trim: true,
   },
   name: {
     type: String,
-    required: true,
+    // required: true,
   },
   client: {
     type: mongoose.Schema.Types.ObjectId,

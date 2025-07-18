@@ -31,6 +31,7 @@ const offerLetterRoutes = require('./routes/offerLetterRoutes');
 const supervisorRoutes = require('./routes/supervisorRoute');
 const establishmentRoutes = require('./routes/establishmentRoute');
 const superAdminRoutes = require('./routes/superAdminRoute');
+const leaveEmailRoutes = require('./routes/leaveEmailRoute.js');
 
 const port = process.env.PORT || 8000;
 
@@ -43,6 +44,7 @@ app.use("/api/establisment/reset-password/", establismentResetPasswordRoutes);
 app.use('/api/establishment/', establishmentRoutes);
 app.use('/api/offer-letter', offerLetterRoutes);
 app.use('/api/super-admin', superAdminRoutes);
+app.use('/api/', leaveEmailRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

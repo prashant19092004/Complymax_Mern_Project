@@ -44,7 +44,8 @@ const ClientForm = () => {
         "Tripura",
         "Uttar Pradesh",
         "Uttarakhand",
-        "West Bengal"
+        "West Bengal",
+        "Delhi"
     ]
     const navigate = useNavigate();
     

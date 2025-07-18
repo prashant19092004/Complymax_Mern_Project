@@ -18,6 +18,20 @@ const auth = async (req, res, next) => {
   }
 };
 
+function verifyToken(token, leaveId) {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Optional: match leaveId for additional safety
+    if (decoded.leaveId !== leaveId) return false;
+
+    return true;
+  } catch (err) {
+    console.error("Invalid or expired token:", err.message);
+    return false;
+  }
+}
+
 const isSupervisor = async (req, res, next) => {
   try {
     const supervisor = await supervisorModel.findOne({email : req.user.email}, {_id:1});
@@ -134,5 +148,6 @@ module.exports = {
   isClient,
   isAdmin,
   isUser,
-  isEstablishment
+  isEstablishment,
+  verifyToken
 };

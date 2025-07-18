@@ -16,11 +16,11 @@ const ClientDetail = () => {
   const [supervisors, setSupervisors] = useState();
 
   const [locationData, setLocationData] = useState({
-    name : "",
+    // name : "",
     location : "",
     state : "",
-    contact : "",
-    email : "",
+    // contact : "",
+    // email : "",
     client_id : state,
     editId : '',
     supervisor: '',
@@ -96,11 +96,11 @@ const ClientDetail = () => {
       });
   
       setLocationData({
-        name : filteredData[0].name,
-        contact : filteredData[0].contact,
+        // name : filteredData[0].name,
+        // contact : filteredData[0].contact,
         state : filteredData[0].state,
         location : filteredData[0].location,
-        email : filteredData[0].email,
+        // email : filteredData[0].email,
         supervisor : filteredData[0].supervisor,
         editId : uid
       });
@@ -119,7 +119,7 @@ const ClientDetail = () => {
       supervisor_id
     }
     try{
-      console.log(uid);
+      // console.log(uid);
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/establishment/delete_location`,
         data,
@@ -156,11 +156,11 @@ const ClientDetail = () => {
             toast.success(res.data.message);
             setClientData(res.data.currentClient);
             setLocationData({
-                name : "",
+                // name : "",
                 location : "",
                 state : "",
-                contact : "",
-                email : "",
+                // contact : "",
+                // email : "",
                 client_id : state,
                 editId : '',
                 supervisor : '',
@@ -184,11 +184,11 @@ const ClientDetail = () => {
 
   let openEnquiry = () => {
     setLocationData({
-        name: '',
+        // name: '',
         location: '',
         state: '',
-        contact : '',
-        email:'',
+        // contact : '',
+        // email:'',
         client_id : state,
         editId : '',
         supervisor : '',
@@ -199,11 +199,11 @@ const ClientDetail = () => {
   
   let closeEnquiry = () => {
     setLocationData({
-      name: '',
+      // name: '',
       location: '',
       state: '',
-      contact : '',
-      email:'',
+      // contact : '',
+      // email:'',
       client_id : state,
       editId : '',
       supervisor : '',
@@ -270,8 +270,8 @@ return (
             return(
               <div className='w-full d-flex gap-3 justify-content-between align-items-center'>
                 <div>
-                  <h1 className='fs-6'>{`${location.location}, ${location.state}`}</h1>
-                  <p>{`${location.name}  • ${location.contact} • ${location.email}`}</p>
+                  <h1 className='fs-6'>{`Location: ${location.location}, State: ${location.state}`}</h1>
+                  {/* <p>{`${location.name}  • ${location.contact} • ${location.email}`}</p> */}
                 </div>
                 <div>
                   {/* <MdDeleteOutline fontSize={20} cursor="pointer" /> */}
@@ -289,12 +289,12 @@ return (
             <h2>Add Location</h2>
             {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Impedit, nemo?</p> */}
             <form action="#" onSubmit={(e) => { e.preventDefault(); addLocation(); }}>
-              <div className="input-box">
+              {/* <div className="input-box">
                 <div className="input-div">
                   <label className="form-label" htmlFor="name">Name</label>
                   <input required type="text" value={locationData.name} name="name" onChange={changeHandler} id="name" placeholder="Name" autoComplete="off"/>
                 </div>
-              </div>
+              </div> */}
               
               <div className="input-box">
                 <div className="input-div">
@@ -315,7 +315,7 @@ return (
                   <input required type="text" value={locationData.location} name="location" onChange={changeHandler} id="location" placeholder="Location" autoComplete="off"/>
                 </div>  
               </div>
-              <div className="input-box">
+              {/* <div className="input-box">
                 <div className="input-div">
                   <label className="form-label" htmlFor="email">Email</label>
                   <input required type="email" value={locationData.email} name="email" onChange={changeHandler} id="email" placeholder="email" autoComplete="off"/>
@@ -326,7 +326,7 @@ return (
                   <label className="form-label" htmlFor="contact">Contact No.</label>
                   <input required type="contact" value={locationData.contact} name="contact" onChange={changeHandler} id="contact" placeholder="contact no" autoComplete="off"/>
                 </div>  
-              </div>
+              </div> */}
               <div className="input-box">
                 <div className="input-div">
                   <label className="form-label" htmlFor="supervisor">Supervisor</label>

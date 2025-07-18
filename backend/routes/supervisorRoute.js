@@ -58,4 +58,6 @@ router.post('/add-reporting-location', auth, isSupervisor, supervisorController.
 
 router.post('/save-checkin-checkout', auth, isSupervisor, supervisorController.saveCheckInCheckOut);
 
+ 
+
 module.exports = router;

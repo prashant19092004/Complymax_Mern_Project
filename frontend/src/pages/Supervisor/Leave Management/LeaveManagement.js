@@ -87,7 +87,6 @@ const LeaveManagement = () => {
     setAllotValues({ ...allotValues, [e.target.name]: e.target.value });
   };
 
-
   const handleAction = async (id, newStatus) => {
     try {
       const response = await axios.post(
@@ -175,9 +174,15 @@ const LeaveManagement = () => {
       <p className="subtitle">Review and manage employee leave requests</p>
       <div className="leave-header-row">
         <div className="leave-header-pills">
-          <span className="leave-pill casual">Casual Leave : {establishment && establishment.casualLeave}</span>
-          <span className="leave-pill medical">Medical Leave : {establishment && establishment.medicalLeave}</span>
-          <span className="leave-pill earned">Earned Leave : {establishment && establishment.earnedLeave}</span>
+          <span className="leave-pill casual">
+            Casual Leave : {establishment && establishment.casualLeave}
+          </span>
+          <span className="leave-pill medical">
+            Medical Leave : {establishment && establishment.medicalLeave}
+          </span>
+          <span className="leave-pill earned">
+            Earned Leave : {establishment && establishment.earnedLeave}
+          </span>
         </div>
       </div>
 
@@ -267,13 +272,17 @@ const LeaveManagement = () => {
                       <div className="label">Remaining Leave</div>
                       <div className="leave-badges">
                         <span className="leave-pill casual">
-                          Casual: {establishment.casualLeave - req.user_id.casualLeave}
+                          Casual:{" "}
+                          {establishment.casualLeave - req.user_id.casualLeave}
                         </span>
                         <span className="leave-pill earned">
-                          Earned: {establishment.earnedLeave - req.user_id.earnedLeave}
+                          Earned:{" "}
+                          {establishment.earnedLeave - req.user_id.earnedLeave}
                         </span>
                         <span className="leave-pill medical">
-                          Medical: {establishment.medicalLeave - req.user_id.medicalLeave}
+                          Medical:{" "}
+                          {establishment.medicalLeave -
+                            req.user_id.medicalLeave}
                         </span>
                       </div>
                     </div>
@@ -281,6 +290,16 @@ const LeaveManagement = () => {
                       <div className="label">Leave Sub Type</div>
                       <div className="value">{req.leaveSubType}</div>
                     </div>
+                    {req.status === "Rejected" && (
+                      <div>
+                        <div className="label">Rejected By</div>
+                        <div className="value">
+                          {req.respondedByEstablishment
+                            ? "Rejected by HOD"
+                            : "Rejected by RM"}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {req.status === "Pending" && (
                     <div className="action-btns">

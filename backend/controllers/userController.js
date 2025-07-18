@@ -13,6 +13,8 @@ const AWS = require("aws-sdk");
 const hiredModel = require("../models/hired.model.js");
 const Attendance = require("../models/attendance.model.js");
 const moment = require("moment-timezone");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 const rekognition = new AWS.Rekognition({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -853,6 +855,31 @@ exports.leavePageData = async (req, res) => {
   }
 };
 
+const generateLeaveActionLink = ({ leaveId, role, action, responderId }) => {
+  const token = jwt.sign({ leaveId, role, action }, process.env.JWT_SECRET, {
+    expiresIn: "2d",
+  });
+  return `${process.env.BASE_URL}/api/leave-action?leaveId=${leaveId}&role=${role}&action=${action}&responderId=${responderId}&token=${token}`;
+};
+
+// Utility to send email
+const sendEmail = async ({from, to, subject, html }) => {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail", // Or your email provider
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from,
+    to,
+    subject,
+    html,
+  });
+};
+
 exports.leaveApplication = async (req, res) => {
   try {
     const {
@@ -866,7 +893,7 @@ exports.leaveApplication = async (req, res) => {
       from,
       to,
     } = req.body;
-    const userId = req.user.id; // Assuming user ID is available in req.user
+    const userId = req.user.id;
 
     const leave = new Leave({
       establishment_id,
@@ -880,70 +907,126 @@ exports.leaveApplication = async (req, res) => {
       from,
       to,
       status: "Pending",
-      // Add other fields as needed
     });
 
     await leave.save();
 
-    const establishment = await establishmentModel
-      .findById(establishment_id)
-      .select("leaveRequests");
+    // Update related models
+    const [establishment, user, supervisor, client] = await Promise.all([
+      establishmentModel
+        .findById(establishment_id)
+        .select("name leaveRequests earnedLeave medicalLeave casualLeave"),
+      userModel
+        .findById(userId)
+        .select(
+          "full_Name email leaveRequests casualLeave earnedLeave medicalLeave"
+        ),
+      supervisorModel
+        .findById(supervisor_id)
+        .select("name email leaveRequests"),
+      clientModel.findById(client_id).select("leaveRequests"),
+    ]);
 
-    if (!establishment) {
-      return res.status(404).json({
-        success: false,
-        message: "Establishment not found",
-      });
+    if (!establishment || !user || !supervisor || !client) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Related data not found" });
     }
-    // Add the leave request to the establishment's leaveRequests array
+
+    // Push leave into related models
     establishment.leaveRequests.push(leave._id);
-    await establishment.save();
-
-    const user = await userModel.findById(userId).select("leaveRequests");
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    // Add the leave request to the user's leaveRequests array
     user.leaveRequests.push(leave._id);
-    await user.save();
-
-    const supervisor = await supervisorModel
-      .findById(supervisor_id)
-      .select("leaveRequests");
-    if (!supervisor) {
-      return res.status(404).json({
-        success: false,
-        message: "Supervisor not found",
-      });
-    }
-    // Add the leave request to the supervisor's leaveRequests array
     supervisor.leaveRequests.push(leave._id);
-    await supervisor.save();
-
-    const client = await clientModel
-      .findById(client_id)
-      .select("leaveRequests");
-    if (!client) {
-      return res.status(404).json({
-        success: false,
-        message: "Client not found",
-      });
-    }
-
-    // Add the leave request to the client's leaveRequests array
     client.leaveRequests.push(leave._id);
-    await client.save();
 
-    // Fetch all leave requests for the user to return in the response
+    await Promise.all([
+      establishment.save(),
+      user.save(),
+      supervisor.save(),
+      client.save(),
+    ]);
+
+    // ✅ Send Email to Supervisor
+    const approveLink = generateLeaveActionLink({
+      leaveId: leave._id,
+      role: "supervisor",
+      action: "approve",
+      responderId: supervisor._id
+    });
+    const rejectLink = generateLeaveActionLink({
+      leaveId: leave._id,
+      role: "supervisor",
+      action: "reject",
+      responderId: supervisor._id
+    });
+
+    console.log(approveLink);
+    console.log(rejectLink);
+
+    const remainingEarnedLeave = establishment.earnedLeave - user.earnedLeave;
+    const remainingMedicalLeave =
+      establishment.medicalLeave - user.medicalLeave;
+    const remainingCasualLeave = establishment.casualLeave - user.casualLeave;
+
+    const emailHTML = `
+  <div style="max-width: 600px; margin: auto; background: #fff; padding: 16px; border-radius: 8px; font-family: Arial, sans-serif; font-size: 14px;">
+    <h2 style="color: #333; font-size: 18px; margin-bottom: 12px;">Leave Request Approval Needed</h2>
+    <p style="margin: 6px 0;"><strong>${user.full_Name}</strong> has submitted a leave request:</p>
+    
+    <ul style="line-height: 1.4; padding-left: 16px; margin: 8px 0;">
+      <li><strong>From:</strong> ${from}</li>
+      <li><strong>To:</strong> ${to}</li>
+      <li><strong>Type:</strong> ${leaveType} - ${leaveSubType}</li>
+      <li><strong>Reason:</strong> ${reason}</li>
+    </ul>
+
+    <h3 style="margin: 16px 0 8px; font-size: 16px; color: #333;">Remaining Leave Balance</h3>
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding: 6px; border-bottom: 1px solid #ddd;">Leave Type</th>
+          <th style="text-align: left; padding: 6px; border-bottom: 1px solid #ddd;">Remaining</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 6px; border-bottom: 1px solid #eee;">Earned Leave</td>
+          <td style="padding: 6px; border-bottom: 1px solid #eee;">${remainingEarnedLeave}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px; border-bottom: 1px solid #eee;">Medical Leave</td>
+          <td style="padding: 6px; border-bottom: 1px solid #eee;">${remainingMedicalLeave}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px;">Casual Leave</td>
+          <td style="padding: 6px;">${remainingCasualLeave}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 16px; margin-bottom: 6px;">Please take an action:</p>
+    <div style="margin-top: 12px; text-align: center;">
+      <a href="${approveLink}" style="background: #28a745; color: white; padding: 8px 14px; text-decoration: none; border-radius: 4px; margin-right: 6px;">Accept</a>
+      <a href="${rejectLink}" style="background: #dc3545; color: white; padding: 8px 14px; text-decoration: none; border-radius: 4px;">Reject</a>
+    </div>
+
+    <p style="margin-top: 20px;">Regards,<br/>Leave Management System</p>
+  </div>
+`;
+
+
+    await sendEmail({
+      from: establishment.name,
+      to: supervisor.email,
+      subject: "Leave Request from " + user.full_Name,
+      html: emailHTML,
+    });
+
     const leaveRequests = await Leave.find({ user_id: userId });
 
     res.status(201).json({
       success: true,
-      message: "Leave request submitted successfully",
+      message: "Leave request submitted and email sent to supervisor",
       leave,
       leaveRequests,
     });
@@ -963,7 +1046,9 @@ exports.attendanceUserData = async (req, res) => {
 
     const userData = await userModel
       .findById(userId)
-      .select("full_Name email face faceAdded attendance leaveTaken leaveRequests")
+      .select(
+        "full_Name email face faceAdded attendance leaveTaken leaveRequests"
+      )
       .populate([
         {
           path: "attendance",
@@ -974,17 +1059,16 @@ exports.attendanceUserData = async (req, res) => {
             path: "establishment",
             select: "earnedLeave casualLeave medicalLeave holidays",
             populate: {
-              path : "holidays",
-              select: "date"
-            }
+              path: "holidays",
+              select: "date",
+            },
           },
         },
         {
           path: "leaveRequests",
-          select: "from to status"
-        }
-      ]
-    );
+          select: "from to status",
+        },
+      ]);
 
     // const leaveRequests = await Leave.find({ user_id : userId });
 

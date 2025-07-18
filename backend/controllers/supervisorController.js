@@ -121,14 +121,12 @@ exports.hireUser = async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Hired Successfully..",
-        requiredHirings,
-        users,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Hired Successfully..",
+      requiredHirings,
+      users,
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
@@ -160,13 +158,11 @@ exports.getActiveUsers = async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Active Users List fetched",
-        success: true,
-        activeUsers,
-      });
+    res.status(200).json({
+      message: "Active Users List fetched",
+      success: true,
+      activeUsers,
+    });
   } catch (e) {
     res.status(500).json({ message: "Internal server error", success: false });
   }
@@ -280,13 +276,11 @@ exports.getPendingWages = async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .json({
-        message: "pending Wages List fetched",
-        success: true,
-        pendingWages,
-      });
+    res.status(200).json({
+      message: "pending Wages List fetched",
+      success: true,
+      pendingWages,
+    });
   } catch (e) {
     res.status(500).json({ message: "Internal server error", success: false });
   }
@@ -465,13 +459,11 @@ exports.getPendingPfEsic = async (req, res) => {
         pendingPfEsic.push(pfEsic[i]);
       }
     }
-    res
-      .status(200)
-      .json({
-        message: "pending PF/ESIC List fetched",
-        success: true,
-        pendingPfEsic,
-      });
+    res.status(200).json({
+      message: "pending PF/ESIC List fetched",
+      success: true,
+      pendingPfEsic,
+    });
   } catch (e) {
     res.status(500).json({ message: "Internal server error", success: false });
   }
@@ -639,7 +631,9 @@ exports.updateLeaveStatus = async (req, res) => {
     }
 
     const leaveRequest = await LeaveRequestModel.findById(leaveRequestId)
-      .select("status respondedBySupervisor _id respondedAt user_id leaveType from to")
+      .select(
+        "status respondedBySupervisor _id respondedAt user_id leaveType from to"
+      )
       .populate(
         "user_id",
         "full_Name _id leaveTaken leaveYear leaveHistory medicalLeaveHistory casualLeaveHistory earnedLeaveHistory casualLeave earnedLeave medicalLeave"
@@ -648,52 +642,55 @@ exports.updateLeaveStatus = async (req, res) => {
     if (leaveRequest) {
       leaveRequest.respondedBySupervisor = req.user.id;
       leaveRequest.respondedAt = new Date();
-      leaveRequest.status = status;
       leaveRequest.updatedAt = new Date();
-      // leaveRequest.user_id.leaveTaken += 1; // Increment leave taken count
-
-      if (leaveRequest.user_id.leaveYear < new Date().getFullYear()) {
-        leaveRequest.user_id.casualLeaveHistory.push({
-          year: leaveRequest.user_id.leaveYear,
-          totalLeaves: leaveRequest.user_id.casualLeave,
-        });
-        leaveRequest.user_id.casualLeave = 0; // Reset casual leave for the new
-        leaveRequest.user_id.earnedLeaveHistory.push({
-          year: leaveRequest.user_id.leaveYear,
-          totalLeaves: leaveRequest.user_id.earnedLeave,
-        });
-        leaveRequest.user_id.earnedLeave = 0; // Reset earned leave for the new year
-        leaveRequest.user_id.medicalLeaveHistory.push({
-          year: leaveRequest.user_id.leaveYear,
-          totalLeaves: leaveRequest.user_id.medicalLeave,
-        });
-        leaveRequest.user_id.medicalLeave = 0; // Reset medical leave for the new year
-        leaveRequest.user_id.leaveHistory.push({
-          year: leaveRequest.user_id.leaveYear,
-          totalLeaves: leaveRequest.user_id.leaveTaken,
-        });
-        leaveRequest.user_id.leaveTaken = 0; // Reset total leaves taken for the new year
-        // Update the leave year to the current year
-        leaveRequest.user_id.leaveYear = new Date().getFullYear();
-      }
-
       if (status === "Approved") {
-        // Calculate number of leave days (inclusive)
-        const fromDate = new Date(leaveRequest.from);
-        const toDate = new Date(leaveRequest.to);
-        const timeDiff = toDate.getTime() - fromDate.getTime();
-        const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1; // inclusive of both days
-
-        if (leaveRequest.leaveType === "Casual") {
-          leaveRequest.user_id.casualLeave += dayDiff;
-        } else if (leaveRequest.leaveType === "Earned") {
-          leaveRequest.user_id.earnedLeave += dayDiff;
-        } else if (leaveRequest.leaveType === "Medical") {
-          leaveRequest.user_id.medicalLeave += dayDiff;
-        }
-
-        leaveRequest.user_id.leaveTaken += dayDiff;
+        leaveRequest.status = "Supervisor";
+      } else {
+        leaveRequest.status = status;
       }
+
+      // if (leaveRequest.user_id.leaveYear < new Date().getFullYear()) {
+      //   leaveRequest.user_id.casualLeaveHistory.push({
+      //     year: leaveRequest.user_id.leaveYear,
+      //     totalLeaves: leaveRequest.user_id.casualLeave,
+      //   });
+      //   leaveRequest.user_id.casualLeave = 0; // Reset casual leave for the new
+      //   leaveRequest.user_id.earnedLeaveHistory.push({
+      //     year: leaveRequest.user_id.leaveYear,
+      //     totalLeaves: leaveRequest.user_id.earnedLeave,
+      //   });
+      //   leaveRequest.user_id.earnedLeave = 0; // Reset earned leave for the new year
+      //   leaveRequest.user_id.medicalLeaveHistory.push({
+      //     year: leaveRequest.user_id.leaveYear,
+      //     totalLeaves: leaveRequest.user_id.medicalLeave,
+      //   });
+      //   leaveRequest.user_id.medicalLeave = 0; // Reset medical leave for the new year
+      //   leaveRequest.user_id.leaveHistory.push({
+      //     year: leaveRequest.user_id.leaveYear,
+      //     totalLeaves: leaveRequest.user_id.leaveTaken,
+      //   });
+      //   leaveRequest.user_id.leaveTaken = 0; // Reset total leaves taken for the new year
+      //   // Update the leave year to the current year
+      //   leaveRequest.user_id.leaveYear = new Date().getFullYear();
+      // }
+
+      // if (status === "Approved") {
+      //   // Calculate number of leave days (inclusive)
+      //   const fromDate = new Date(leaveRequest.from);
+      //   const toDate = new Date(leaveRequest.to);
+      //   const timeDiff = toDate.getTime() - fromDate.getTime();
+      //   const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1; // inclusive of both days
+
+      //   if (leaveRequest.leaveType === "Casual") {
+      //     leaveRequest.user_id.casualLeave += dayDiff;
+      //   } else if (leaveRequest.leaveType === "Earned") {
+      //     leaveRequest.user_id.earnedLeave += dayDiff;
+      //   } else if (leaveRequest.leaveType === "Medical") {
+      //     leaveRequest.user_id.medicalLeave += dayDiff;
+      //   }
+
+      //   leaveRequest.user_id.leaveTaken += dayDiff;
+      // }
     }
     // Save the user leave data
     await leaveRequest.user_id.save();

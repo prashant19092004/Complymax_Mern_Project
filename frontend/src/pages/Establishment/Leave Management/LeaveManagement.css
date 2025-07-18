@@ -90,7 +90,7 @@ body {
     text-transform: uppercase;
   }
   
-  .status-tag.pending {
+  .status-tag.supervisor {
     background-color: #fff3cd;
     color: #856404;
   }
@@ -283,7 +283,7 @@ body {
     display: inline-block;
   }
   .status-badge.approved { background: #4caf50; }
-  .status-badge.pending { background: #ff9800; }
+  .status-badge.supervisor { background: #ff9800; }
   .status-badge.rejected { background: #f44336; }
   
   .operation-icons {
