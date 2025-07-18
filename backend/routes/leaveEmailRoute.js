@@ -302,7 +302,7 @@ router.get("/leave-action", async (req, res) => {
 
         leave.user_id.leaveTaken += dayDiff;
 
-        const emailHTML = getLeaveStatusEmailHTML({employeeName : leave.user_id.full_Name, status : "Rejected", leaveType: leave.leaveType, fromDate: formatFrom, toDate: formatTo, respondedBy: "HOD", companyName: leave.establishment_id.name});
+        const emailHTML = getLeaveStatusEmailHTML({employeeName : leave.user_id.full_Name, status : "Approved", leaveType: leave.leaveType, fromDate: formatFrom, toDate: formatTo, respondedBy: "HOD", companyName: leave.establishment_id.name});
 
         await sendEmail({
           from: leave.establishment_id.name,
