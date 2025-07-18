@@ -9,8 +9,8 @@ const establismentModel = require('../models/admin.js');
 const transporter = nodemailer.createTransport({
     service: 'gmail', // Use your email provider
     auth: {
-      user: 'prashantkumargupta19092004@gmail.com',
-      pass: 'iwhi iyyv yvfi kvrs',
+      user: 'info@complymax.co.in',
+      pass: 'cpen jkaj jeyb ladi',
     },
   });
 
