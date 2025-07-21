@@ -139,3 +139,16 @@
 .clickable-row:hover {
   background: #f1f5f9;
 }
+
+.download-btn {
+  padding: 6px 12px;
+  margin-left: 10px;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.download-btn:hover {
+  background-color: #219150;
+}

@@ -44,7 +44,7 @@ const attendanceSchema = new mongoose.Schema({
   // Status tracking
   status: {
     type: String,
-    enum: ["Present", "Absent", "Leave", "First Half Leave", "First Half Leave"],
+    enum: ["Present", "Absent", "Leave", "First Half Leave", "Second Half Leave"],
     default: "Absent",
   },
   lateByMinutes: {

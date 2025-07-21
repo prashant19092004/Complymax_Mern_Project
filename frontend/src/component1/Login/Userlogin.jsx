@@ -163,10 +163,10 @@ let loginSubmitHandle = (e) => {
                             id='role' 
                             class="form__input">
                             <option value="">Select</option>
-                            <option value="User">User</option>
+                            <option value="User">Employee</option>
                             <option value="Supervisor">RM login</option>
-                            <option value="Client">Client</option>
-                            <option value="Establisment">Establishment</option>
+                            <option value="Client">Customer</option>
+                            <option value="Establisment">Company</option>
                             </select>
                         </div>
                     </div>

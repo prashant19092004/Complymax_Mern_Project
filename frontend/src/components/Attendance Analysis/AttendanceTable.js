@@ -1,27 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./AttendanceTable.css";
 import { useNavigate } from "react-router-dom";
 import moment from "moment-timezone";
+import * as XLSX from "xlsx";
 
 const AttendanceTable = ({ users = [] }) => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("All");
   const [searchText, setSearchText] = useState("");
+  const [dateFilter, setDateFilter] = useState(
+    moment().tz("Asia/Kolkata").format("YYYY-MM-DD")
+  );
 
-  // Helper to format time to IST (e.g. 09:15 AM)
   const formatTime = (timeStr) => {
     if (!timeStr) return "-";
     return moment(timeStr).tz("Asia/Kolkata").format("hh:mm A");
   };
 
-  const getStatus = (attendance) => {
-    if (!attendance) return "Absent";
+
+  const getStatus = (attendance, dateStr) => {
+    const todayStr = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
+
+    if (!attendance) {
+      return dateStr === todayStr ? "Absent" : "Holiday";
+    }
+
     if (attendance.lateByMinutes > 0) return "Late";
     return attendance.status || "Present";
   };
-
-  // Get today's date in YYYY-MM-DD format (for filtering)
-  const todayDateStr = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
   const getInitials = (name) => {
     if (!name) return "";
@@ -31,9 +37,9 @@ const AttendanceTable = ({ users = [] }) => {
   };
 
   const processedUsers = users?.map((user) => {
-    const todayAttendance = (user.attendance || []).find(
+    const matchedAttendance = (user.attendance || []).find(
       (a) =>
-        moment(a.date).tz("Asia/Kolkata").format("YYYY-MM-DD") === todayDateStr
+        moment(a.date).tz("Asia/Kolkata").format("YYYY-MM-DD") === dateFilter
     );
 
     return {
@@ -41,10 +47,10 @@ const AttendanceTable = ({ users = [] }) => {
       name: user.full_Name,
       initials: getInitials(user.full_Name),
       department: user.hired?.hiring_id?.job_category || "-",
-      status: getStatus(todayAttendance),
-      checkIn: formatTime(todayAttendance?.checkInTime),
-      checkOut: formatTime(todayAttendance?.checkOutTime),
-      email:user.email
+      status: getStatus(matchedAttendance, dateFilter),
+      checkIn: formatTime(matchedAttendance?.checkInTime),
+      checkOut: formatTime(matchedAttendance?.checkOutTime),
+      email: user.email,
     };
   });
 
@@ -58,10 +64,27 @@ const AttendanceTable = ({ users = [] }) => {
     return matchStatus && matchSearch;
   });
 
+  const handleDownloadExcel = () => {
+    const worksheetData = filteredData.map((emp) => ({
+      Name: emp.name,
+      Department: emp.department,
+      Status: emp.status,
+      "Check-In": emp.checkIn,
+      "Check-Out": emp.checkOut,
+      Email: emp.email,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+
+    XLSX.writeFile(workbook, `Attendance_${dateFilter}.xlsx`);
+  };
+
   return (
     <div className="table-container">
       <div className="table-header">
-        <h3>Today’s Attendance</h3>
+        <h3>Attendance</h3>
         <div className="table-filters">
           <input
             type="text"
@@ -79,6 +102,15 @@ const AttendanceTable = ({ users = [] }) => {
             <option value="Leave">Leave</option>
             <option value="Late">Late</option>
           </select>
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            max={moment().format("YYYY-MM-DD")}
+          />
+          <button onClick={handleDownloadExcel} className="download-btn">
+            Download Excel
+          </button>
         </div>
       </div>
 

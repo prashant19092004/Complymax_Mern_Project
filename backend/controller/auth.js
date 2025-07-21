@@ -46,7 +46,7 @@ exports.userlogin = async (req, res) => {
 
             res.cookie("token", token, option).status(200).json({
                 success: true,
-                token, user, message: "user looged  succes"
+                token, user, message: "login Successfully"
             })
 
         } else {
@@ -103,7 +103,7 @@ exports.adminlogin = async (req, res) => {
 
             res.cookie("token", token, option).status(200).json({
                 success: true,
-                token, admin, message: "admin looged  succes"
+                token, admin, message: "login Successfully"
             })
 
         } else {
@@ -160,7 +160,7 @@ exports.superadminlogin = async (req, res) => {
 
             res.cookie("token", token, option).status(200).json({
                 success: true,
-                token, superadmin, message: "admin looged  succes"
+                token, superadmin, message: "login Successfully"
             })
 
         } else {
@@ -218,7 +218,7 @@ exports.clientlogin = async (req, res) => {
 
             res.cookie("token", token, option).status(200).json({
                 success: true,
-                token, client, message: "admin looged  succes"
+                token, client, message: "login Successfully"
             })
 
         } else {
@@ -275,7 +275,7 @@ exports.supervisorlogin = async (req, res) => {
 
             res.cookie("token", token, option).status(200).json({
                 success: true,
-                token, supervisor, message: "admin looged  succes"
+                token, supervisor, message: "login Successfully"
             })
 
         } else {

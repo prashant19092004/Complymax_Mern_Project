@@ -49,11 +49,28 @@ router.post("/add_education", auth, isUser, userController.addEducation);
 router.post("/add_experience", auth, isUser, userController.addExperience);
 
 router.post("/delete_education", auth, isUser, userController.deleteEducation);
-router.post("/delete_experience", auth, isUser, userController.deleteExperience);
+router.post(
+  "/delete_experience",
+  auth,
+  isUser,
+  userController.deleteExperience
+);
 
-router.post("/upload/profile-pic", uploadImage.single("image"), auth, isUser, userController.uploadProfilePic);
+router.post(
+  "/upload/profile-pic",
+  uploadImage.single("image"),
+  auth,
+  isUser,
+  userController.uploadProfilePic
+);
 
-router.post("/upload/pan-image", uploadImageAndPdf.single("image"), auth, isUser, userController.uploadPanImage);
+router.post(
+  "/upload/pan-image",
+  uploadImageAndPdf.single("image"),
+  auth,
+  isUser,
+  userController.uploadPanImage
+);
 
 // router.post('/upload/aadhar-image', uploadImageAndPdf.single('image'), auth, async (req, res) => {
 //     try {
@@ -76,40 +93,100 @@ router.post("/upload/pan-image", uploadImageAndPdf.single("image"), auth, isUser
 
 router.post("/delete/pan-image", auth, isUser, userController.deletePanImage);
 
-router.post("/delete/aadhar-front-image", auth, isUser, userController.deleteAadharFrontImage);
+router.post(
+  "/delete/aadhar-front-image",
+  auth,
+  isUser,
+  userController.deleteAadharFrontImage
+);
 
-router.post("/delete/aadhar-back-image", auth, isUser, userController.deleteAadharBackImage);
+router.post(
+  "/delete/aadhar-back-image",
+  auth,
+  isUser,
+  userController.deleteAadharBackImage
+);
 
 // Add this route for certificate upload
-router.post("/upload/certificate", uploadImageAndPdf.single("certificate"), auth, isUser, userController.uploadCertificate);
+router.post(
+  "/upload/certificate",
+  uploadImageAndPdf.single("certificate"),
+  auth,
+  isUser,
+  userController.uploadCertificate
+);
 
 // Add this route for certificate deletion
-router.post("/delete/certificate", auth, isUser, userController.deleteCertificate);
+router.post(
+  "/delete/certificate",
+  auth,
+  isUser,
+  userController.deleteCertificate
+);
 
 // Add account image upload route
-router.post("/upload/account-image", uploadImageAndPdf.single("image"), auth, isUser, userController.uploadAccountImage);
+router.post(
+  "/upload/account-image",
+  uploadImageAndPdf.single("image"),
+  auth,
+  isUser,
+  userController.uploadAccountImage
+);
 
 // Add account image delete route
-router.post("/delete/account-image", auth, isUser, userController.deleteAccountImage);
+router.post(
+  "/delete/account-image",
+  auth,
+  isUser,
+  userController.deleteAccountImage
+);
 
 // Add these routes for Aadhar front and back image upload
-router.post("/upload/aadhar-front-image", uploadImageAndPdf.single("image"), auth, isUser, userController.uploadAadharFrontImage);
+router.post(
+  "/upload/aadhar-front-image",
+  uploadImageAndPdf.single("image"),
+  auth,
+  isUser,
+  userController.uploadAadharFrontImage
+);
 
-router.post("/upload/aadhar-back-image", uploadImageAndPdf.single("image"), auth, isUser, userController.uploadAadharBackImage);
+router.post(
+  "/upload/aadhar-back-image",
+  uploadImageAndPdf.single("image"),
+  auth,
+  isUser,
+  userController.uploadAadharBackImage
+);
 
 // Add logo delete route
 
 // Signature routes
-router.post("/upload/signature", auth, uploadImage.single("image"), userController.uploadSignature);
+router.post(
+  "/upload/signature",
+  auth,
+  uploadImage.single("image"),
+  userController.uploadSignature
+);
 router.post("/delete/signature", auth, userController.deleteSignature);
 
 router.get("/leave-page/user-data", auth, isUser, userController.leavePageData);
-router.post("/leave-page/leave-application", auth, isUser, userController.leaveApplication);
+router.post(
+  "/leave-page/leave-application",
+  auth,
+  isUser,
+  userController.leaveApplication
+);
 
-router.get("/attendance/user-data", auth, isUser, userController.attendanceUserData);
+router.get(
+  "/attendance/user-data",
+  auth,
+  isUser,
+  userController.attendanceUserData
+);
 router.post("/attendance/upload-face", auth, isUser, userController.uploadFace);
 
 router.post("/attendance/check-in", auth, isUser, userController.checkIn);
 router.post("/attendance/check-out", auth, isUser, userController.checkOut);
+
 
 module.exports = router;
