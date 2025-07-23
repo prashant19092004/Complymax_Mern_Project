@@ -10,16 +10,24 @@ const bodyParser = require('body-parser');
 // CORS configuration
 // app.use(cors());
 
+// ✅ Allow requests from Capacitor app and local frontend
+const allowedOrigins = [
+  "capacitor://localhost",
+  "http://localhost",
+  "https://localhost",
+  "http://localhost:3000",
+  "https://complymax.co.in",         // Add your real frontend if needed
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:3000",           // for React web development
-    "capacitor://localhost",           // for Android/iOS Capacitor apps
-    "https://complymax.co.in",         // your live frontend (optional)
-    "https://api.complymax.co.in"      // your backend (optional)
-  ],
+  origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true                   // if you're using cookies or auth headers
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
+
+// ✅ Handle OPTIONS preflight requests globally
+app.options("*", cors());
 
 require("dotenv").config();
 
