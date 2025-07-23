@@ -38,6 +38,7 @@ const AppLogin = () => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true, // <-- Add this if needed
         }
       );
 

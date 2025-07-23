@@ -16,17 +16,35 @@ const allowedOrigins = [
   "http://localhost",
   "https://localhost",
   "http://localhost:3000",
-  "https://complymax.co.in",         // Add your real frontend if needed
+  "https://complymax.co.in", // Production frontend (if hosted here)
 ];
 
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
+app.use((req, res, next) => {
+  console.log("Origin:", req.headers.origin);
+  console.log("Referer:", req.headers.referer);
+  console.log("Method:", req.method);
+  next();
+});
 
-// ✅ Handle OPTIONS preflight requests globally
+// Middleware
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn("❌ CORS blocked for origin:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// ✅ Handle OPTIONS requests for all routes
 app.options("*", cors());
 
 require("dotenv").config();
