@@ -11,6 +11,7 @@ require('dotenv').config();
 exports.userlogin = async (req, res) => { 
     try {
         const { email, password } = req.body
+        console.log(email, password);
 
         if (!email || !password) {
             return res.status(400).json({
@@ -19,8 +20,10 @@ exports.userlogin = async (req, res) => {
             })
         }
 
+        console.log("1");
         let user = await User.findOne({ email }).select("+password") 
 
+        console.log("2");
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -33,6 +36,8 @@ exports.userlogin = async (req, res) => {
             id: user._id,
         }
 
+        console.log("3");
+
         if (await bcrpt.compare(password, user.password)) {
             let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" })
             user = user.toObject()
@@ -43,11 +48,14 @@ exports.userlogin = async (req, res) => {
                 expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
                 httpOnly: true
             }
+            console.log("4");
 
             res.cookie("token", token, option).status(200).json({
                 success: true,
                 token, user, message: "login Successfully"
             })
+
+            console.log("5");
 
         } else {
             return res.status(403).json({

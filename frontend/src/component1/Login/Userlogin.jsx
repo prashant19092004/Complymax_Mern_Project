@@ -209,6 +209,9 @@ let loginSubmitHandle = (e) => {
                     <input type="submit" class="form__button" value="Login" />
 
                 </form>
+                <p class="form__register">
+                    Don't have an account? <Link to="/user-signup" class="form__register-link">Sign up</Link>
+                </p>
             </div>
 
         </div>

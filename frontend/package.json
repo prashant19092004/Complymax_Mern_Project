@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/camera": "^7.0.1",
+    "@capacitor/cli": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
+    "@capacitor/geolocation": "^7.1.4",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-pdf/renderer": "^3.4.2",
     "@testing-library/jest-dom": "^5.17.0",
@@ -45,6 +50,7 @@
     "react-toastify": "^10.0.5",
     "react-webcam": "^7.2.0",
     "recharts": "^3.0.0",
+    "sharp": "^0.34.3",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
   },

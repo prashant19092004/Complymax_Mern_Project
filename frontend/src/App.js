@@ -1,5 +1,10 @@
 import React from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  Navigate,
+} from "react-router-dom";
+import { isNativeApp } from "./utils/isNativeApp";
 
 // Common Pages
 import Home from "./component1/Home/Home";
@@ -15,6 +20,7 @@ import ForgotPassword from "./pages/ResetPassword/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import SuperAdminLogin from "./pages/SuperAdmin/SuperAdminLogin/SuperAdminLogin";
 import SuperAdminDashboard from "./pages/SuperAdmin/SuperAdminDashboard/SuperAdminDashboard";
+import AppLogin from "./component1/Login/AppLogin";
 
 // Client Dashboard
 import Dashboard from "./component1/Client_main/Dashboard";
@@ -79,8 +85,22 @@ import UserAttendencePage from "./pages/User/Attendence/Attendence";
 
 function App() {
   const router = createBrowserRouter([
-    { path: "/", element: <Home />, errorElement: <ErrorPage /> },
+    {
+      path: "/",
+      element: isNativeApp ? (
+        localStorage.getItem("token") ? (
+          <Navigate to="/user_dashboard" />
+        ) : (
+          <Navigate to="/app-login" />
+        )
+      ) : (
+        <Navigate to="/home" />
+      ),
+      errorElement: <ErrorPage />,
+    },
+    { path: "/home", element: <Home />, errorElement: <ErrorPage /> },
     { path: "/client-signup", element: <Client_signup /> },
+    { path: "/app-login", element: <AppLogin /> },
     { path: "/client_login", element: <Client_login /> },
     {
       path: "/user-signup",
@@ -106,7 +126,10 @@ function App() {
         { path: "client_registration", element: <ClientRegistration /> },
         { path: "client_registration_form", element: <ClientForm /> },
         { path: "sub_admin", element: <Subadmin /> },
-        { path: "supervisor_registration", element: <SupervisorRegistration />, },
+        {
+          path: "supervisor_registration",
+          element: <SupervisorRegistration />,
+        },
         { path: "supervisor_registration_form", element: <SupervisorForm /> },
         { path: "establisment_profile", element: <EstablishmentProfile /> },
         { path: "client_detail", element: <ClientDetail /> },
@@ -132,9 +155,9 @@ function App() {
           children: [
             { path: "", element: <Holiday /> },
             { path: "calender", element: <HolidayCalender /> },
-            { path: "all-holidays", element: <AllHolidays /> }
-          ]
-        }
+            { path: "all-holidays", element: <AllHolidays /> },
+          ],
+        },
       ],
     },
 

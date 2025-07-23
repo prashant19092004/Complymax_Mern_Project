@@ -247,3 +247,9 @@ img{
     }
 }
 
+.form__register{
+    text-align: center;
+    color: gray;
+    margin-top: 1rem;
+}
+

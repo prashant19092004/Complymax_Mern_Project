@@ -8,7 +8,18 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 // CORS configuration
-app.use(cors());
+// app.use(cors());
+
+app.use(cors({
+  origin: [
+    "http://localhost:3000",           // for React web development
+    "capacitor://localhost",           // for Android/iOS Capacitor apps
+    "https://complymax.co.in",         // your live frontend (optional)
+    "https://api.complymax.co.in"      // your backend (optional)
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true                   // if you're using cookies or auth headers
+}));
 
 require("dotenv").config();
 
