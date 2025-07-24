@@ -3,11 +3,11 @@ import { MdDeleteOutline, MdEdit } from "react-icons/md";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import CropModal from '../CropModal';
+import { getToken } from '../../../../utils/tokenService';
 
 const EducationSection = ({ 
   user, 
   setUser,
-  token,
   handleEducationPdfUpload
 }) => {
   const [isExperience, setIsExperience] = useState(false);
@@ -79,6 +79,7 @@ const EducationSection = ({
   };
 
   const handleCertificateCroppedImage = async (blob) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       const file = new File([blob], "certificate-image.jpeg", {
@@ -118,6 +119,7 @@ const EducationSection = ({
   };
 
   const handleDeleteCertificate = async (id) => {
+    const token = await getToken();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/certificate`,
@@ -143,6 +145,7 @@ const EducationSection = ({
   };
 
   const addEducation = async () => {
+    const token = await getToken();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/add_education`,
@@ -199,6 +202,7 @@ const EducationSection = ({
   };
 
   const deleteEducation = async () => {
+    const token = await getToken();
     const uid = educationData.editId;
     try {
       const response = await axios.post(

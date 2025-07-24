@@ -3,15 +3,17 @@ import axios from 'axios';
 import { FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './style.css';
+import { getToken } from '../../../utils/tokenService';
 
 const OfferLetter = () => {
   const [offerLetters, setOfferLetters] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchOfferLetters = async () => {
+      const token = await getToken();
+      setLoading(true);
       try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/offer-letter/user/offer-letters`, {
           headers: {
@@ -27,7 +29,7 @@ const OfferLetter = () => {
     };
 
     fetchOfferLetters();
-  }, [token]);
+  }, []);
 
   const getStatusBadgeClass = (status) => {
     switch (status) {

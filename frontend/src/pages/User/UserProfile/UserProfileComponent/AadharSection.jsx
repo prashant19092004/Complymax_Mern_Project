@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getToken } from '../../../../utils/tokenService'; // Assuming you have a utility function to get the token
 
 const AadharSection = ({ 
   user, 
@@ -9,7 +10,6 @@ const AadharSection = ({
   setShowCropModal, 
   setPreviewUrl, 
   setCrop,
-  token,
   isAadharFront,
   setIsAadharFront
 }) => {
@@ -17,6 +17,7 @@ const AadharSection = ({
   const aadhar_back_image_input_ref = useRef();
 
   const handleAadharFrontCroppedImage = async (blob) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       const file = new File([blob], "cropped-aadhar-front.jpeg", {
@@ -51,6 +52,7 @@ const AadharSection = ({
   };
 
   const handleAadharBackCroppedImage = async (blob) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       const file = new File([blob], "cropped-aadhar-back.jpeg", {
@@ -85,6 +87,7 @@ const AadharSection = ({
   };
 
   const handlePdfUpload = async (file, isFront) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       formData.append("image", file);
@@ -132,6 +135,7 @@ const AadharSection = ({
   };
 
   const handleDeleteAadharFrontImage = async () => {
+    const token = await getToken();
     try {
       console.log("Attempting to delete Aadhar front image...");
       const response = await axios.post(
@@ -166,6 +170,7 @@ const AadharSection = ({
   };
 
   const handleDeleteAadharBackImage = async () => {
+    const token = await getToken();
     try {
       console.log("Attempting to delete Aadhar back image...");
       const response = await axios.post(

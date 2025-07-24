@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { storeToken } from "../../utils/tokenService"; // Assuming you have a utility function to store the token
 
 const AppLogin = () => {
   const [loginData, setLoginData] = useState({
@@ -22,7 +23,8 @@ const AppLogin = () => {
     // console.log(loginData);
   };
 
-  const submitHandle = async () => {
+  const submitHandle = async (e) => {
+    e.preventDefault();
     try {
       // Debug: log the backend URL and loginData
       console.log(
@@ -44,8 +46,9 @@ const AppLogin = () => {
 
       console.log("Login Response:", response);
 
-      localStorage.setItem("token", response.data.token);
+      // localStorage.setItem("token", response.data.token);
       toast.success(response.data.message);
+      await storeToken(response.data.token);
       navigate("/user_dashboard");
     } catch (err) {
       console.error("Login Error:", err);

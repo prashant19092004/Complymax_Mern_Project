@@ -5,6 +5,7 @@ import { FaCalendarAlt, FaRegEdit, FaPlaneDeparture } from "react-icons/fa";
 import "./LeaveManagement.css";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getToken } from "../../../utils/tokenService";
 
 const LeaveManagement = () => {
   const [showModal, setShowModal] = useState(false);
@@ -19,7 +20,6 @@ const LeaveManagement = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [dateError, setDateError] = useState("");
-  const token = localStorage.getItem("token");
   const [userData, setUserData] = useState();
   const [leaveHistory1, setLeaveHistory1] = useState();
 
@@ -154,6 +154,8 @@ const LeaveManagement = () => {
       from: fromDate,
       to: toDate,
     };
+
+    const token = await getToken();
     try {
       // Replace with your actual API endpoint
       const response = await axios.post(
@@ -189,6 +191,7 @@ const LeaveManagement = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      const token = await getToken();
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/user/leave-page/user-data`,
@@ -209,7 +212,7 @@ const LeaveManagement = () => {
     };
 
     fetchUserData();
-  }, [token]);
+  }, []);
 
   if (loading) {
     return (

@@ -5,6 +5,7 @@ import "./style.css";
 import { toast } from "react-toastify";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { getToken } from "../../../utils/tokenService";
 
 
 /* ---------- helper for responsive preview ---------- */
@@ -32,12 +33,12 @@ const ShowOfferLetter = () => {
   const offerRef = useRef();
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
 
   // Fetch user's signature
   useEffect(() => {
     const fetchUserProfile = async () => {
+      const token = await getToken();
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/user/profile`,
@@ -56,10 +57,11 @@ const ShowOfferLetter = () => {
     };
 
     fetchUserProfile();
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     const fetchOfferLetter = async () => {
+      const token = await getToken();
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/offer-letter/user/offer-letter/${id}`,
@@ -103,7 +105,7 @@ const ShowOfferLetter = () => {
       setError("Invalid offer letter ID or authentication token");
       setLoading(false);
     }
-  }, [id, token]);
+  }, [id]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -124,6 +126,7 @@ const ShowOfferLetter = () => {
         );
         return;
       }
+      const token = await getToken();
 
       // Get the current signature position
       const currentSignaturePosition = {
@@ -160,6 +163,7 @@ const ShowOfferLetter = () => {
   };
 
   const handleReject = async () => {
+    const token = await getToken();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/offer-letter/user/offer-letter/${id}/respond`,

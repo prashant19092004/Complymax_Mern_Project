@@ -3,13 +3,13 @@ import './style.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getToken } from '../../utils/tokenService';
 
 const PanForm = () => {
   const navigate = useNavigate();
   const [panNumber, setPanNumber] = useState("");
   const [otpGenerated, setOtpGenerated] = useState(false);
   const [panData, setPanData] = useState();
-  const userToken = localStorage.getItem("token");
 
   function changeHandler(e) {
     setPanNumber(e.target.value);
@@ -37,6 +37,7 @@ const PanForm = () => {
       )
         .then(async (res) => {
           if (res.data.success) {
+            const userToken = await getToken();
             setPanData(res.data.data);
 
             try {

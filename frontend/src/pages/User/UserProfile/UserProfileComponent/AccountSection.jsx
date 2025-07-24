@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getToken } from '../../../../utils/tokenService';
 
 const AccountSection = ({ 
   user, 
@@ -10,12 +11,12 @@ const AccountSection = ({
   setShowCropModal,
   setPreviewUrl,
   setCrop,
-  token,
   setIsAccountImage
 }) => {
   const account_image_input_ref = useRef();
 
   const handleAccountCroppedImage = async (blob) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       const file = new File([blob], "cropped-account-image.jpeg", {
@@ -56,6 +57,7 @@ const AccountSection = ({
   };
 
   const handlePdfUpload = async (file) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       formData.append("image", file);

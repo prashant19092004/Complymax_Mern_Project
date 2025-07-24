@@ -3,11 +3,11 @@ import { FaSignature } from "react-icons/fa";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import CropModal from '../CropModal';
+import { getToken } from '../../../../utils/tokenService';
 
 const SignatureSection = ({ 
   user, 
   setUser,
-  token
 }) => {
   const [showCropModal, setShowCropModal] = React.useState(false);
   const [previewUrl, setPreviewUrl] = React.useState(null);
@@ -21,6 +21,7 @@ const SignatureSection = ({
   const signature_input_ref = useRef();
 
   const handleSignatureCroppedImage = async (blob) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       const file = new File([blob], "cropped-signature.jpeg", {
@@ -85,6 +86,7 @@ const SignatureSection = ({
   };
 
   const handleDeleteSignature = async () => {
+    const token = await getToken();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/signature`,

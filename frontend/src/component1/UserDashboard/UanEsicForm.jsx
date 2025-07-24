@@ -3,6 +3,7 @@ import "./style.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getToken } from "../../utils/tokenService";
 
 const UanEsicForm = () => {
   const navigate = useNavigate();
@@ -10,7 +11,6 @@ const UanEsicForm = () => {
   const [esicNumber, setEsicNumber] = useState("");
   //   const [otpGenerated, setOtpGenerated] = useState(false);
   //   const [panData, setPanData] = useState();
-  const userToken = localStorage.getItem("token");
 
   function uanChangeHandler(e) {
     setUanNumber(e.target.value);
@@ -26,6 +26,7 @@ const UanEsicForm = () => {
       uanNumber: uanNumber,
       esicNumber: esicNumber,
     };
+    const userToken = await getToken();
 
     try {
       await axios

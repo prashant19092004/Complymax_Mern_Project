@@ -17,9 +17,9 @@ import PanSection from './UserProfileComponent/PanSection';
 import AccountSection from './UserProfileComponent/AccountSection';
 import SignatureSection from './UserProfileComponent/SignatureSection';
 import { toast } from "react-toastify";
+import { getToken } from '../../../utils/tokenService';
 
 const UserProfile = () => {
-    const token = localStorage.getItem("token");
   const navigate = useNavigate();
     const [user, setUser] = useState();
     const [loading, setLoading] = useState(true);
@@ -73,6 +73,7 @@ const UserProfile = () => {
   };
 
   const handleProfilePicCroppedImage = async (blob) => {
+    const token = await getToken();
     try {
       const formData = new FormData();
       const file = new File([blob], "profile-pic.jpeg", {
@@ -107,6 +108,7 @@ const UserProfile = () => {
   };
 
   const handlePanCroppedImage = async (blob) => {
+    const token = await getToken();
   try {
     const formData = new FormData();
       const file = new File([blob], "cropped-pan-image.jpeg", {
@@ -142,6 +144,7 @@ const UserProfile = () => {
 };
 
 const handleAadharFrontCroppedImage = async (blob) => {
+  const token = await getToken();
   try {
     const formData = new FormData();
       const file = new File([blob], "cropped-aadhar-front.jpeg", {
@@ -176,6 +179,7 @@ const handleAadharFrontCroppedImage = async (blob) => {
 };
 
 const handleAadharBackCroppedImage = async (blob) => {
+  const token = await getToken();
   try {
     const formData = new FormData();
       const file = new File([blob], "cropped-aadhar-back.jpeg", {
@@ -209,53 +213,54 @@ const handleAadharBackCroppedImage = async (blob) => {
   }
 };
 
-const handleAadharPdfUpload = async (file, isFront) => {
-  try {
-    const formData = new FormData();
-    formData.append("image", file);
+// const handleAadharPdfUpload = async (file, isFront) => {
+//   try {
+//     const formData = new FormData();
+//     formData.append("image", file);
 
-    const endpoint = isFront 
-      ? `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-front-image`
-      : `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-back-image`;
+//     const endpoint = isFront 
+//       ? `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-front-image`
+//       : `${process.env.REACT_APP_BACKEND_URL}/api/user/upload/aadhar-back-image`;
 
-    const response = await axios({
-      method: 'post',
-      url: endpoint,
-      data: formData,
-        headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`,
-        },
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
-    });
+//     const response = await axios({
+//       method: 'post',
+//       url: endpoint,
+//       data: formData,
+//         headers: {
+//         'Content-Type': 'multipart/form-data',
+//         'Authorization': `Bearer ${token}`,
+//         },
+//       maxContentLength: Infinity,
+//       maxBodyLength: Infinity
+//     });
 
-    if (response.data.user) {
-        setUser((prev) => ({
-        ...prev,
-        [isFront ? 'aadhar_front_image' : 'aadhar_back_image']: response.data.user[isFront ? 'aadhar_front_image' : 'aadhar_back_image'],
-      }));
-      toast.success(`Aadhar ${isFront ? 'front' : 'back'} document uploaded successfully!`);
-      setShowCropModal(false);
-      setPreviewUrl(null);
-    }
-  } catch (error) {
-    console.error("Upload error details:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
-    if (error.response?.status === 413) {
-      toast.error("File size too large. Please upload a smaller file.");
-    } else if (error.response?.status === 415) {
-      toast.error("Unsupported file type. Please upload a PDF or image file.");
-    } else {
-      toast.error(error.response?.data?.message || "Failed to upload document");
-    }
-  }
-};
+//     if (response.data.user) {
+//         setUser((prev) => ({
+//         ...prev,
+//         [isFront ? 'aadhar_front_image' : 'aadhar_back_image']: response.data.user[isFront ? 'aadhar_front_image' : 'aadhar_back_image'],
+//       }));
+//       toast.success(`Aadhar ${isFront ? 'front' : 'back'} document uploaded successfully!`);
+//       setShowCropModal(false);
+//       setPreviewUrl(null);
+//     }
+//   } catch (error) {
+//     console.error("Upload error details:", {
+//       message: error.message,
+//       response: error.response?.data,
+//       status: error.response?.status
+//     });
+//     if (error.response?.status === 413) {
+//       toast.error("File size too large. Please upload a smaller file.");
+//     } else if (error.response?.status === 415) {
+//       toast.error("Unsupported file type. Please upload a PDF or image file.");
+//     } else {
+//       toast.error(error.response?.data?.message || "Failed to upload document");
+//     }
+//   }
+// };
 
 const handleAccountCroppedImage = async (blob) => {
+  const token = await getToken();
   try {
     const formData = new FormData();
       const file = new File([blob], "cropped-account-image.jpeg", {
@@ -299,6 +304,7 @@ const handleAccountCroppedImage = async (blob) => {
   };
 
 const handleCertificateCroppedImage = async (blob) => {
+  const token = await getToken();
   try {
     const formData = new FormData();
       const file = new File([blob], "certificate-image.jpeg", {
@@ -334,6 +340,7 @@ const handleCertificateCroppedImage = async (blob) => {
 };
 
 const handlePanPdfUpload = async (file) => {
+  const token = await getToken();
   try {
     const formData = new FormData();
     formData.append("image", file);
@@ -377,6 +384,7 @@ const handlePanPdfUpload = async (file) => {
 };
 
 const handleEducationPdfUpload = async (file, educationId) => {
+  const token = await getToken();
   try {
     const formData = new FormData();
     formData.append("certificate", file);
@@ -418,6 +426,7 @@ const handleEducationPdfUpload = async (file, educationId) => {
 };
 
 const handleExperiencePdfUpload = async (file, experienceId) => {
+  const token = await getToken();
   try {
     const formData = new FormData();
     formData.append("certificate", file);
@@ -460,6 +469,7 @@ const handleExperiencePdfUpload = async (file, experienceId) => {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      const token = await getToken();
       try {
         setLoading(true);
         const response = await axios.get(
@@ -479,7 +489,7 @@ const handleExperiencePdfUpload = async (file, experienceId) => {
     };
 
     fetchProfile();
-  }, [token]);
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -538,7 +548,7 @@ const handleExperiencePdfUpload = async (file, experienceId) => {
       {/* Document Sections */}
       <div className="row g-3 g-md-4">
         <div className="col-12">
-            <AadharSection user={user} setUser={setUser} setShowCropModal={setShowCropModal} setPreviewUrl={setPreviewUrl} setCrop={setCrop} token={token} isAadharFront={isAadharFront} setIsAadharFront={setIsAadharFront} />
+            <AadharSection user={user} setUser={setUser} setShowCropModal={setShowCropModal} setPreviewUrl={setPreviewUrl} setCrop={setCrop} isAadharFront={isAadharFront} setIsAadharFront={setIsAadharFront} />
         </div>
         <div className="col-12">
         <PanSection 
@@ -548,19 +558,17 @@ const handleExperiencePdfUpload = async (file, experienceId) => {
               setShowCropModal={setShowCropModal} 
           setPreviewUrl={setPreviewUrl}
           setCrop={setCrop}
-              token={token} 
           setIsPanImage={setIsPanImage}
               handlePanPdfUpload={handlePanPdfUpload}
         />
         </div>
         <div className="col-12">
-            <AccountSection user={user} setUser={setUser} addAccount={addAccount} setShowCropModal={setShowCropModal} setPreviewUrl={setPreviewUrl} setCrop={setCrop} token={token} setIsAccountImage={setIsAccountImage} />
+            <AccountSection user={user} setUser={setUser} addAccount={addAccount} setShowCropModal={setShowCropModal} setPreviewUrl={setPreviewUrl} setCrop={setCrop} setIsAccountImage={setIsAccountImage} />
         </div>
         <div className="col-12">
         <EducationSection 
           user={user}
               setUser={setUser} 
-              token={token}
               handleEducationPdfUpload={handleEducationPdfUpload}
         />
         </div>
@@ -568,12 +576,11 @@ const handleExperiencePdfUpload = async (file, experienceId) => {
         <ExperienceSection 
           user={user}
               setUser={setUser} 
-              token={token}
               handleExperiencePdfUpload={handleExperiencePdfUpload}
         />
         </div>
         <div className="col-12">
-            <SignatureSection user={user} setUser={setUser} token={token} />
+            <SignatureSection user={user} setUser={setUser} />
         </div>
       </div>
     </div>

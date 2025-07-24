@@ -3,6 +3,7 @@ import './style.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getToken } from '../../utils/tokenService.js';
 
 const AccountForm = () => {
   const navigate = useNavigate();
@@ -14,7 +15,6 @@ const AccountForm = () => {
     ifsc_details: true
   });
   const [accountData, setAccountData] = useState();
-  const userToken = localStorage.getItem("token");
 
   function changeHandler(e) {
     setAccountNumber({
@@ -28,6 +28,7 @@ const AccountForm = () => {
   };
 
   async function generateAccount(e) {
+    const userToken = await getToken();
     e.preventDefault();
     try {
       await axios.post(

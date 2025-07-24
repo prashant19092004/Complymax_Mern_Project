@@ -6,16 +6,18 @@ import LiveSearchSelect from '../../components/userComponents/LiveSearchSelect';
 import { Button } from 'bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { getToken } from '../../utils/tokenService'; // Assuming you have a utility function to get the token
 
 const Jobs = () => {
 
-    const token = localStorage.getItem("token");
+    
     const [hirings, setHirings] = useState();
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState();
     const navigate = useNavigate();
 
   async function fetchingProfile(){
+    const token = await getToken();
     setLoading(true);
     // console.log("Hii");
     try{

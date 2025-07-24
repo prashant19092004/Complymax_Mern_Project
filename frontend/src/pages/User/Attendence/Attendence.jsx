@@ -6,107 +6,98 @@ import FaceCapture from './FaceCapture';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import Webcam from 'react-webcam';
+import { getToken } from '../../../utils/tokenService.js';
+import { Capacitor } from '@capacitor/core';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 const Attendance = () => {
-  const token = localStorage.getItem('token');
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isCapturing, setIsCapturing] = useState(false);
-  const [captureMode, setCaptureMode] = useState('check-in'); // 'check-in' or 'check-out'
+  const [captureMode, setCaptureMode] = useState('check-in');
   const webcamRef = useRef(null);
   const [checkedIn, setCheckedIn] = useState(false);
   const [todayStatus, setTodayStatus] = useState("Not Checked In");
   const [presentDays, setPresentDays] = useState(0);
   const [absentDays, setAbsentDays] = useState(0);
   const [balanceLeave, setBalanceLeave] = useState(0);
+  const isApp = Capacitor.isNativePlatform();
 
   const isCheckedInToday = (attendanceArray) => {
-  const today = new Date();
-  return attendanceArray.some((record) => {
-    const checkInDate = new Date(record.checkInTime);
-    return (
-      checkInDate.getDate() === today.getDate() &&
-      checkInDate.getMonth() === today.getMonth() &&
-      checkInDate.getFullYear() === today.getFullYear()
-    );
-  });
-}
-
-function getTodayStatus(userData) {
-  const today = new Date();
-
-  const isSameDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return (
-      d.getDate() === today.getDate() &&
-      d.getMonth() === today.getMonth() &&
-      d.getFullYear() === today.getFullYear()
-    );
+    const today = new Date();
+    return attendanceArray.some((record) => {
+      const checkInDate = new Date(record.checkInTime);
+      return (
+        checkInDate.getDate() === today.getDate() &&
+        checkInDate.getMonth() === today.getMonth() &&
+        checkInDate.getFullYear() === today.getFullYear()
+      );
+    });
   };
 
-  // 1. Check for Holiday
-  const isHoliday = userData.attendance?.establishment?.holidays?.some(holiday =>
-    isSameDate(holiday.date)
-  );
-  if (isHoliday) return "Holiday";
+  function getTodayStatus(userData) {
+    const today = new Date();
+    const isSameDate = (dateStr) => {
+      const d = new Date(dateStr);
+      return (
+        d.getDate() === today.getDate() &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear()
+      );
+    };
 
-  // 2. Check for Approved Leave
-  const isOnLeave = userData.leaveRequests?.some(leave => {
-    if (leave.status !== "Approved") return false;
-    const from = new Date(leave.from);
-    const to = new Date(leave.to);
-    return today >= from && today <= to;
-  });
-  if (isOnLeave) return "Leave";
-
-  // 3. Check if Checked In Today
-  const isCheckedIn = userData.attendance?.some(record =>
-    isSameDate(record.checkInTime)
-  );
-  return isCheckedIn ? "Checked In" : "Not Checked In";
-}
-
-
-function getMonthlyPresentCount(attendanceArray) {
-  const now = new Date();
-  return attendanceArray.filter((record) => {
-    const date = new Date(record.date);
-    return (
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear() &&
-      record.status === "Present"
+    const isHoliday = userData.attendance?.establishment?.holidays?.some(holiday =>
+      isSameDate(holiday.date)
     );
-  }).length;
-}
+    if (isHoliday) return "Holiday";
 
-function getMonthlyAbsentCount(attendanceArray) {
-  const now = new Date();
-  return attendanceArray.filter((record) => {
-    const date = new Date(record.date);
-    return (
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear() &&
-      record.status === "Absent"
+    const isOnLeave = userData.leaveRequests?.some(leave => {
+      if (leave.status !== "Approved") return false;
+      const from = new Date(leave.from);
+      const to = new Date(leave.to);
+      return today >= from && today <= to;
+    });
+    if (isOnLeave) return "Leave";
+
+    const isCheckedIn = userData.attendance?.some(record =>
+      isSameDate(record.checkInTime)
     );
-  }).length;
-}
+    return isCheckedIn ? "Checked In" : "Not Checked In";
+  }
 
+  function getMonthlyPresentCount(attendanceArray) {
+    const now = new Date();
+    return attendanceArray.filter((record) => {
+      const date = new Date(record.date);
+      return (
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear() &&
+        record.status === "Present"
+      );
+    }).length;
+  }
 
-const calculateBalanceLeave = (userData) => {
-  const earnedLeave = userData?.attendance[0]?.establishment?.earnedLeave || 0;
-  const casualLeave = userData?.attendance[0]?.establishment?.casualLeave || 0;
-  const medicalLeave = userData?.attendance[0]?.establishment?.medicalLeave || 0;
-  const leaveTaken = userData?.leaveTaken || 0; 
+  function getMonthlyAbsentCount(attendanceArray) {
+    const now = new Date();
+    return attendanceArray.filter((record) => {
+      const date = new Date(record.date);
+      return (
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear() &&
+        record.status === "Absent"
+      );
+    }).length;
+  }
 
-
-  const totalAllocatedLeave = earnedLeave + casualLeave + medicalLeave;
-  const balanceLeave = totalAllocatedLeave - leaveTaken;
-
-  return balanceLeave >= 0 ? balanceLeave : 0;
-};
-
-
+  const calculateBalanceLeave = (userData) => {
+    const earnedLeave = userData?.attendance[0]?.establishment?.earnedLeave || 0;
+    const casualLeave = userData?.attendance[0]?.establishment?.casualLeave || 0;
+    const medicalLeave = userData?.attendance[0]?.establishment?.medicalLeave || 0;
+    const leaveTaken = userData?.leaveTaken || 0;
+    const totalAllocatedLeave = earnedLeave + casualLeave + medicalLeave;
+    return Math.max(totalAllocatedLeave - leaveTaken, 0);
+  };
 
   const handleCheckIn = () => {
     setCaptureMode('check-in');
@@ -133,7 +124,16 @@ const calculateBalanceLeave = (userData) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
 
-      const imageSrc = webcamRef.current?.getScreenshot();
+      let imageSrc;
+      if (isApp) {
+        const photo = await Camera.getPhoto({
+          resultType: CameraResultType.Base64,
+          quality: 90
+        });
+        imageSrc = `data:image/jpeg;base64,${photo.base64String}`;
+      } else {
+        imageSrc = webcamRef.current?.getScreenshot();
+      }
 
       if (!imageSrc) {
         toast.error('Failed to capture image.');
@@ -141,11 +141,11 @@ const calculateBalanceLeave = (userData) => {
         return;
       }
 
-      const endpoint =
-        captureMode === 'check-in'
-          ? '/api/user/attendance/check-in'
-          : '/api/user/attendance/check-out';
+      const endpoint = captureMode === 'check-in'
+        ? '/api/user/attendance/check-in'
+        : '/api/user/attendance/check-out';
 
+      const token = await getToken();
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}${endpoint}`,
         {
@@ -169,10 +169,9 @@ const calculateBalanceLeave = (userData) => {
       if (err.code === 1) {
         toast.error('Location permission denied. Please enable GPS.');
       } else if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message || `Server error during ${captureMode}.`;
-        toast.error(message);
+        toast.error(err.response?.data?.message || `Server error during ${captureMode}.`);
       } else {
-        toast.error(`An unexpected error occurred during ${captureMode}.`);
+        toast.error(`Unexpected error during ${captureMode}.`);
       }
       console.error(`${captureMode} error:`, err);
     } finally {
@@ -182,6 +181,8 @@ const calculateBalanceLeave = (userData) => {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      const token = await getToken();
+      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/user/attendance/user-data`,
@@ -192,62 +193,46 @@ const calculateBalanceLeave = (userData) => {
           }
         );
 
-        if (!response.data.success) {
-          throw new Error(response.data.message);
-        }
+        if (!response.data.success) throw new Error(response.data.message);
 
-        setUserData(response.data.userData);
-        setCheckedIn(isCheckedInToday(response?.data?.userData?.attendance));
-        setTodayStatus(getTodayStatus(response?.data?.userData));
-        setPresentDays(getMonthlyPresentCount(response?.data?.userData?.attendance));
-        setAbsentDays(getMonthlyAbsentCount(response?.data?.userData?.attendance));
-        setBalanceLeave(calculateBalanceLeave(response?.data?.userData));
-        setLoading(false);
+        const data = response.data.userData;
+        setUserData(data);
+        setCheckedIn(isCheckedInToday(data.attendance));
+        setTodayStatus(getTodayStatus(data));
+        setPresentDays(getMonthlyPresentCount(data.attendance));
+        setAbsentDays(getMonthlyAbsentCount(data.attendance));
+        setBalanceLeave(calculateBalanceLeave(data));
       } catch (error) {
-        toast.error('Error fetching user data. Please try again later.');
+        toast.error('Error fetching user data.');
+      } finally {
         setLoading(false);
       }
     };
-
     fetchUserData();
-  }, [token, refreshKey]);
+  }, [refreshKey]);
 
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  console.log(userData);
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div>
-      {/* Webcam Modal */}
       {isCapturing && (
-        <div
-          className="modal fade show d-block"
-          tabIndex="-1"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
-        >
+        <div className="modal fade show d-block" tabIndex="-1" style={{ background: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content p-3 text-center">
               <h5>Capture Face for {captureMode === 'check-in' ? 'Check-In' : 'Check-Out'}</h5>
-              <Webcam
-                ref={webcamRef}
-                audio={false}
-                screenshotFormat="image/jpeg"
-                className="img-thumbnail mb-3"
-                width="100%"
-              />
-              <button
-                className="btn btn-primary w-100"
-                onClick={captureAndSend}
-              >
+              {!isApp && (
+                <Webcam
+                  ref={webcamRef}
+                  audio={false}
+                  screenshotFormat="image/jpeg"
+                  className="img-thumbnail mb-3"
+                  width="100%"
+                />
+              )}
+              <button className="btn btn-primary w-100" onClick={captureAndSend}>
                 Submit {captureMode === 'check-in' ? 'Check-In' : 'Check-Out'}
               </button>
-              <button
-                className="btn btn-secondary w-100 mt-2"
-                onClick={() => setIsCapturing(false)}
-              >
+              <button className="btn btn-secondary w-100 mt-2" onClick={() => setIsCapturing(false)}>
                 Cancel
               </button>
             </div>
@@ -255,7 +240,6 @@ const calculateBalanceLeave = (userData) => {
         </div>
       )}
 
-      {/* Main UI */}
       {!userData?.face ? (
         <div className="text-center mt-4">
           <h2 className="mb-3">Add your face to use the attendance system</h2>

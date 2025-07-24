@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getToken } from '../../../../utils/tokenService';
 
 const PanSection = ({ 
   user, 
@@ -10,13 +11,13 @@ const PanSection = ({
   setShowCropModal,
   setPreviewUrl,
   setCrop,
-  token,
   setIsPanImage,
   handlePanPdfUpload
 }) => {
   const pan_image_input_ref = useRef();
 
   const handleDeletePanImage = async () => {
+    const token = await getToken();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/pan-image`,

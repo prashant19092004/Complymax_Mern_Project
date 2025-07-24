@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'build',
   server: {
     cleartext: true, // allows http requests
-    androidScheme: 'https', // or 'http' if not using SSL
+    androidScheme: 'http', // or 'http' if not using SSL
     // hostname: 'localhost' // optional
   }
 };

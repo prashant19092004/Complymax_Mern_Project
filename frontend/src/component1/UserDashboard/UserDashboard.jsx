@@ -14,15 +14,16 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiMenuAlt2 } from 'react-icons/hi';
+import { getToken } from '../../utils/tokenService'; // Assuming you have a utility function to get the token
 
 const UserDashboard = () => {
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
     const [user, setUser] = useState();
     const [loading, setLoading] = useState(true);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   async function fetchingProfile(){
+    const token = await getToken();
     setLoading(true);
     try{
       await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user/user-dashboard`, {

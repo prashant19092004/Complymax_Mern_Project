@@ -8,6 +8,8 @@
     "@capacitor/cli": "^7.4.2",
     "@capacitor/core": "^7.4.2",
     "@capacitor/geolocation": "^7.1.4",
+    "@capacitor/preferences": "^7.0.1",
+    "@ionic/react": "^8.6.5",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-pdf/renderer": "^3.4.2",
     "@testing-library/jest-dom": "^5.17.0",
