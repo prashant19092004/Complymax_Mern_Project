@@ -98,6 +98,7 @@ const AccountSection = ({
   };
 
   const handleDeleteAccountImage = async () => {
+    const token = await getToken();
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/delete/account-image`,

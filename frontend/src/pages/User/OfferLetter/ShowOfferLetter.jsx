@@ -99,7 +99,7 @@ const ShowOfferLetter = () => {
       }
     };
 
-    if (id && token) {
+    if (id) {
       fetchOfferLetter();
     } else {
       setError("Invalid offer letter ID or authentication token");
