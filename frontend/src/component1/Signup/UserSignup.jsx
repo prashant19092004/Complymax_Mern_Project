@@ -1,30 +1,29 @@
-import React from 'react'
-import { Outlet, Link } from 'react-router-dom'
-import './UserSignup.css';
-import authenticationImg from './../../assets/authentication.svg';
+import React from "react";
+import { Outlet, Link } from "react-router-dom";
+import "./UserSignup.css";
+import authenticationImg from "./../../assets/authentication.svg";
+import { isNativeApp } from "../../utils/isNativeApp";
 
 const UserSignup = () => {
   return (
     <div>
-        {/* <div className="container px-4 mx-auto my-8">
-	            <Outlet />
-        </div> */}
-        <div class="l-form">
-            {/* <div class="shape1"></div>
-            <div class="shape2"></div> */}
-
-            <div class="form">
-                {/* <img src={authenticationImg} alt="" class="form__img" /> */}
-
-                <Outlet />
-                <p class="form__register">
-                    Already have an account? <Link to="/user_login" class="form__register-link">Login</Link>
-                </p>
-            </div>
-
+      <div className="shape-box">
+        <div className="shape1"></div>
+        <div className="shape2"></div>
+      </div>
+      <div className="l-form">
+        <div className="form">
+          <Outlet />
+          <p className="form__register">
+            Already have an account?{" "}
+            <Link to={isNativeApp ? "/app-login" : "/user_login"} className="form__register-link">
+              Login
+            </Link>
+          </p>
         </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default UserSignup
+export default UserSignup;

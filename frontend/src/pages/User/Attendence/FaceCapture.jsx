@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { getToken } from '../../../utils/tokenService';
 
@@ -26,21 +26,24 @@ const FaceCapture = ({ onSuccess }) => {
   }, []);
 
   const capture = async () => {
-    if (isApp) {
-      try {
-        const image = await Camera.getPhoto({
-          quality: 90,
-          resultType: CameraResultType.Base64,
-        });
-        setCapturedImage(`data:image/jpeg;base64,${image.base64String}`);
-      } catch (error) {
-        toast.error('Camera access denied or cancelled.');
-      }
-    } else {
-      const imageSrc = webcamRef.current.getScreenshot();
-      setCapturedImage(imageSrc);
+  if (isApp) {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Camera, // 👈 Force camera use
+        allowEditing: false,
+        saveToGallery: false,
+      });
+      setCapturedImage(`data:image/jpeg;base64,${image.base64String}`);
+    } catch (error) {
+      toast.error('Camera access denied or cancelled.');
     }
-  };
+  } else {
+    const imageSrc = webcamRef.current.getScreenshot();
+    setCapturedImage(imageSrc);
+  }
+};
 
   const uploadFace = async () => {
     const token = await getToken();

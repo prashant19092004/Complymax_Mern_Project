@@ -14,6 +14,7 @@ const AppLogin = () => {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
+    app: true
   });
 
   const navigate = useNavigate();
@@ -77,77 +78,83 @@ const AppLogin = () => {
   }
 
   return (
-    <div class="l-form">
-      <div class="shape1"></div>
-      <div class="shape2"></div>
-
-      <div class="form">
-        {/* <img src={login_pic} alt="" class="form__img" /> */}
-
-        <form action="" onSubmit={submitHandle} class="form__content">
-          <h1 class="form__title">Welcome</h1>
-
-          <div class="form__div form__div-one">
-            <div class="form__icon">
-              <i class="bx bx-user-circle"></i>
-            </div>
-
-            <div class="form__div-input">
-              <label for="" class="form__label">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                onChange={changeHandle}
-                required
-                value={loginData.email}
-                id="email"
-                class="form__input"
-                onFocus={addfocus}
-                onBlur={remfocus}
-              />
-            </div>
-          </div>
-
-          <div class="form__div">
-            <div class="form__icon">
-              <i class="bx bx-lock"></i>
-            </div>
-
-            <div class="form__div-input">
-              <label for="" class="form__label">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                onChange={changeHandle}
-                required
-                value={loginData.password}
-                id="password"
-                class="form__input"
-                onFocus={addfocus}
-                onBlur={remfocus}
-              />
-            </div>
-          </div>
-
-          <Link to="/reset-password" className="form__forgot">
-            Forgot Password?
-          </Link>
-
-          <input type="submit" class="form__button" value="Login" />
-        </form>
-
-        <p class="form__register">
-          Don't have an account?{" "}
-          <Link to="/user-signup" class="form__register-link">
-            Sign up
-          </Link>
-        </p>
+    <>
+      <div className="shape-box">
+        <div className="shape1"></div>
+        <div className="shape2"></div>
       </div>
-    </div>
+      <div class="l-form">
+        <div class="shape1"></div>
+        <div class="shape2"></div>
+
+        <div class="form">
+          {/* <img src={login_pic} alt="" class="form__img" /> */}
+
+          <form action="" onSubmit={submitHandle} class="form__content">
+            <h1 class="form__title">Welcome</h1>
+
+            <div class="form__div form__div-one">
+              <div class="form__icon">
+                <i class="bx bx-user-circle"></i>
+              </div>
+
+              <div class="form__div-input">
+                <label for="" class="form__label">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  onChange={changeHandle}
+                  required
+                  value={loginData.email}
+                  id="email"
+                  class="form__input"
+                  onFocus={addfocus}
+                  onBlur={remfocus}
+                />
+              </div>
+            </div>
+
+            <div class="form__div">
+              <div class="form__icon">
+                <i class="bx bx-lock"></i>
+              </div>
+
+              <div class="form__div-input">
+                <label for="" class="form__label">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  onChange={changeHandle}
+                  required
+                  value={loginData.password}
+                  id="password"
+                  class="form__input"
+                  onFocus={addfocus}
+                  onBlur={remfocus}
+                />
+              </div>
+            </div>
+
+            <Link to="/reset-password" className="form__forgot">
+              Forgot Password?
+            </Link>
+
+            <input type="submit" class="form__button" value="Login" />
+          </form>
+
+          <p class="form__register">
+            Don't have an account?{" "}
+            <Link to="/user-signup" class="form__register-link">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+    </>
   );
 };
 

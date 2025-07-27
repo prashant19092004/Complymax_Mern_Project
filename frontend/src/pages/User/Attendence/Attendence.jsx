@@ -8,11 +8,12 @@ import axios from 'axios';
 import Webcam from 'react-webcam';
 import { getToken } from '../../../utils/tokenService.js';
 import { Capacitor } from '@capacitor/core';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 const Attendance = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false); // 👈 new state
   const [refreshKey, setRefreshKey] = useState(0);
   const [isCapturing, setIsCapturing] = useState(false);
   const [captureMode, setCaptureMode] = useState('check-in');
@@ -24,7 +25,7 @@ const Attendance = () => {
   const [balanceLeave, setBalanceLeave] = useState(0);
   const isApp = Capacitor.isNativePlatform();
 
-  const isCheckedInToday = (attendanceArray) => {
+    const isCheckedInToday = (attendanceArray) => {
     const today = new Date();
     return attendanceArray.some((record) => {
       const checkInDate = new Date(record.checkInTime);
@@ -110,6 +111,7 @@ const Attendance = () => {
   };
 
   const captureAndSend = async () => {
+    setProcessing(true); // 👈 Start processing spinner
     try {
       const getLocation = () =>
         new Promise((resolve, reject) => {
@@ -128,7 +130,10 @@ const Attendance = () => {
       if (isApp) {
         const photo = await Camera.getPhoto({
           resultType: CameraResultType.Base64,
-          quality: 90
+          quality: 90,
+          source: CameraSource.Camera,
+          allowEditing: false,
+          saveToGallery: false,
         });
         imageSrc = `data:image/jpeg;base64,${photo.base64String}`;
       } else {
@@ -137,7 +142,6 @@ const Attendance = () => {
 
       if (!imageSrc) {
         toast.error('Failed to capture image.');
-        setIsCapturing(false);
         return;
       }
 
@@ -163,27 +167,27 @@ const Attendance = () => {
         toast.success(`${captureMode === 'check-in' ? 'Check-in' : 'Check-out'} successful!`);
         setRefreshKey((prev) => prev + 1);
       } else {
-        toast.error(res.data?.message || `${captureMode === 'check-in' ? 'Check-in' : 'Check-out'} failed.`);
+        toast.error(res.data?.message || 'Failed to mark attendance.');
       }
     } catch (err) {
       if (err.code === 1) {
         toast.error('Location permission denied. Please enable GPS.');
       } else if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message || `Server error during ${captureMode}.`);
+        toast.error(err.response?.data?.message || 'Server error during attendance.');
       } else {
-        toast.error(`Unexpected error during ${captureMode}.`);
+        toast.error('Unexpected error during attendance.');
       }
-      console.error(`${captureMode} error:`, err);
     } finally {
+      setProcessing(false); // 👈 Stop spinner
       setIsCapturing(false);
     }
   };
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = await getToken();
       setLoading(true);
       try {
+        const token = await getToken();
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/user/attendance/user-data`,
           {
@@ -220,6 +224,7 @@ const Attendance = () => {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content p-3 text-center">
               <h5>Capture Face for {captureMode === 'check-in' ? 'Check-In' : 'Check-Out'}</h5>
+
               {!isApp && (
                 <Webcam
                   ref={webcamRef}
@@ -229,12 +234,23 @@ const Attendance = () => {
                   width="100%"
                 />
               )}
-              <button className="btn btn-primary w-100" onClick={captureAndSend}>
-                Submit {captureMode === 'check-in' ? 'Check-In' : 'Check-Out'}
-              </button>
-              <button className="btn btn-secondary w-100 mt-2" onClick={() => setIsCapturing(false)}>
-                Cancel
-              </button>
+
+              {processing ? (
+                <div className="d-flex justify-content-center my-3">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Processing...</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <button className="btn btn-primary w-100" onClick={captureAndSend}>
+                    Submit {captureMode === 'check-in' ? 'Check-In' : 'Check-Out'}
+                  </button>
+                  <button className="btn btn-secondary w-100 mt-2" onClick={() => setIsCapturing(false)}>
+                    Cancel
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -247,8 +263,17 @@ const Attendance = () => {
         </div>
       ) : (
         <>
-          <TopStatusSection todayStatus={todayStatus} presentDays={presentDays} absentDays={absentDays} balanceLeave={balanceLeave} />
-          <MarkAttendanceSection onCheckIn={handleCheckIn} onCheckOut={handleCheckOut} todayStatus={todayStatus} />
+          <TopStatusSection
+            todayStatus={todayStatus}
+            presentDays={presentDays}
+            absentDays={absentDays}
+            balanceLeave={balanceLeave}
+          />
+          <MarkAttendanceSection
+            onCheckIn={handleCheckIn}
+            onCheckOut={handleCheckOut}
+            todayStatus={todayStatus}
+          />
           <AttendanceHistoryTable key={refreshKey} attendance={userData.attendance} />
         </>
       )}

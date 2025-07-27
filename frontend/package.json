@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@capacitor/android": "^7.4.2",
+    "@capacitor/app": "^7.0.1",
     "@capacitor/camera": "^7.0.1",
     "@capacitor/cli": "^7.4.2",
     "@capacitor/core": "^7.4.2",
@@ -15,6 +16,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "animejs": "^4.1.1",
     "axios": "^1.6.8",
     "backend-7-auth": "file:..",
     "bootstrap": "^5.3.3",

@@ -35,6 +35,9 @@ const corsOptions = {
   credentials: true,
 };
 
+// ✅ Handle preflight requests with same config
+app.options("*", cors(corsOptions));
+
 // ✅ Log origin, referer, method
 app.use((req, res, next) => {
   console.log("Origin:", req.headers.origin);
@@ -43,11 +46,11 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // ✅ Apply CORS middleware globally
 app.use(cors(corsOptions));
 
-// ✅ Handle preflight requests with same config
-app.options("*", cors(corsOptions));
+
 
 require("dotenv").config();
 
@@ -95,10 +98,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
-
 connectDB();
 require("./cron/markAbsentees.js");
 require("./cron/fetchHolidayForNewYear.js");
@@ -108,8 +107,5 @@ app.listen(port, '0.0.0.0', () => {
 });
 
 
-// mongoose.connect(process.env.MONGO_URI)
-// .then(() => console.log('MongoDB is connected'))
-// .catch((err) => console.log(err));
 
 
