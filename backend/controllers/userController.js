@@ -1132,6 +1132,7 @@ exports.checkIn = async (req, res) => {
     const userId = req.user.id;
     const { image, location } = req.body;
 
+
     if (!image || !location) {
       return res.status(400).json({
         success: false,
@@ -1201,6 +1202,7 @@ exports.checkIn = async (req, res) => {
       });
     }
 
+
     // Time in IST for calculations
     const istNow = moment().tz("Asia/Kolkata");
     const startOfDayUTC = istNow.clone().startOf("day").utc().toDate();
@@ -1217,6 +1219,7 @@ exports.checkIn = async (req, res) => {
         message: "Already checked in today.",
       });
     }
+
 
     const attendanceData = existingRecord || new Attendance({ user: userId });
 
@@ -1246,7 +1249,7 @@ exports.checkIn = async (req, res) => {
 
     attendanceData.checkInLocation.latitude = location.latitude;
     attendanceData.checkInLocation.longitude = location.longitude;
-    attendanceData.checkInImage = image;
+    // attendanceData.checkInImage = image;
 
     attendanceData.user = userId;
     attendanceData.geoFencePassed = true;
@@ -1259,6 +1262,7 @@ exports.checkIn = async (req, res) => {
     attendanceData.lateByMinutes = lateByMinutes;
 
     await attendanceData.save();
+
 
     // Push attendance to related entities
     await Promise.all([
@@ -1278,6 +1282,7 @@ exports.checkIn = async (req, res) => {
         $push: { attendance: attendanceData._id },
       }),
     ]);
+
 
     res.status(200).json({ success: true, message: "Check-in recorded." });
   } catch (err) {

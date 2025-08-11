@@ -81,6 +81,9 @@ import UserOfferLetter from "./pages/User/OfferLetter/OfferLetter";
 import ShowOfferLetter from "./pages/User/OfferLetter/ShowOfferLetter";
 import UserLeaveManagement from "./pages/User/Leave Management/LeaveManagement";
 import UserAttendencePage from "./pages/User/Attendence/Attendence";
+import FaceAttendance from "./pages/User/Attendence/FaceAttendance";
+import FaceScanPage from "./pages/User/Attendence/FaceScanPage";
+import Logout from "./Logout";
 
 const router = createBrowserRouter([
     {
@@ -94,6 +97,10 @@ const router = createBrowserRouter([
                 errorElement: <ErrorPage />
             }
         ]
+    },
+    {
+      path: "/logout",
+      element: <Logout />,
     },
     { path: "/home", element: <Home />, errorElement: <ErrorPage /> },
     { path: "/client-signup", element: <Client_signup /> },
@@ -204,6 +211,10 @@ const router = createBrowserRouter([
         { path: "attendance", element: <UserAttendencePage /> },
       ],
     },
+    {
+      path: "face-attendance/:type",
+      element: <FaceScanPage />,
+    }
   ]);
 
 export default router;

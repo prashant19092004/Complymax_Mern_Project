@@ -9,6 +9,7 @@ import Webcam from 'react-webcam';
 import { getToken } from '../../../utils/tokenService.js';
 import { Capacitor } from '@capacitor/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { useNavigate } from 'react-router-dom';
 
 const Attendance = () => {
   const [userData, setUserData] = useState(null);
@@ -24,6 +25,7 @@ const Attendance = () => {
   const [absentDays, setAbsentDays] = useState(0);
   const [balanceLeave, setBalanceLeave] = useState(0);
   const isApp = Capacitor.isNativePlatform();
+  const navigate = useNavigate();
 
     const isCheckedInToday = (attendanceArray) => {
     const today = new Date();
@@ -101,13 +103,15 @@ const Attendance = () => {
   };
 
   const handleCheckIn = () => {
-    setCaptureMode('check-in');
-    setIsCapturing(true);
+    // setCaptureMode('check-in');
+    // setIsCapturing(true);
+    navigate('/face-attendance/check-in');
   };
 
   const handleCheckOut = () => {
-    setCaptureMode('check-out');
-    setIsCapturing(true);
+    // setCaptureMode('check-out');
+    // setIsCapturing(true);
+    navigate('/face-attendance/check-out');
   };
 
   const captureAndSend = async () => {

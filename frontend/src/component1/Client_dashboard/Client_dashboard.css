@@ -709,6 +709,8 @@
 
 /* Prevent main screen scroll */
 .dashboard-wrapper {
+    padding-top: constant(safe-area-inset-top); /* iOS Safari fallback */
+    padding-top: env(safe-area-inset-top);
     height: 100vh;
     overflow: hidden;
 }

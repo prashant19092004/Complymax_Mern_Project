@@ -27,6 +27,7 @@ const Userlogin = () => {
   };
 
   const handleLoginRequest = async (url, redirectPath) => {
+    console.log(`${process.env.REACT_APP_BACKEND_URL}${url}`);
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}${url}`, loginData, {
         headers: { "Content-Type": "application/json" },

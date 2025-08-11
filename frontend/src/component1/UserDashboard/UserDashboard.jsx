@@ -17,6 +17,7 @@ import {
   FaHeadset,
   FaUserCircle,
 } from "react-icons/fa";
+import { MdOutlineLogout } from "react-icons/md";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
@@ -58,6 +59,13 @@ const UserDashboard = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
+  const closeSidebar = () => {
+    console.log(sidebarCollapsed);
+    if(sidebarCollapsed) {
+      setSidebarCollapsed(false);
+    }
+  }
+
   const navItems = [
     {
       path: "/user_dashboard/dashboard",
@@ -95,6 +103,12 @@ const UserDashboard = () => {
       label: "Support 24/7",
       show: true,
     },
+    {
+      path: "/logout",
+      icon: <MdOutlineLogout />,
+      label: "Logout",
+      show: true,
+    }
   ];
 
   if (loading) {
@@ -112,6 +126,7 @@ const UserDashboard = () => {
         className={`dashboard-container ${
           sidebarCollapsed ? "sidebar-collapsed" : ""
         }`}
+        onClick={closeSidebar}
       >
         <nav className="sidebar">
           <div className="sidebar-header">
@@ -171,15 +186,9 @@ const UserDashboard = () => {
         <main className="main-content">
           {/* Mobile Header */}
           <div className="mobile-header">
-            <div className="mobile-logo">
-              <img
-                src={Logo}
-                alt="Company Logo"
-                className="mobile-company-logo"
-              />
-            </div>
+            
             <div className="mobile-actions">
-              <ProfileDropdown profile_pic={user?.profilePic} />
+              {/* <ProfileDropdown profile_pic={user?.profilePic} /> */}
               <button className="mobile-menu-btn" onClick={toggleSidebar}>
                 {sidebarCollapsed ? (
                   <MdKeyboardArrowLeft size={24} />
@@ -188,6 +197,14 @@ const UserDashboard = () => {
                 )}
               </button>
             </div>
+            <div className="mobile-logo">
+              <img
+                src={Logo}
+                alt="Company Logo"
+                className="mobile-company-logo"
+              />
+            </div>
+            <div style={{width: '48px'}}></div>
           </div>
 
           {/* Mobile Welcome Section */}
@@ -221,11 +238,11 @@ const UserDashboard = () => {
                   })}
                 </p>
               </div>
-              <div className="header-actions">
+              {/* <div className="header-actions">
                 <NotificationIcon />
                 <div className="divider-vertical"></div>
                 <ProfileDropdown profile_pic={user?.profilePic} />
-              </div>
+              </div> */}
             </div>
           </div>
 
