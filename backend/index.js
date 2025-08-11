@@ -7,47 +7,38 @@ const path = require("path");
 const app = express();
 const connectDB = require("./config/database");
 
+// ✅ CORS handling at the very top
 const allowedOrigins = [
   "capacitor://localhost",
   "http://localhost",
   "http://localhost:3000",
+  "http://127.0.0.1:3000",
   "https://localhost",
   "https://complymax.co.in",
   "http://192.168.135.81:3000"
 ];
 
-// ✅ Force CORS headers before anything else
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+
+  console.log("🔥 Request:", req.method, req.originalUrl);
+  console.log("📡 Origin:", origin);
+
+  if (origin && allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
   }
+  
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
+    return res.status(200).end(); // ✅ Always OK for preflight
   }
 
   next();
 });
 
-// ✅ Logging to debug CORS
-app.use((req, res, next) => {
-  console.log("🔥 Request:", req.method, req.originalUrl);
-  console.log("Origin:", req.headers.origin);
-  console.log("Referer:", req.headers.referer);
-
-  res.on("finish", () => {
-    console.log("🔍 CORS Headers Sent:", {
-      origin: res.getHeader("Access-Control-Allow-Origin"),
-      creds: res.getHeader("Access-Control-Allow-Credentials")
-    });
-  });
-
-  next();
-});
 
 // ✅ Middleware
 app.use(cookieParser());
@@ -62,14 +53,15 @@ app.use("/api/user", require("./routes/userRoutes"));
 
 // ✅ Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
+  console.error("❌ Error:", err.stack);
+  res.status(500).json({
     success: false,
     message: "Something broke!",
-    error: err.message 
+    error: err.message
   });
 });
 
+// ✅ Connect DB & Start Server
 connectDB();
 app.listen(process.env.PORT || 8000, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${process.env.PORT || 8000}`);
