@@ -4,6 +4,17 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const path = require("path");
 const connectDB = require("./config/database");
+const multer = require('multer');
+const mongoose = require('mongoose');
+const authRoutes = require("./routes/authRoute");
+const userRoutes = require("./routes/userRoutes");
+const establismentResetPasswordRoutes = require("./routes/establismentResetPasswordRoute");
+const clientRoutes = require('./routes/clientRoutes');
+const offerLetterRoutes = require('./routes/offerLetterRoutes');
+const supervisorRoutes = require('./routes/supervisorRoute');
+const establishmentRoutes = require('./routes/establishmentRoute');
+const superAdminRoutes = require('./routes/superAdminRoute');
+const leaveEmailRoutes = require('./routes/leaveEmailRoute.js');
 
 const app = express();
 
@@ -59,8 +70,15 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ Routes
-app.use("/", require("./routes/authRoute"));
-app.use("/api/user", require("./routes/userRoutes"));
+app.use("/", authRoutes);
+app.use("/api/user/", userRoutes);
+app.use('/api/client', clientRoutes);
+app.use('/api/supervisor', supervisorRoutes);
+app.use("/api/establisment/reset-password/", establismentResetPasswordRoutes);
+app.use('/api/establishment/', establishmentRoutes);
+app.use('/api/offer-letter', offerLetterRoutes);
+app.use('/api/super-admin', superAdminRoutes);
+app.use('/api/', leaveEmailRoutes);
 // ... other routes ...
 
 // ✅ Error handler
@@ -73,8 +91,13 @@ app.use((err, req, res, next) => {
   });
 });
 
+
+
 // ✅ Start server
 connectDB();
+require("./cron/markAbsentees.js");
+require("./cron/fetchHolidayForNewYear.js");
+
 app.listen(process.env.PORT || 8000, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${process.env.PORT || 8000}`);
 });
