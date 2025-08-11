@@ -15,6 +15,7 @@ const Attendance = require("../models/attendance.model.js");
 const moment = require("moment-timezone");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const holidayModel = require("../models/holiday.model.js");
 
 const rekognition = new AWS.Rekognition({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
