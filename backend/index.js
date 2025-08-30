@@ -15,6 +15,7 @@ const supervisorRoutes = require('./routes/supervisorRoute');
 const establishmentRoutes = require('./routes/establishmentRoute');
 const superAdminRoutes = require('./routes/superAdminRoute');
 const leaveEmailRoutes = require('./routes/leaveEmailRoute.js');
+const cors = require("cors");
 
 const app = express();
 
@@ -29,39 +30,46 @@ const allowedOrigins = [
 ];
 
 // ✅ Universal CORS handler
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+// app.use((req, res, next) => {
+//   const origin = req.headers.origin;
+//   if (allowedOrigins.includes(origin)) {
+//     res.header("Access-Control-Allow-Origin", origin);
+//   }
+//   res.header("Access-Control-Allow-Credentials", "true");
+//   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    console.log("⚡ Preflight request from:", origin, "→", req.originalUrl);
-    return res.sendStatus(200);
-  }
+//   // Handle preflight requests
+//   if (req.method === "OPTIONS") {
+//     console.log("⚡ Preflight request from:", origin, "→", req.originalUrl);
+//     return res.sendStatus(200);
+//   }
 
-  next();
-});
+//   next();
+// });
 
-// ✅ Logging for debugging
-app.use((req, res, next) => {
-  console.log("🔥 Request:", req.method, req.originalUrl);
-  console.log("📡 Origin:", req.headers.origin);
-  console.log("📌 Referer:", req.headers.referer);
+// // ✅ Logging for debugging
+// app.use((req, res, next) => {
+//   console.log("🔥 Request:", req.method, req.originalUrl);
+//   console.log("📡 Origin:", req.headers.origin);
+//   console.log("📌 Referer:", req.headers.referer);
 
-  res.on("finish", () => {
-    console.log("🔍 CORS Headers Sent:", {
-      "Access-Control-Allow-Origin": res.getHeader("Access-Control-Allow-Origin"),
-      "Access-Control-Allow-Credentials": res.getHeader("Access-Control-Allow-Credentials")
-    });
-  });
+//   res.on("finish", () => {
+//     console.log("🔍 CORS Headers Sent:", {
+//       "Access-Control-Allow-Origin": res.getHeader("Access-Control-Allow-Origin"),
+//       "Access-Control-Allow-Credentials": res.getHeader("Access-Control-Allow-Credentials")
+//     });
+//   });
 
-  next();
-});
+//   next();
+// });
+
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // ✅ Middlewares
 app.use(cookieParser());
