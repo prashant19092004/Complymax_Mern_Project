@@ -29,43 +29,18 @@ const allowedOrigins = [
   "http://192.168.135.81:3000"
 ];
 
-// ✅ Universal CORS handler
-// app.use((req, res, next) => {
-//   const origin = req.headers.origin;
-//   if (allowedOrigins.includes(origin)) {
-//     res.header("Access-Control-Allow-Origin", origin);
-//   }
-//   res.header("Access-Control-Allow-Credentials", "true");
-//   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-//   // Handle preflight requests
-//   if (req.method === "OPTIONS") {
-//     console.log("⚡ Preflight request from:", origin, "→", req.originalUrl);
-//     return res.sendStatus(200);
-//   }
-
-//   next();
-// });
-
-// // ✅ Logging for debugging
-// app.use((req, res, next) => {
-//   console.log("🔥 Request:", req.method, req.originalUrl);
-//   console.log("📡 Origin:", req.headers.origin);
-//   console.log("📌 Referer:", req.headers.referer);
-
-//   res.on("finish", () => {
-//     console.log("🔍 CORS Headers Sent:", {
-//       "Access-Control-Allow-Origin": res.getHeader("Access-Control-Allow-Origin"),
-//       "Access-Control-Allow-Credentials": res.getHeader("Access-Control-Allow-Credentials")
-//     });
-//   });
-
-//   next();
-// });
-
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman, curl, mobile native)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn("❌ CORS blocked for origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 };
 
