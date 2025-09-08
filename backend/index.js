@@ -19,32 +19,32 @@ const cors = require("cors");
 
 const app = express();
 
-// Allowed origins for CORS
-const allowedOrigins = [
-  "capacitor://localhost",
-  "http://localhost",
-  "http://localhost:3000",
-  "https://localhost",
-  "https://complymax.co.in",
-  "http://192.168.135.81:3000"
-];
+// // Allowed origins for CORS
+// const allowedOrigins = [
+//   "capacitor://localhost",
+//   "http://localhost",
+//   "http://localhost:3000",
+//   "https://localhost",
+//   "https://complymax.co.in",
+//   "http://192.168.135.81:3000"
+// ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like Postman, curl, mobile native)
-    if (!origin) return callback(null, true);
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (like Postman, curl, mobile native)
+//     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn("❌ CORS blocked for origin:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-};
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       console.warn("❌ CORS blocked for origin:", origin);
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 // ✅ Middlewares
 app.use(cookieParser());

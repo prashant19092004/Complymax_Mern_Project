@@ -31,7 +31,7 @@ const Userlogin = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}${url}`, loginData, {
         headers: { "Content-Type": "application/json" },
-        withCredentials: true,
+        // withCredentials: true,
       });
       console.log(response.data);
 
