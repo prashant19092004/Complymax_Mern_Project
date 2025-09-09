@@ -84,8 +84,6 @@ const AppLogin = () => {
         <div className="shape2"></div>
       </div>
       <div class="l-form">
-        <div class="shape1"></div>
-        <div class="shape2"></div>
 
         <div class="form">
           {/* <img src={login_pic} alt="" class="form__img" /> */}
