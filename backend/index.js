@@ -26,7 +26,8 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://localhost",
   "https://complymax.co.in",
-  "http://192.168.0.108:3000"
+  "http://192.168.0.108:3000",
+  "https://www.complymax.co.in"
 ];
 
 const corsOptions = {
