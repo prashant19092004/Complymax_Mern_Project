@@ -62,7 +62,9 @@ exports.hireUser = async (req, res) => {
     );
 
     // Find the last hired user by employeeId in descending order
-    const lastHired = await userModel.findOne().sort({ employeeId: -1 });
+    const lastHired = await userModel
+      .findOne({ establisment: currentSupervisor.establisment })
+      .sort({ employeeId: -1 });
     let newEmployeeId = 1001; // Default starting employeeId
 
     // Increment the last user's ID if a user exists

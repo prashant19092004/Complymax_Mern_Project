@@ -183,7 +183,7 @@ const UserDashboard = () => {
           </div>
         </nav>
 
-        <main className="main-content">
+        <main className="main-content" style={{paddingBottom : "20px"}}>
           {/* Mobile Header */}
           <div className="mobile-header">
             

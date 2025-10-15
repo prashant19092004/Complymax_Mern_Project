@@ -54,6 +54,7 @@ import HolidayManagement from "./pages/Establishment/Holiday Management/HolidayM
 import Holiday from "./pages/Establishment/Holiday Management/Holiday";
 import HolidayCalender from "./pages/Establishment/Holiday Management/HolidayCalender";
 import AllHolidays from "./pages/Establishment/Holiday Management/AllHolidays";
+import AllCandidates from "./pages/Establishment/AllCandidates/AllCandidates";
 
 // Supervisor Dashboard
 import SupervisorDashboard from "./component1/Supervisor_dashboard/SupervisorDashboard";
@@ -162,6 +163,7 @@ const router = createBrowserRouter([
             { path: "all-holidays", element: <AllHolidays /> },
           ],
         },
+        { path: "all-candidates", element: <AllCandidates /> },
       ],
     },
 

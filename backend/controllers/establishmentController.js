@@ -396,6 +396,42 @@ exports.getActiveUsers = async (req, res) => {
   }
 };
 
+exports.getAllCandidates = async (req, res) => {
+  try {
+    // Get current admin (and their establishment)
+    const currentEstablishment = await adminModel
+      .findById(req.user.id)
+      .select('_id');
+
+    if (!currentEstablishment) {
+      return res.status(404).json({
+        message: "Admin not found",
+        success: false,
+      });
+    }
+
+    // Fetch users belonging to this establishment with specific fields
+    const users = await userModel
+      .find({ establisment: currentEstablishment._id })
+      .select('employeeId full_Name care_of house street loc po subdist dist zip pan_name account_name landmark Jharkhand aadhar_number pan_number contact account_number account_ifsc establishment'); // 👈 specify fields here
+      // .populate('hired', 'position salary'); // optional: populate specific fields from 'hired'
+
+      // console.log(users);
+    res.status(200).json({
+      message: "Users list fetched successfully",
+      success: true,
+      users,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+
+
 exports.getPendingWages = async (req, res) => {
   try {
     const wages = await userModel

@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.complymax.app',
-  appName: 'Complymax Management Pvt. Ltd.',
+  appName: 'Complymax',
   webDir: 'build',
   server: {
     cleartext: true, // allows http requests

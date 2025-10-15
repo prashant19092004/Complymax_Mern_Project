@@ -452,7 +452,7 @@
     border-top: 4px solid #007bff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 @keyframes spin {

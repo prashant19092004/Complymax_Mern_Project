@@ -47,6 +47,8 @@ router.post("/user_profile/add_Account",auth, isEstablishment, establishmentCont
 
 router.get('/active-users', auth, isEstablishment, establishmentController.getActiveUsers);
 
+router.get('/all-candidates', auth, isEstablishment, establishmentController.getAllCandidates);
+
 router.get('/pending-wages', auth, isEstablishment, establishmentController.getPendingWages);
 
 router.post('/save-wages', auth, isEstablishment, establishmentController.saveWages);
