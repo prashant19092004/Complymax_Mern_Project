@@ -55,6 +55,7 @@ import Holiday from "./pages/Establishment/Holiday Management/Holiday";
 import HolidayCalender from "./pages/Establishment/Holiday Management/HolidayCalender";
 import AllHolidays from "./pages/Establishment/Holiday Management/AllHolidays";
 import AllCandidates from "./pages/Establishment/AllCandidates/AllCandidates";
+import BulkRegister from "./pages/Establishment/BulkRegister/BulkRegister";
 
 // Supervisor Dashboard
 import SupervisorDashboard from "./component1/Supervisor_dashboard/SupervisorDashboard";
@@ -164,6 +165,7 @@ const router = createBrowserRouter([
           ],
         },
         { path: "all-candidates", element: <AllCandidates /> },
+        { path: "bulk-register", element: <BulkRegister /> },
       ],
     },
 

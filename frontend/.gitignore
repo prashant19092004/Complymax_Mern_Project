@@ -9,7 +9,7 @@
 /coverage
 
 # production
-/build
+# /build
 
 # misc
 .DS_Store
@@ -25,4 +25,4 @@ yarn-error.log*
 
 
 android/
-build/
+# build/

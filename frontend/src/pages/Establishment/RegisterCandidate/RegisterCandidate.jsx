@@ -189,14 +189,24 @@ const RegisterCandidate = () => {
           />
           <i className="fas fa-search search__icon" id="icon"></i>
         </div>
-        <Button
-          className="mt-2"
-          onClick={openEnquiry}
-          style={{ height: "50px" }}
-          variant="primary"
-        >
-          Register New
-        </Button>
+        <div className="d-flex justify-content-end gap-5 mb-3">
+          <Button
+            className="mt-2"
+            onClick={openEnquiry}
+            style={{ height: "50px" }}
+            variant="primary"
+          >
+            Register New
+          </Button>
+          <Button
+            className="mt-2"
+            onClick={() => navigate("/establisment_dashboard/bulk-register")}
+            style={{ height: "50px" }}
+            variant="primary"
+          >
+            Bulk Register
+          </Button>
+        </div>
       </div>
 
       <ul className="list_box px-5" style={{ padding: "0px", marginBottom: "100px" }}>
