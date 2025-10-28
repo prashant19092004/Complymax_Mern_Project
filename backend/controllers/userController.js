@@ -1039,42 +1039,100 @@ exports.leaveApplication = async (req, res) => {
   }
 };
 
+// exports.attendanceUserData = async (req, res) => {
+//   try {
+//     const userId = req.user.id;
+
+//     const userData = await userModel
+//       .findById(userId)
+//       .select(
+//         "full_Name email face faceAdded attendance leaveTaken leaveRequests"
+//       )
+//       .populate([
+//         {
+//           path: "attendance",
+//           options: { sort: { date: -1 } },
+//           select:
+//             "_id totalHours status checkInTime date establishment checkOutTime",
+//           populate: {
+//             path: "establishment",
+//             select: "earnedLeave casualLeave medicalLeave holidays",
+//             populate: {
+//               path: "holidays",
+//               select: "date",
+//             },
+//           },
+//         },
+//         {
+//           path: "leaveRequests",
+//           select: "from to status",
+//         },
+//       ]);
+
+//     // const leaveRequests = await Leave.find({ user_id : userId });
+
+//     res.status(200).json({
+//       success: true,
+//       message: "user data has fetched",
+//       userData,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user data:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching user data",
+//       error: error.message,
+//     });
+//   }
+// };
+
 exports.attendanceUserData = async (req, res) => {
   try {
     const userId = req.user.id;
+    const page = parseInt(req.query.page) || 1; // current page
+    const limit = parseInt(req.query.limit) || 10; // per page
+    const skip = (page - 1) * limit;
 
-    const userData = await userModel
+    // Step 1: Fetch basic user info (without populating everything)
+    const user = await userModel
       .findById(userId)
-      .select(
-        "full_Name email face faceAdded attendance leaveTaken leaveRequests"
-      )
-      .populate([
-        {
-          path: "attendance",
-          options: { sort: { date: -1 } },
-          select:
-            "_id totalHours status checkInTime date establishment checkOutTime",
-          populate: {
-            path: "establishment",
-            select: "earnedLeave casualLeave medicalLeave holidays",
-            populate: {
-              path: "holidays",
-              select: "date",
-            },
-          },
-        },
-        {
-          path: "leaveRequests",
-          select: "from to status",
-        },
-      ]);
+      .select("full_Name email face faceAdded leaveTaken leaveRequests")
+      .populate({
+        path: "leaveRequests",
+        select: "from to status",
+      });
 
-    // const leaveRequests = await Leave.find({ user_id : userId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Step 2: Fetch attendance separately with pagination
+    const attendanceData = await Attendance.find({ user: userId })
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select("_id totalHours status checkInTime date establishment checkOutTime")
+      .populate({
+        path: "establishment",
+        select: "earnedLeave casualLeave medicalLeave holidays",
+        populate: { path: "holidays", select: "date" },
+      });
+
+    // Step 3: Count total attendance records for pagination
+    const totalRecords = await Attendance.countDocuments({ user: userId });
 
     res.status(200).json({
       success: true,
-      message: "user data has fetched",
-      userData,
+      message: "User data fetched successfully",
+      userData: {
+        ...user.toObject(),
+        attendance: attendanceData,
+      },
+      pagination: {
+        totalRecords,
+        currentPage: page,
+        totalPages: Math.ceil(totalRecords / limit),
+      },
     });
   } catch (error) {
     console.error("Error fetching user data:", error);

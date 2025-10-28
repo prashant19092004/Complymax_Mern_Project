@@ -13,8 +13,11 @@ import { useNavigate } from 'react-router-dom';
 
 const Attendance = () => {
   const [userData, setUserData] = useState(null);
+  const [attendance, setAttendance] = useState([]); // 🧠 CHANGED - store attendance separately
+  const [page, setPage] = useState(1); // 🧠 CHANGED - track pagination page
+  const [hasMore, setHasMore] = useState(true); // 🧠 CHANGED - track if more pages left
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false); // 👈 new state
+  const [processing, setProcessing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isCapturing, setIsCapturing] = useState(false);
   const [captureMode, setCaptureMode] = useState('check-in');
@@ -27,7 +30,7 @@ const Attendance = () => {
   const isApp = Capacitor.isNativePlatform();
   const navigate = useNavigate();
 
-    const isCheckedInToday = (attendanceArray) => {
+  const isCheckedInToday = (attendanceArray) => {
     const today = new Date();
     return attendanceArray.some((record) => {
       const checkInDate = new Date(record.checkInTime);
@@ -39,7 +42,7 @@ const Attendance = () => {
     });
   };
 
-  function getTodayStatus(userData) {
+  function getTodayStatus(userData, attendanceData) { // 🧠 CHANGED - pass attendanceData
     const today = new Date();
     const isSameDate = (dateStr) => {
       const d = new Date(dateStr);
@@ -50,7 +53,7 @@ const Attendance = () => {
       );
     };
 
-    const isHoliday = userData.attendance?.establishment?.holidays?.some(holiday =>
+    const isHoliday = attendanceData[0]?.establishment?.holidays?.some(holiday =>
       isSameDate(holiday.date)
     );
     if (isHoliday) return "Holiday";
@@ -63,9 +66,7 @@ const Attendance = () => {
     });
     if (isOnLeave) return "Leave";
 
-    const isCheckedIn = userData.attendance?.some(record =>
-      isSameDate(record.checkInTime)
-    );
+    const isCheckedIn = attendanceData?.some(record => isSameDate(record.checkInTime));
     return isCheckedIn ? "Checked In" : "Not Checked In";
   }
 
@@ -93,73 +94,24 @@ const Attendance = () => {
     }).length;
   }
 
-  const calculateBalanceLeave = (userData) => {
-    const earnedLeave = userData?.attendance[0]?.establishment?.earnedLeave || 0;
-    const casualLeave = userData?.attendance[0]?.establishment?.casualLeave || 0;
-    const medicalLeave = userData?.attendance[0]?.establishment?.medicalLeave || 0;
+  const calculateBalanceLeave = (userData, attendanceData) => {
+    const earnedLeave = attendanceData[0]?.establishment?.earnedLeave || 0;
+    const casualLeave = attendanceData[0]?.establishment?.casualLeave || 0;
+    const medicalLeave = attendanceData[0]?.establishment?.medicalLeave || 0;
     const leaveTaken = userData?.leaveTaken || 0;
     const totalAllocatedLeave = earnedLeave + casualLeave + medicalLeave;
     return Math.max(totalAllocatedLeave - leaveTaken, 0);
   };
 
-  const handleCheckIn = () => {
-    // setCaptureMode('check-in');
-    // setIsCapturing(true);
-    navigate('/face-attendance/check-in');
-  };
+  const handleCheckIn = () => navigate('/face-attendance/check-in');
+  const handleCheckOut = () => navigate('/face-attendance/check-out');
 
-  const handleCheckOut = () => {
-    // setCaptureMode('check-out');
-    // setIsCapturing(true);
-    navigate('/face-attendance/check-out');
-  };
-
-  const captureAndSend = async () => {
-    setProcessing(true); // 👈 Start processing spinner
+  // 🧠 CHANGED - fetch user data with pagination
+  const fetchUserData = async (reset = false) => {
     try {
-      const getLocation = () =>
-        new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0,
-          });
-        });
-
-      const position = await getLocation();
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-
-      let imageSrc;
-      if (isApp) {
-        const photo = await Camera.getPhoto({
-          resultType: CameraResultType.Base64,
-          quality: 90,
-          source: CameraSource.Camera,
-          allowEditing: false,
-          saveToGallery: false,
-        });
-        imageSrc = `data:image/jpeg;base64,${photo.base64String}`;
-      } else {
-        imageSrc = webcamRef.current?.getScreenshot();
-      }
-
-      if (!imageSrc) {
-        toast.error('Failed to capture image.');
-        return;
-      }
-
-      const endpoint = captureMode === 'check-in'
-        ? '/api/user/attendance/check-in'
-        : '/api/user/attendance/check-out';
-
       const token = await getToken();
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}${endpoint}`,
-        {
-          image: imageSrc,
-          location: { latitude, longitude },
-        },
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/attendance/user-data?page=${page}&limit=10`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -167,99 +119,59 @@ const Attendance = () => {
         }
       );
 
-      if (res.data?.success) {
-        toast.success(`${captureMode === 'check-in' ? 'Check-in' : 'Check-out'} successful!`);
-        setRefreshKey((prev) => prev + 1);
-      } else {
-        toast.error(res.data?.message || 'Failed to mark attendance.');
+      if (!response.data.success) throw new Error(response.data.message);
+      const data = response.data.userData;
+
+      if (reset) setUserData(data);
+
+      // merge attendance pages
+      setAttendance((prev) =>
+        reset ? data.attendance : [...prev, ...data.attendance]
+      );
+
+      // pagination control
+      const { currentPage, totalPages } = response.data.pagination;
+      setHasMore(currentPage < totalPages);
+
+      // update dashboard stats only once (on first load)
+      if (page === 1 || reset) {
+        setCheckedIn(isCheckedInToday(data.attendance));
+        setTodayStatus(getTodayStatus(data, data.attendance));
+        setPresentDays(getMonthlyPresentCount(data.attendance));
+        setAbsentDays(getMonthlyAbsentCount(data.attendance));
+        setBalanceLeave(calculateBalanceLeave(data, data.attendance));
       }
-    } catch (err) {
-      if (err.code === 1) {
-        toast.error('Location permission denied. Please enable GPS.');
-      } else if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message || 'Server error during attendance.');
-      } else {
-        toast.error('Unexpected error during attendance.');
-      }
+    } catch (error) {
+      toast.error('Error fetching user data.');
     } finally {
-      setProcessing(false); // 👈 Stop spinner
-      setIsCapturing(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      try {
-        const token = await getToken();
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/user/attendance/user-data`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.data.success) throw new Error(response.data.message);
-
-        const data = response.data.userData;
-        setUserData(data);
-        setCheckedIn(isCheckedInToday(data.attendance));
-        setTodayStatus(getTodayStatus(data));
-        setPresentDays(getMonthlyPresentCount(data.attendance));
-        setAbsentDays(getMonthlyAbsentCount(data.attendance));
-        setBalanceLeave(calculateBalanceLeave(data));
-      } catch (error) {
-        toast.error('Error fetching user data.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserData();
+    setPage(1);
+    setAttendance([]);
+    setHasMore(true);
+    setLoading(true);
+    fetchUserData(true);
   }, [refreshKey]);
+
+  // 🧠 CHANGED - load more attendance when user clicks
+  const loadMoreAttendance = () => {
+    if (hasMore) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  // 🧠 CHANGED - whenever page changes, fetch next batch
+  useEffect(() => {
+    if (page > 1) fetchUserData();
+  }, [page]);
 
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
-      {isCapturing && (
-        <div className="modal fade show d-block" tabIndex="-1" style={{ background: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content p-3 text-center">
-              <h5>Capture Face for {captureMode === 'check-in' ? 'Check-In' : 'Check-Out'}</h5>
-
-              {!isApp && (
-                <Webcam
-                  ref={webcamRef}
-                  audio={false}
-                  screenshotFormat="image/jpeg"
-                  className="img-thumbnail mb-3"
-                  width="100%"
-                />
-              )}
-
-              {processing ? (
-                <div className="d-flex justify-content-center my-3">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Processing...</span>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <button className="btn btn-primary w-100" onClick={captureAndSend}>
-                    Submit {captureMode === 'check-in' ? 'Check-In' : 'Check-Out'}
-                  </button>
-                  <button className="btn btn-secondary w-100 mt-2" onClick={() => setIsCapturing(false)}>
-                    Cancel
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
+    <div style={{paddingBottom: '40px'}}>
       {!userData?.face ? (
         <div className="text-center mt-4">
           <h2 className="mb-3">Add your face to use the attendance system</h2>
@@ -278,7 +190,18 @@ const Attendance = () => {
             onCheckOut={handleCheckOut}
             todayStatus={todayStatus}
           />
-          <AttendanceHistoryTable key={refreshKey} attendance={userData.attendance} />
+
+          {/* 🧠 CHANGED - pass paginated attendance */}
+          <AttendanceHistoryTable key={refreshKey} attendance={attendance} />
+
+          {/* 🧠 CHANGED - Load more button */}
+          {hasMore && (
+            <div className="text-center my-3">
+              <button className="btn btn-outline-primary" onClick={loadMoreAttendance}>
+                Load More
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
